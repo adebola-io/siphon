@@ -27,6 +27,7 @@ function err(message: string, source?: fs.PathLike, charac?: number): void {
 type Clauses =
   | "FILE_NON_EXISTENT"
   | "CSS_NON_EXISTENT"
+  | "NOT_A_DIRECTORY"
   | "COMMENT_UNCLOSED"
   | "TAG_UNCLOSED"
   | "HTML_FRAGMENT"
@@ -44,6 +45,11 @@ const Errors = {
       case "CSS_NON_EXISTENT":
         err(
           `You are trying to import '${source.toString()}', which cannot be found.`
+        );
+        break;
+      case "NOT_A_DIRECTORY":
+        err(
+          `The given path ${source.toString()} does not lead to a directory.`
         );
         break;
       case "COMMENT_UNCLOSED":

@@ -1,5 +1,3 @@
-const barrel = require("../lib/dist/barrel.js");
+const watcher = require("../lib/dist/watcher/watcher.js");
 
-barrel.bundle(`test/test.html`).into("test/test.bundle.html");
-
-// console.log([1, 2, 3, 4].slice(0, -1));
+watcher.default();

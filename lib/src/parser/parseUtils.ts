@@ -9,29 +9,31 @@ export function checkForEnd(character: string, source: PathLike): void {
   if (!character) Errors.enc("ABRUPT", source);
 }
 
-export function isForeignTag(tagName: string): boolean {
-  return ["script", "style"].includes(tagName);
+export function isForeignTag(tagName: string | undefined): boolean {
+  return tagName ? ["script", "style"].includes(tagName) : false;
 }
 
-export function isVoid(tagName: string): boolean {
-  return [
-    "!DOCTYPE",
-    "area",
-    "base",
-    "br",
-    "col",
-    "command",
-    "embed",
-    "hr",
-    "img",
-    "input",
-    "keygen",
-    "link",
-    "meta",
-    "param",
-    "source",
-    "track",
-    "wbr",
-  ].includes(tagName);
+export function isVoid(tagName: string | undefined): boolean {
+  if (tagName)
+    return [
+      "!DOCTYPE",
+      "area",
+      "base",
+      "br",
+      "col",
+      "command",
+      "embed",
+      "hr",
+      "img",
+      "input",
+      "keygen",
+      "link",
+      "meta",
+      "param",
+      "source",
+      "track",
+      "wbr",
+    ].includes(tagName);
+  else return false;
 }
 export const stringMarkers: Array<string> = ["'", "`", '"'];

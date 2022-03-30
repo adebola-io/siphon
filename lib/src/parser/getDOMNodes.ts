@@ -30,7 +30,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
     i: number,
     attrs?: string
   ) {
-    let j = 0;
+    let j = 1;
     let content: string = "";
     while (textSlice[j]) {
       if (stringMarkers.includes(textSlice[j])) {
