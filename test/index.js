@@ -1,3 +1,1 @@
-const watcher = require("../lib/dist/watcher/watcher.js");
-
-watcher.default();
+console.log(0);

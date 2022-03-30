@@ -15,7 +15,7 @@ function resolveStyles(nodes: HTMLDocumentNode[], source: PathLike) {
       link.type = "element";
       link.tagName = "style";
       link.isVoid = undefined;
-      link.attributes = { source: link.attributes.href };
+      link.attributes = undefined;
       link.content = readFileSync(reqFile)
         .toString()
         .replace(/\n|\t|\r/g, "");

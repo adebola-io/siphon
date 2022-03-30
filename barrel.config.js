@@ -1,5 +1,5 @@
 module.exports = {
   watch: "test",
-  root: "test/test.html",
+  root: "test/src.html",
   output: "bundle.html",
 };
