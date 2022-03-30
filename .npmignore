@@ -1,0 +1,3 @@
+lib/src
+*.ts
+!*.d.ts

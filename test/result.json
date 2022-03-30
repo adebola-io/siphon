@@ -1,0 +1,52 @@
+[
+  {
+    "type": "definition",
+    "tagName": "!DOCTYPE",
+    "attributes": { "html": true }
+  },
+  {
+    "type": "element",
+    "tagName": "html",
+    "attributes": { "lang": "en" },
+    "children": [
+      {
+        "type": "element",
+        "tagName": "head",
+        "children": [
+          {
+            "type": "element",
+            "tagName": "meta",
+            "attributes": { "charset": "UTF-8" }
+          },
+          {
+            "type": "element",
+            "tagName": "meta",
+            "attributes": {
+              "http-equiv": "X-UA-Compatible",
+              "content": "IE=edge"
+            }
+          },
+          {
+            "type": "element",
+            "tagName": "meta",
+            "attributes": {
+              "name": "viewport",
+              "content": "width=device-width, initial-scale=1.0"
+            }
+          },
+          {
+            "type": "element",
+            "tagName": "link",
+            "attributes": { "rel": "stylesheet", "href": "test.css" }
+          },
+          {
+            "type": "element",
+            "tagName": "title",
+            "children": [{ "type": "text", "content": "Document" }]
+          }
+        ]
+      },
+      { "type": "element", "tagName": "body" }
+    ]
+  }
+]

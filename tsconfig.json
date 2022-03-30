@@ -1,0 +1,17 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "target": "ES5",
+    "lib": ["ES5", "DOM"],
+    "rootDir": "lib/src",
+    "outDir": "lib/dist"
+  },
+
+  // "include": ["lib/src"],
+  "exclude": ["node_modules"]
+}
