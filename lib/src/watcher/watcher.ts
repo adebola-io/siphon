@@ -5,6 +5,8 @@ import barrel from "..";
 import getAllFiles from "../utils/getAllFiles";
 colors.setTheme({
   red: "red",
+  green: "green",
+  yellow: "yellow",
 });
 export interface BarrelOptions {
   watch: PathLike;
@@ -25,15 +27,23 @@ function startWatcher() {
     };
   console.clear();
   console.log("Watching Files for changes...");
+  try {
+    barrel.bundle(options.root).into(options.output);
+    console.log();
+    console.log();
+    console.log("Bundling successful. Barrel found 0 errors.".green);
+  } catch (e: any | { message: string }) {
+    console.log(e.message.red);
+  }
   getAllFiles(options.watch).forEach((file) => {
     watchFile(file, { interval: 200 }, () => {
       console.clear();
-      console.log("File change detected. Starting incremental compilation");
+      console.log("File change detected. Compiling dependencies...".yellow);
       try {
         barrel.bundle(options.root).into(options.output);
         console.log();
         console.log();
-        console.log("Found 0 errors. Watching for file changes.");
+        console.log("Bundling successful. Barrel found 0 errors.".green);
       } catch (e: any | { message: string }) {
         console.log(e.message.red);
       }

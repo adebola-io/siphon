@@ -13,7 +13,7 @@ function resolveScripts(nodes: HTMLDocumentNode[], source: PathLike) {
     if (!existsSync(reqFile)) Errors.enc("CSS_NON_EXISTENT", reqFile);
     script.type = "element";
     script.tagName = "script";
-    script.attributes.src = undefined;
+    delete script.attributes.src;
     script.content = readFileSync(reqFile).toString();
   });
   return nodes;
