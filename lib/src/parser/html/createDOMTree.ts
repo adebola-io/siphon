@@ -1,5 +1,5 @@
 import fs = require("fs");
-import { HTMLDocumentNode } from "../types/html";
+import { HTMLDocumentNode } from "../../types/html";
 import getDOMNodes from "./getDOMNodes";
 
 function createDOMTree(source: fs.PathLike): HTMLDocumentNode[] {

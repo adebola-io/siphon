@@ -1,5 +1,5 @@
 import { PathLike } from "fs";
-import Errors from "../errors";
+import Errors from "../../errors";
 
 export function isSpaceCharac(character: string): boolean {
   return /\u0020|\u0009|\u000A|\u000C|\u000D/.test(character);

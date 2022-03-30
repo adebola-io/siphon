@@ -4,6 +4,15 @@ body {
   align-items: center;
   height: 100vh;
   margin: 0;
-  background-color: lightyellow;
-  color: yellowgreen;
+  font-family: sans-serif;
+}
+header {
+  position: fixed;
+  top: 0;
+  display: flex;
+  align-items: center;
+  height: 60px;
+  width: 100%;
+  box-shadow: 0 0 2px 0 steelblue;
+  background-color: #f0f0f0;
 }

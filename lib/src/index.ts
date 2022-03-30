@@ -3,7 +3,7 @@ import path = require("path");
 import Errors from "./errors";
 import * as resolver from "./resolver";
 import * as transplacer from "./transplacer";
-import createDOMTree from "./parser/createDOMTree";
+import createDOMTree from "./parser/html/createDOMTree";
 
 export function bundle(source: fs.PathLike) {
   return {

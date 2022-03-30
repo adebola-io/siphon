@@ -3,6 +3,7 @@ import colors = require("colors");
 import path = require("path");
 import barrel from "..";
 import getAllFiles from "../utils/getAllFiles";
+import { newTimeStamp } from "../utils/dating";
 colors.setTheme({
   red: "red",
   green: "green",
@@ -38,12 +39,20 @@ function startWatcher() {
   getAllFiles(options.watch).forEach((file) => {
     watchFile(file, { interval: 200 }, () => {
       console.clear();
-      console.log("File change detected. Compiling dependencies...".yellow);
+      console.log(
+        newTimeStamp({ noDate: true }) +
+          ": " +
+          "File change detected. Compiling dependencies...".yellow
+      );
       try {
         barrel.bundle(options.root).into(options.output);
         console.log();
         console.log();
-        console.log("Bundling successful. Barrel found 0 errors.".green);
+        console.log(
+          newTimeStamp({ noDate: true }) +
+            ": " +
+            "Bundling successful. Barrel found 0 errors.".green
+        );
       } catch (e: any | { message: string }) {
         console.log(e.message.red);
       }

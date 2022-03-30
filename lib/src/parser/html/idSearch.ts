@@ -1,4 +1,4 @@
-import { HTMLDocumentNode } from "../types/html";
+import { HTMLDocumentNode } from "../../types/html";
 
 function idSearch(
   nodes: HTMLDocumentNode[] | undefined,

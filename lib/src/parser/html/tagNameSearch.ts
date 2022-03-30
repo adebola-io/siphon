@@ -1,4 +1,4 @@
-import { HTMLDocumentNode } from "../types/html";
+import { HTMLDocumentNode } from "../../types/html";
 
 function tagNameSearch(nodes: HTMLDocumentNode[], searchStr: string) {
   let results: any[] = [];
