@@ -1,3 +1,5 @@
-const barrel = require("../lib/dist/barrel.js").default;
+const barrel = require("../lib/dist/barrel.js");
 
-console.log(barrel("test/test.html").getElementsByTagName("link"));
+barrel.bundle(`test/test.html`).into("test/test.bundle.html");
+
+// console.log([1, 2, 3, 4].slice(0, -1));

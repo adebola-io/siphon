@@ -4,8 +4,10 @@ export interface HTMLTokenTree {
   children?: Array<HTMLTokenTree>;
 }
 export interface HTMLDocumentNode {
-  id?: number;
+  identifier?: number;
   type?: string;
+  isVoid?: boolean;
+  lookupInFile?: number;
   tagName?: string;
   parent?: string | null;
   attributeList?: string;

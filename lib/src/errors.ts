@@ -1,6 +1,6 @@
 import fs = require("fs");
 import path = require("path");
-import { isSpaceCharac } from "./html_parser/parseUtils";
+import { isSpaceCharac } from "./parser/parseUtils";
 function err(message: string, source?: fs.PathLike, charac?: number): void {
   var sourceText: any;
   let i = 0,
@@ -26,6 +26,7 @@ function err(message: string, source?: fs.PathLike, charac?: number): void {
 }
 type Clauses =
   | "FILE_NON_EXISTENT"
+  | "CSS_NON_EXISTENT"
   | "COMMENT_UNCLOSED"
   | "TAG_UNCLOSED"
   | "HTML_FRAGMENT"
@@ -39,6 +40,11 @@ const Errors = {
     switch (clause) {
       case "FILE_NON_EXISTENT":
         err(`Barrel could not find ${source.toString()}.`);
+        break;
+      case "CSS_NON_EXISTENT":
+        err(
+          `You are trying to import '${source.toString()}', which cannot be found.`
+        );
         break;
       case "COMMENT_UNCLOSED":
         err(`Barrel encountered an unclosed comment.`, source, charac);

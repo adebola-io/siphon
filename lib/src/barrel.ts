@@ -1,10 +1,11 @@
 import fs = require("fs");
 import path = require("path");
-
 import Errors from "./errors";
-import createDOMTree from "./html_parser/createDOMTree";
-import idSearch from "./html_parser/idSearch";
-import tagNameSearch from "./html_parser/tagNameSearch";
+import * as resolver from "./resolver";
+import createDOMTree from "./parser/createDOMTree";
+import idSearch from "./parser/idSearch";
+import tagNameSearch from "./parser/tagNameSearch";
+
 function barrel(startFile: fs.PathLike) {
   if (!fs.existsSync(startFile))
     Errors.enc("FILE_NON_EXISTENT", path.resolve(startFile.toString()));
@@ -25,6 +26,24 @@ function barrel(startFile: fs.PathLike) {
         },
       };
   }
+}
+
+export function bundle(source: fs.PathLike) {
+  return {
+    into(destination: fs.PathLike) {
+      if (!fs.existsSync(source)) Errors.enc("FILE_NON_EXISTENT", source);
+      let fileExt = path.extname(source.toString());
+      switch (fileExt) {
+        case ".html":
+        case ".xhtml":
+        case ".mhtml":
+          var htmlTree = createDOMTree(source);
+          htmlTree = resolver.resolveStyles(htmlTree, source);
+          fs.writeFile("test/result.json", JSON.stringify(htmlTree), () => {});
+          return true;
+      }
+    },
+  };
 }
 
 export default barrel;

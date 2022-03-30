@@ -140,6 +140,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
                     ? "definition"
                     : "element",
                 parent: tagStack.top(),
+                isVoid: isVoid(startofTag) ? true : undefined,
                 tagName: startofTag,
                 attributes: getNodeAttributes(attributeList),
               };
@@ -156,6 +157,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
               type: "element",
               tagName: startofTag,
               parent: tagStack.top(),
+              isVoid: isVoid(startofTag) ? true : undefined,
               attributes: getNodeAttributes(attributeList),
             };
             nodes.push(node);

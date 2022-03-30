@@ -6,6 +6,7 @@ function createDOMTree(source: fs.PathLike): HTMLDocumentNode[] {
   let nodes = getDOMNodes(source);
   let filledNodes: HTMLDocumentNode[] = [];
   for (let i = 0; nodes[i]; i++) {
+    nodes[i].identifier = i;
     let h = i - 1;
     if (nodes[i].parent) {
       while (nodes[h] && nodes[i].parent !== nodes[h].tagName) h--;
