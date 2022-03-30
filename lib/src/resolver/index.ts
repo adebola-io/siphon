@@ -1,3 +1,3 @@
 import resolveStyles from "./resolveStyles";
-
-export { resolveStyles };
+import resolveScripts from "./resolveScripts";
+export { resolveStyles, resolveScripts };

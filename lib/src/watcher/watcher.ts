@@ -31,6 +31,8 @@ function startWatcher() {
       console.log("File change detected. Starting incremental compilation");
       try {
         barrel.bundle(options.root).into(options.output);
+        console.log();
+        console.log();
         console.log("Found 0 errors. Watching for file changes.");
       } catch (e: any | { message: string }) {
         console.log(e.message.red);

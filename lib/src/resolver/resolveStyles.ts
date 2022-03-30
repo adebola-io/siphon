@@ -1,5 +1,4 @@
 import { existsSync, PathLike, readFileSync } from "fs";
-import path = require("path");
 import Errors from "../errors";
 import tagNameSearch from "../parser/tagNameSearch";
 import { HTMLDocumentNode } from "../types/html";
@@ -16,7 +15,10 @@ function resolveStyles(nodes: HTMLDocumentNode[], source: PathLike) {
       link.type = "element";
       link.tagName = "style";
       link.isVoid = undefined;
-      link.content = readFileSync(reqFile).toString();
+      link.attributes = { source: link.attributes.href };
+      link.content = readFileSync(reqFile)
+        .toString()
+        .replace(/\n|\t|\r/g, "");
     } else throw new Error();
   });
   return nodes;

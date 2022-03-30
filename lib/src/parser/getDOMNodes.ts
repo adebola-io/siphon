@@ -48,7 +48,8 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
       parent: tagStack.top(),
       attributes: attrs ? getNodeAttributes(attrs) : undefined,
       tagName: startTag,
-      content,
+      content:
+        startTag === "style" ? content.replace(/\n|\r|\t/g, "") : content,
     };
     nodes.push(node);
     return i + j - 1;

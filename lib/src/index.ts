@@ -16,6 +16,7 @@ export function bundle(source: fs.PathLike) {
         case ".mhtml":
           var htmlTree = createDOMTree(source);
           htmlTree = resolver.resolveStyles(htmlTree, source);
+          htmlTree = resolver.resolveScripts(htmlTree, source);
           fs.writeFile(
             destination,
             transplacer.transplaceHTML(htmlTree),
