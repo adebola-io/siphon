@@ -1,4 +1,4 @@
-import { isForeignTag, isVoid } from "../parser/parseUtils";
+import { isForeignTag, isVoid } from "../parser/html/parseUtils";
 import { HTMLDocumentNode } from "../types/html";
 
 /**

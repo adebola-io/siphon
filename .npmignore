@@ -1,3 +1,4 @@
 lib/src
 *.ts
 !*.d.ts
+test

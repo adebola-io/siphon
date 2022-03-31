@@ -1,6 +1,6 @@
 import fs = require("fs");
 import path = require("path");
-import { isSpaceCharac } from "./parser/parseUtils";
+import { isSpaceCharac } from "./parser/html/parseUtils";
 function err(message: string, source?: fs.PathLike, charac?: number): void {
   var sourceText: any;
   let i = 0,

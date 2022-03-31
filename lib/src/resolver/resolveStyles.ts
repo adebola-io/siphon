@@ -1,6 +1,6 @@
 import { existsSync, PathLike, readFileSync } from "fs";
 import Errors from "../errors";
-import tagNameSearch from "../parser/tagNameSearch";
+import tagNameSearch from "../parser/html/tagNameSearch";
 import { HTMLDocumentNode } from "../types/html";
 import relativePath from "../utils/relativePath";
 
