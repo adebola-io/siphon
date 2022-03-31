@@ -1,5 +1,6 @@
 {
   "config": {
-    "rootDir": "test"
+    "rootDir": "test",
+    "formatFiles": false
   }
 }

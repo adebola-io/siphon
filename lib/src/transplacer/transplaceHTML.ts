@@ -28,11 +28,21 @@ function transplaceHTML(
       switch (true) {
         // Handle foreign tags.
         case isForeignTag(node.tagName):
-          html += `<${node.tagName}${attributeList}>${
+          html += `<${node.tagName}${attributeList}>`;
+          html += `${
             options.formatFiles && node.content
               ? formatExternalText(node.content, node.tagName)
+              : node.tagName === "style"
+              ? node.content
+                  ?.trim()
+                  .replace(/\n|\r|\t/g, "")
+                  .replace(/;([\s]*)/g, ";")
+                  .replace(/([\s]*){([\s]*)/g, "{")
+                  .replace(/([\s]*)}([\s]*)/g, "}")
               : node.content
-          }</${node.tagName}>\n`;
+          }`;
+          html += `</${node.tagName}>`;
+          if (options.formatFiles) html += "\n";
           break;
         // Handle text nodes.
         case node.type === "text":
