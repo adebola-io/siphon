@@ -1,6 +1,6 @@
 import fs = require("fs");
 import Errors from "../../errors";
-import { HTMLDocumentNode } from "../../types/html";
+import { HTMLDocumentNode } from "../../types";
 import Stack from "../../utils/stack";
 import getNodeAttributes from "./getNodeAttributes";
 import {
@@ -48,8 +48,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
       parent: tagStack.top(),
       attributes: attrs ? getNodeAttributes(attrs) : undefined,
       tagName: startTag,
-      content:
-        startTag === "style" ? content.replace(/\n|\r|\t/g, "") : content,
+      content,
     };
     nodes.push(node);
     return i + j - 1;

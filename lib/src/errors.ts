@@ -26,6 +26,7 @@ function err(message: string, source?: fs.PathLike, charac?: number): void {
 }
 type Clauses =
   | "FILE_NON_EXISTENT"
+  | "NO_ROOTDIR"
   | "CSS_NON_EXISTENT"
   | "NOT_A_DIRECTORY"
   | "COMMENT_UNCLOSED"
@@ -40,7 +41,10 @@ const Errors = {
   enc(clause: Clauses, source: fs.PathLike, charac?: number, options?: any) {
     switch (clause) {
       case "FILE_NON_EXISTENT":
-        err(`siphon could not find ${source.toString()}.`);
+        err(`Siphon could not find ${source.toString()}.`);
+        break;
+      case "NO_ROOTDIR":
+        err(`The rootDir '${source}' does not exist.`);
         break;
       case "CSS_NON_EXISTENT":
         err(
@@ -53,13 +57,13 @@ const Errors = {
         );
         break;
       case "COMMENT_UNCLOSED":
-        err(`siphon encountered an unclosed comment.`, source, charac);
+        err(`Siphon encountered an unclosed comment.`, source, charac);
         break;
       case "TAG_UNCLOSED":
         err(`Expected a start tag.`, source, charac);
         break;
       case "HTML_FRAGMENT":
-        err(`siphon does not support HTML fragments.`, source, charac);
+        err(`Siphon does not support HTML fragments.`, source, charac);
         break;
       case "INVALID_TAG":
         err(`Invalid tag Name '${options.name}'`, source, charac);

@@ -1,3 +1,4 @@
+import { PathLike } from "fs";
 export interface HTMLTokenTree {
   tagName?: any;
   attributes?: any;
@@ -14,4 +15,18 @@ export interface HTMLDocumentNode {
   attributes?: any;
   content?: string;
   children?: Array<HTMLDocumentNode>;
+}
+export interface Relation {
+  from: PathLike;
+  to: PathLike;
+}
+export interface siphonOptions {
+  rootDir: PathLike;
+  outDir: PathLike;
+  deep: boolean;
+  relations: Relation[];
+  formatFiles: boolean;
+  internalJS: boolean;
+  internalStyles: boolean;
+  preserveComments: boolean;
 }

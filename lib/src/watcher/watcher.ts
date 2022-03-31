@@ -1,63 +1,81 @@
 import { existsSync, PathLike, watchFile } from "fs";
 import colors = require("colors");
 import path = require("path");
-import siphon from "..";
+import siphon, { bundle } from "..";
 import getAllFiles from "../utils/getAllFiles";
 import { newTimeStamp } from "../utils/dating";
+import { siphonOptions } from "../types";
+import Errors from "../errors";
 colors.setTheme({
   red: "red",
+  gray: "gray",
   green: "green",
   yellow: "yellow",
 });
-export interface siphonOptions {
-  watch: PathLike;
-  root: PathLike;
-  output: PathLike;
-}
 function startWatcher() {
   const defaults: siphonOptions = {
-    watch: "src",
-    root: "public/index.html",
-    output: "dist/bundle.html",
+    rootDir: "./src",
+    outDir: "./build",
+    deep: false,
+    relations: [{ from: "index.html", to: "index.bundle.html" }],
+    formatFiles: true,
+    internalJS: false,
+    internalStyles: false,
+    preserveComments: false,
   };
   let options: siphonOptions = defaults;
-  if (existsSync("siphon.config.js"))
+  if (existsSync("spnconfig.json")) {
     options = {
       ...defaults,
-      ...require(path.resolve("siphon.config.js")),
+      ...require(path.resolve("spnconfig.json")).config,
     };
-  console.clear();
-  console.log("Watching Files for changes...");
-  try {
-    siphon.bundle(options.root).into(options.output);
-    console.log();
-    console.log();
-    console.log("Bundling successful. siphon found 0 errors.".green);
-  } catch (e: any | { message: string }) {
-    console.log(e.message.red);
   }
-  getAllFiles(options.watch).forEach((file) => {
+  /**
+   * Core bundler.
+   */
+  function runBundler() {
+    options.relations.forEach((relation) => {
+      try {
+        let source = `${options.rootDir}/${relation.from}`,
+          destination = `${options.outDir}/${relation.to}`;
+        siphon.bundle(source).into(destination, options);
+        console.log(
+          `${
+            `${newTimeStamp({
+              noDate: true,
+            })}:`.gray
+          }${` Bundling successful. Siphon found zero errors.`.green}`
+        );
+      } catch (e: any) {
+        console.log();
+        console.log(e.message?.red);
+      }
+    });
+  }
+  if (!existsSync(options.rootDir)) Errors.enc("NO_ROOTDIR", options.rootDir);
+  getAllFiles(options.rootDir).forEach((file) => {
     watchFile(file, { interval: 200 }, () => {
       console.clear();
       console.log(
-        newTimeStamp({ noDate: true }) +
-          ": " +
-          "File change detected. Compiling dependencies...".yellow
+        `${
+          `${newTimeStamp({
+            noDate: true,
+          })}:`.gray
+        }${` File change detected. Running bundler...`.yellow}`
       );
-      try {
-        siphon.bundle(options.root).into(options.output);
-        console.log();
-        console.log();
-        console.log(
-          newTimeStamp({ noDate: true }) +
-            ": " +
-            "Bundling successful. siphon found 0 errors.".green
-        );
-      } catch (e: any | { message: string }) {
-        console.log(e.message.red);
-      }
+      console.log();
+      runBundler();
     });
   });
+
+  console.clear();
+  console.log(
+    `${
+      `${newTimeStamp({
+        noDate: true,
+      })}:`.gray
+    }${` Staging Files and starting bundler...`.yellow}`
+  );
 }
 
 export default startWatcher;
