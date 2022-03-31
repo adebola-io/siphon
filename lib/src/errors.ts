@@ -40,7 +40,7 @@ const Errors = {
   enc(clause: Clauses, source: fs.PathLike, charac?: number, options?: any) {
     switch (clause) {
       case "FILE_NON_EXISTENT":
-        err(`Barrel could not find ${source.toString()}.`);
+        err(`siphon could not find ${source.toString()}.`);
         break;
       case "CSS_NON_EXISTENT":
         err(
@@ -53,13 +53,13 @@ const Errors = {
         );
         break;
       case "COMMENT_UNCLOSED":
-        err(`Barrel encountered an unclosed comment.`, source, charac);
+        err(`siphon encountered an unclosed comment.`, source, charac);
         break;
       case "TAG_UNCLOSED":
         err(`Expected a start tag.`, source, charac);
         break;
       case "HTML_FRAGMENT":
-        err(`Barrel does not support HTML fragments.`, source, charac);
+        err(`siphon does not support HTML fragments.`, source, charac);
         break;
       case "INVALID_TAG":
         err(`Invalid tag Name '${options.name}'`, source, charac);

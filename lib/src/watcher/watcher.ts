@@ -1,7 +1,7 @@
 import { existsSync, PathLike, watchFile } from "fs";
 import colors = require("colors");
 import path = require("path");
-import barrel from "..";
+import siphon from "..";
 import getAllFiles from "../utils/getAllFiles";
 import { newTimeStamp } from "../utils/dating";
 colors.setTheme({
@@ -9,30 +9,30 @@ colors.setTheme({
   green: "green",
   yellow: "yellow",
 });
-export interface BarrelOptions {
+export interface siphonOptions {
   watch: PathLike;
   root: PathLike;
   output: PathLike;
 }
 function startWatcher() {
-  const defaults: BarrelOptions = {
+  const defaults: siphonOptions = {
     watch: "src",
     root: "public/index.html",
     output: "dist/bundle.html",
   };
-  let options: BarrelOptions = defaults;
-  if (existsSync("barrel.config.js"))
+  let options: siphonOptions = defaults;
+  if (existsSync("siphon.config.js"))
     options = {
       ...defaults,
-      ...require(path.resolve("barrel.config.js")),
+      ...require(path.resolve("siphon.config.js")),
     };
   console.clear();
   console.log("Watching Files for changes...");
   try {
-    barrel.bundle(options.root).into(options.output);
+    siphon.bundle(options.root).into(options.output);
     console.log();
     console.log();
-    console.log("Bundling successful. Barrel found 0 errors.".green);
+    console.log("Bundling successful. siphon found 0 errors.".green);
   } catch (e: any | { message: string }) {
     console.log(e.message.red);
   }
@@ -45,13 +45,13 @@ function startWatcher() {
           "File change detected. Compiling dependencies...".yellow
       );
       try {
-        barrel.bundle(options.root).into(options.output);
+        siphon.bundle(options.root).into(options.output);
         console.log();
         console.log();
         console.log(
           newTimeStamp({ noDate: true }) +
             ": " +
-            "Bundling successful. Barrel found 0 errors.".green
+            "Bundling successful. siphon found 0 errors.".green
         );
       } catch (e: any | { message: string }) {
         console.log(e.message.red);

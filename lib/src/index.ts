@@ -15,8 +15,6 @@ export function bundle(source: fs.PathLike) {
         case ".xhtml":
         case ".mhtml":
           var htmlTree = createDOMTree(source);
-          htmlTree = resolver.resolveStyles(htmlTree, source);
-          htmlTree = resolver.resolveScripts(htmlTree, source);
           fs.writeFile(
             destination,
             transplacer.transplaceHTML(htmlTree),
@@ -27,5 +25,5 @@ export function bundle(source: fs.PathLike) {
     },
   };
 }
-const barrel = { bundle };
-export default barrel;
+const siphon = { bundle };
+export default siphon;

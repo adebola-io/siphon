@@ -1,4 +1,3 @@
 lib/src
-*.ts
-!*.d.ts
+tsconfig.json
 test

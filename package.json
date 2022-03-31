@@ -1,5 +1,5 @@
 {
-  "name": "barrel",
+  "name": "siphon",
   "version": "0.0.0",
   "description": "Concatenate all your web files together into one file.",
   "main": "index.js",
