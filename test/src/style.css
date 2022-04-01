@@ -1,0 +1,38 @@
+body {
+  margin: 0;
+}
+header {
+  position: fixed;
+  top: 0;
+  display: flex;
+  align-items: center;
+  height: 50px;
+  width: 94%;
+  padding: 0 3%;
+  border-bottom: 1.5px solid gray;
+}
+header > span {
+  font-size: 13pt;
+  font-family: "Segoe UI", sans-serif;
+}
+header > button {
+  height: 45px;
+  width: 45px;
+  margin-left: auto;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+}
+header > button > hr {
+  width: 70%;
+  background-color: green;
+  color: aquamarine;
+}
+navbar {
+  position: fixed;
+  bottom: 0;
+  display: block;
+  height: 55px;
+  width: 100%;
+  border-top: 1.5px solid gray;
+}

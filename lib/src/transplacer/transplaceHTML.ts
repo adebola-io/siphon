@@ -25,6 +25,15 @@ function transplaceHTML(
               attributeList += ` ${entry[0]}="${entry[1]}"`;
             } else attributeList += ` ${entry[0]}`;
           });
+          if (attributeList.length > 50 && options.formatFiles) {
+            attributeList = "\n" + spacers + tab;
+            Object.entries(node.attributes).forEach((entry) => {
+              if (entry[1] !== true) {
+                attributeList +=
+                  ` ${entry[0]}="${entry[1]}"` + "\n" + spacers + tab;
+              } else attributeList += ` ${entry[0]}` + "\n" + spacers + tab;
+            });
+          }
         }
       }
       switch (true) {
@@ -49,8 +58,17 @@ function transplaceHTML(
             let textSlices: string[] = [];
             let i = 0;
             do {
-              textSlices.push(node.content?.slice(i, i + 70));
-              i += 70;
+              if (node.content[i + 70] === " ") {
+                textSlices.push(node.content?.slice(i, i + 70));
+                i += 70;
+              } else {
+                let j = i + 70;
+                while (node.content[j] && node.content[j] !== " ") {
+                  j++;
+                }
+                textSlices.push(node.content?.slice(i, j));
+                i = j;
+              }
             } while (node.content[i]);
             html += textSlices.join("\n" + spacers) + "\n";
           } else html += `${node.content}`;
@@ -63,9 +81,9 @@ function transplaceHTML(
           break;
         // Handle void tags.
         case isVoid(node.tagName):
-          html += `<${node.tagName}${attributeList} />${
-            options.formatFiles ? "\n" : ""
-          }`;
+          html += `<${node.tagName}${attributeList}${
+            options.formatFiles ? " " : ""
+          }/>${options.formatFiles ? "\n" : ""}`;
           break;
         // Handle regular tags.
         default:

@@ -1,7 +1,8 @@
-import { existsSync, PathLike, watchFile } from "fs";
+import { existsSync, watchFile } from "fs";
 import colors = require("colors");
 import path = require("path");
-import siphon, { bundle } from "..";
+import defaults from "../defaults";
+import siphon from "..";
 import getAllFiles from "../utils/getAllFiles";
 import { newTimeStamp } from "../utils/dating";
 import { siphonOptions } from "../types";
@@ -13,16 +14,6 @@ colors.setTheme({
   yellow: "yellow",
 });
 function startWatcher() {
-  const defaults: siphonOptions = {
-    rootDir: "./src",
-    outDir: "./build",
-    deep: false,
-    relations: [{ from: "index.html", to: "index.bundle.html" }],
-    formatFiles: true,
-    internalJS: false,
-    internalStyles: false,
-    preserveComments: false,
-  };
   let options: siphonOptions = defaults;
   if (existsSync("spnconfig.json")) {
     options = {
@@ -38,7 +29,7 @@ function startWatcher() {
       try {
         let source = `${options.rootDir}/${relation.from}`,
           destination = `${options.outDir}/${relation.to}`;
-        siphon.bundle(source).into(destination, options);
+        siphon.bundler(source).into(destination, options);
         console.log(
           `${
             `${newTimeStamp({

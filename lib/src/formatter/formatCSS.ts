@@ -1,4 +1,5 @@
 import { minifyCSS } from "../minifier";
+import { checkForEnd } from "../parser/html/parseUtils";
 /**
  * Formats CSS text.
  * @param srcText Source CSS text.
@@ -14,9 +15,20 @@ function formatCSS(
   srcText = minifyCSS(srcText);
   let formattedText: string = "";
   let level = 0;
+  let store = "";
   // starting on a newline.
   for (let i = 0; srcText[i]; i++) {
-    if (srcText[i + 1] === "{") {
+    if (srcText[i] === "(") {
+      i++;
+      while (srcText[i] && srcText[i] !== ")") {
+        store += srcText[i++];
+      }
+      checkForEnd(srcText[i], "./");
+      formattedText += "(" + store + ")";
+      store = "";
+    } else if (srcText[i] === ">") {
+      formattedText += " > ";
+    } else if (srcText[i + 1] === "{") {
       // entry of new class.
       level++;
       formattedText += srcText[i++];
