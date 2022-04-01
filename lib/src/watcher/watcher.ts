@@ -1,4 +1,4 @@
-import { existsSync, watchFile } from "fs";
+import { existsSync, watch } from "fs";
 import colors = require("colors");
 import path = require("path");
 import defaults from "../defaults";
@@ -43,22 +43,19 @@ function startWatcher() {
       }
     });
   }
-  if (!existsSync(options.rootDir)) Errors.enc("NO_ROOTDIR", options.rootDir);
-  getAllFiles(options.rootDir).forEach((file) => {
-    watchFile(file, { interval: 200 }, () => {
-      console.clear();
-      console.log(
-        `${
-          `${newTimeStamp({
-            noDate: true,
-          })}:`.gray
-        }${` File change detected. Running bundler...`.yellow}`
-      );
-      console.log();
-      runBundler();
-    });
-  });
 
+  if (!existsSync(options.rootDir)) Errors.enc("NO_ROOTDIR", options.rootDir);
+  let ready = true;
+  function throttle() {
+    if (ready) runBundler();
+    ready = false;
+    setTimeout(() => {
+      ready = true;
+    }, 300);
+  }
+
+  // File Watcher.
+  watch(options.rootDir, { recursive: true }, throttle);
   console.clear();
   console.log(
     `${
@@ -68,5 +65,7 @@ function startWatcher() {
     }${` Staging Files and starting bundler...`.yellow}`
   );
 }
+
+function filesTracker() {}
 
 export default startWatcher;
