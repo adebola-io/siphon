@@ -1,6 +1,8 @@
 <h1 align=center> Siphon </h1>
 
-Siphon is a Node JS web bundler that reads HTML documents, and resolves their assets into a fewer files for production.
+Siphon is a Node JS web bundler that reads HTML documents and resolves their assets into fewer files for production.
+
+Unlike Webpack and Rollup, Siphon is document based, ergo it's entry point is a HTML file, rather than a Javascript one.
 
 ---
 
@@ -18,7 +20,7 @@ Once it is installed, you can cd into a project folder with an `index.html` file
 siphon bundle index.html
 ```
 
-This command will read the file, determine all its required assets, and bundle them up into a `build` folder.
+This command will read the file, determine all its required assets, and bundle them up into an `index.html` file in a `build` folder.
 
 ---
 
