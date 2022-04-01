@@ -1,6 +1,8 @@
 import { isForeignTag, isVoid } from "../parser/html/parseUtils";
 import { HTMLDocumentNode, siphonOptions } from "../types";
-
+import * as formatter from "../formatter";
+import * as minifier from "../minifier";
+const tab: string = "  ";
 /**
  * Takes in a set of nodes and returns their original HTML format.
  * @param nodes The tree(s) of nodes generated from the original HTML.
@@ -31,16 +33,12 @@ function transplaceHTML(
           html += `<${node.tagName}${attributeList}>`;
           html += `${
             options.formatFiles && node.content
-              ? formatExternalText(node.content, node.tagName)
-              : node.tagName === "style"
-              ? node.content
-                  ?.trim()
-                  .replace(/\n|\r|\t/g, "")
-                  .replace(/;([\s]*)/g, ";")
-                  .replace(/([\s]*){([\s]*)/g, "{")
-                  .replace(/([\s]*)}([\s]*)/g, "}")
+              ? formatExternalText(node.content, node.tagName, spacers)
               : node.content
+              ? minifyExternalText(node.content, node.tagName)
+              : ""
           }`;
+          if (options.formatFiles && node.content) html += spacers;
           html += `</${node.tagName}>`;
           if (options.formatFiles) html += "\n";
           break;
@@ -77,7 +75,7 @@ function transplaceHTML(
               html += "\n";
             }
           }
-          html += transplaceHTML(node.children, options, spacers + "  ");
+          html += transplaceHTML(node.children, options, spacers + tab);
           if (options.formatFiles) {
             if (
               (node.children && node.children[0].type !== "text") ||
@@ -97,8 +95,19 @@ function transplaceHTML(
   }
   return html;
 }
-function formatExternalText(externalText: string, assetType?: string) {
-  return externalText;
+function formatExternalText(
+  externalText: string,
+  assetType?: string,
+  spacers?: string
+) {
+  if (assetType === "style")
+    return formatter.formatCSS(externalText, spacers, tab);
+  if (assetType === "script") return externalText;
+}
+
+function minifyExternalText(externalText?: string, assetType?: string) {
+  if (externalText !== undefined && assetType === "style")
+    return minifier.minifyCSS(externalText);
 }
 
 export default transplaceHTML;

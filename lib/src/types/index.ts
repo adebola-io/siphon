@@ -1,9 +1,17 @@
 import { PathLike } from "fs";
-export interface HTMLTokenTree {
-  tagName?: any;
-  attributes?: any;
-  children?: Array<HTMLTokenTree>;
-}
+export type Clauses =
+  | "FILE_NON_EXISTENT"
+  | "NO_ROOTDIR"
+  | "CSS_NON_EXISTENT"
+  | "NOT_A_DIRECTORY"
+  | "COMMENT_UNCLOSED"
+  | "TAG_UNCLOSED"
+  | "HTML_FRAGMENT"
+  | "INVALID_TAG"
+  | "INVALID_VOID_TAG"
+  | "ABRUPT"
+  | "CLOSING_TAG_ATTR"
+  | "UNEXPECTED_CLOSE";
 export interface HTMLDocumentNode {
   identifier?: number;
   type?: string;

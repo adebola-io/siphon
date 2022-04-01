@@ -48,7 +48,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
       parent: tagStack.top(),
       attributes: attrs ? getNodeAttributes(attrs) : undefined,
       tagName: startTag,
-      content,
+      content: content === "" ? undefined : content,
     };
     nodes.push(node);
     return i + j - 1;

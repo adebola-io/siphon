@@ -1,9 +1,10 @@
 import fs = require("fs");
 import path = require("path");
 import { isSpaceCharac } from "./parser/html/parseUtils";
+import { Clauses } from "./types";
 function err(message: string, source?: fs.PathLike, charac?: number): void {
   var sourceText: any;
-  let i = 0,
+  let i = 1,
     j = 1,
     k = 0;
   if (source && charac) {
@@ -24,19 +25,7 @@ function err(message: string, source?: fs.PathLike, charac?: number): void {
   }`;
   throw new Error(message);
 }
-type Clauses =
-  | "FILE_NON_EXISTENT"
-  | "NO_ROOTDIR"
-  | "CSS_NON_EXISTENT"
-  | "NOT_A_DIRECTORY"
-  | "COMMENT_UNCLOSED"
-  | "TAG_UNCLOSED"
-  | "HTML_FRAGMENT"
-  | "INVALID_TAG"
-  | "INVALID_VOID_TAG"
-  | "ABRUPT"
-  | "CLOSING_TAG_ATTR"
-  | "UNEXPECTED_CLOSE";
+
 const Errors = {
   enc(clause: Clauses, source: fs.PathLike, charac?: number, options?: any) {
     switch (clause) {

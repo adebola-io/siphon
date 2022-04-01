@@ -27,7 +27,7 @@ function startWatcher() {
   if (existsSync("spnconfig.json")) {
     options = {
       ...defaults,
-      ...require(path.resolve("spnconfig.json")).config,
+      ...require(path.resolve("spnconfig.json")).bundlerOptions,
     };
   }
   /**

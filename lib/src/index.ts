@@ -22,10 +22,13 @@ export function bundle(source: fs.PathLike) {
           for (let index = 1; destinationRoutes[index]; index++) {
             let resolvedPath = destinationRoutes.slice(0, index).join("/");
             if (!fs.existsSync(resolvedPath)) {
-              console.log(resolvedPath);
               fs.mkdirSync(resolvedPath);
             }
           }
+          if (options.internalStyles)
+            htmlTree = resolver.resolveStyles(htmlTree, source);
+          if (options.internalJS)
+            htmlTree = resolver.resolveScripts(htmlTree, source);
           fs.writeFile(
             destination,
             transplacer.transplaceHTML(htmlTree, options),

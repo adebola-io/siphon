@@ -4,7 +4,7 @@
   "description": "Concatenate all your web files together into one file.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node scripts/testing.js",
     "watch": "node scripts/watch.js"
   },
   "keywords": [
@@ -15,6 +15,9 @@
   "license": "ISC",
   "dependencies": {
     "colors": "^1.4.0"
+  },
+  "bin": {
+    "siphon": "bin/siphon"
   },
   "devDependencies": {
     "@types/node": "^17.0.23",
