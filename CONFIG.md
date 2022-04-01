@@ -10,9 +10,24 @@ The output folder for the bundled project. The default is `'./build'`.
 
 The root folder to watch during automatic bundling. The default is `'./src'`
 
-#### `baseFiles`
+#### `relations`
 
-The entry points to start bundling from. Having multiple entry points means that Siphon will bundle into multiple html files. The default value is `['src/index.html']`
+Relations are links between base HTML files in the root directory and their bundled outputs in the output directory. The `relations` parameter in the config file holds an array of these links.
+For example, the config file:
+```json
+{
+   "bundlerOptions": {
+       "rootDir": "src",
+       "outDir": "build",
+       "relations": [
+          {"from": "start.html", "to": "index.html"}
+       ]
+    }
+}
+```
+has only one relation.
+
+This instructs the Siphon core compiler to start bundling from `src/start.html` and release the bundled file as `build/index.html`.
 
 #### `internalJS`
 
@@ -20,7 +35,7 @@ Determines whether the bundler should write all external Javascript into the HTM
 
 #### `internalStyles`
 
-Determines whether the bundler should write all external stylesheets into the HTML file. The default is `true`.
+Determines whether the bundler should write all external stylesheets into the HTML file. The default is `false`.
 
 #### `deep`
 
