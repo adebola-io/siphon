@@ -1,6 +1,6 @@
 import fs = require("fs");
 import path = require("path");
-import { isSpaceCharac } from "./parser/html/parseUtils";
+import { isSpaceCharac } from "./core/parser/html/parseUtils";
 import { Clauses } from "./types";
 function err(message: string, source?: fs.PathLike, charac?: number): void {
   var sourceText: any;
@@ -68,6 +68,9 @@ const Errors = {
         break;
       case "UNEXPECTED_CLOSE":
         err(`Encountered unexpected closing tag.`, source, charac);
+        break;
+      case "OPEN_CURLY_EXPECTED":
+        err(`Siphon expected a {`, source, charac);
         break;
     }
   },

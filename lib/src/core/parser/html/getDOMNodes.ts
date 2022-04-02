@@ -1,7 +1,7 @@
 import fs = require("fs");
-import Errors from "../../errors";
-import { HTMLDocumentNode } from "../../types";
-import Stack from "../../utils/stack";
+import Errors from "../../../errors";
+import { HTMLDocumentNode } from "../../../types";
+import Stack from "../../../utils/stack";
 import getNodeAttributes from "./getNodeAttributes";
 import {
   checkForEnd,

@@ -1,9 +1,9 @@
 import fs = require("fs");
 import path = require("path");
 import Errors from "../errors";
-import * as resolver from "../resolver";
-import * as transplacer from "../transplacer";
-import createDOMTree from "../parser/html/createDOMTree";
+import resolver from "./resolver";
+import transplacer from "./transplacer";
+import createDOMTree from "./parser/html/createDOMTree";
 import { siphonOptions } from "../types";
 
 export function bundler(source: fs.PathLike) {

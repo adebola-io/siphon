@@ -11,7 +11,8 @@ export type Clauses =
   | "INVALID_VOID_TAG"
   | "ABRUPT"
   | "CLOSING_TAG_ATTR"
-  | "UNEXPECTED_CLOSE";
+  | "UNEXPECTED_CLOSE"
+  | "OPEN_CURLY_EXPECTED";
 export interface HTMLDocumentNode {
   identifier?: number;
   type?: string;

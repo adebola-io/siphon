@@ -1,7 +1,7 @@
 import { isForeignTag, isVoid } from "../parser/html/parseUtils";
-import { HTMLDocumentNode, siphonOptions } from "../types";
-import * as formatter from "../formatter";
-import * as minifier from "../minifier";
+import { HTMLDocumentNode, siphonOptions } from "../../types";
+import formatter from "../formatter";
+import minifier from "../minifier";
 const tab: string = "  ";
 /**
  * Takes in a set of nodes and returns their original HTML format.

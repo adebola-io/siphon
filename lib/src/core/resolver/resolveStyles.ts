@@ -1,9 +1,9 @@
 import { existsSync, PathLike, readFileSync } from "fs";
-import Errors from "../errors";
+import Errors from "../../errors";
 import tagNameSearch from "../parser/html/tagNameSearch";
-import { HTMLDocumentNode, siphonOptions } from "../types";
-import relativePath from "../utils/relativePath";
-import * as formatter from "../formatter";
+import { HTMLDocumentNode, siphonOptions } from "../../types";
+import relativePath from "../../utils/relativePath";
+import formatter from "../formatter";
 
 /**
  * Reads through a set of HTML DOM Trees and replaces links to stylesheets with the actual stylesheet content.
@@ -28,9 +28,10 @@ function resolveStyles(
       link.tagName = "style";
       link.isVoid = undefined;
       link.attributes = undefined;
+      let styling = readFileSync(reqFile).toString();
       if (options?.formatFiles) {
-        link.content = formatter.formatCSS(readFileSync(reqFile).toString());
-      } else link.content = readFileSync(reqFile).toString();
+        link.content = formatter.formatCSS(styling);
+      } else link.content = styling;
     } else throw new Error();
   });
   return nodes;

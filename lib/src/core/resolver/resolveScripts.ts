@@ -1,8 +1,8 @@
 import { existsSync, PathLike, readFileSync } from "fs";
-import Errors from "../errors";
+import Errors from "../../errors";
 import tagNameSearch from "../parser/html/tagNameSearch";
-import { HTMLDocumentNode } from "../types";
-import relativePath from "../utils/relativePath";
+import { HTMLDocumentNode } from "../../types";
+import relativePath from "../../utils/relativePath";
 
 function resolveScripts(nodes: HTMLDocumentNode[], source: PathLike) {
   let scripts: HTMLDocumentNode[] = tagNameSearch(nodes, "script").filter(

@@ -1,5 +1,5 @@
-import { minifyCSS } from "../minifier";
-import { checkForEnd } from "../parser/html/parseUtils";
+import minifier from "../minifier";
+import { checkForEnd } from "../../core/parser/html/parseUtils";
 /**
  * Formats CSS text.
  * @param srcText Source CSS text.
@@ -12,7 +12,7 @@ function formatCSS(
   spacers: string = "",
   tab: string = ""
 ): string {
-  srcText = minifyCSS(srcText);
+  srcText = minifier.minifyCSS(srcText);
   let formattedText: string = "";
   let level = 0;
   let store = "";
