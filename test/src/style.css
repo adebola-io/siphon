@@ -1,4 +1,42 @@
-@import url(./style2.css);
+@import url(./style2);
+:root {
+  --theme: #74004d;
+  --themeLight: #d8d8d8;
+}
 body {
-  margin: 10px;
+  margin: 0;
+  background-color: black;
+}
+header {
+  position: fixed;
+  top: 0;
+  display: flex;
+  align-items: center;
+  height: 50px;
+  width: 94%;
+  padding: 0 3%;
+  color: white;
+  background-color: var(--theme);
+}
+header > .logo {
+  font-size: 14pt;
+  font-family: sans-serif;
+}
+header > .drop_down_button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 45px;
+  width: 45px;
+  margin-left: auto;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+header > .drop_down_button > hr {
+  width: 75%;
+  margin: 8% 0;
+  border: 1px solid white;
+  border-radius: 4px;
 }

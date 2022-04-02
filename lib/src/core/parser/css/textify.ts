@@ -9,8 +9,8 @@ import { isSpaceCharac, stringMarkers } from "../html/parseUtils";
  * @returns compiled css text.
  */
 function textify(source: PathLike) {
-  let crossSiteImports: string[] = [];
-  let fullImportList: string[] = [source.toString()];
+  let foreignImports: string[] = [];
+  let allImports: string[] = [source.toString()];
   function textify_core(source: PathLike) {
     let cssText = readFileSync(source).toString();
     let store = "";
@@ -41,20 +41,19 @@ function textify(source: PathLike) {
           } else store += cssText[i++];
         }
         if (store.includes("https://") || store.includes("http://")) {
-          crossSiteImports.push("@import " + store);
+          foreignImports.push("@import " + store);
         } else cssFileImports.push(store);
         store = "";
         while (isSpaceCharac(cssText[i])) i++;
       } else text += cssText[i];
     }
     cssFileImports.forEach(function (cssimport) {
-      let realImport = "";
+      let src = "";
       let i = 0;
       while (cssimport[i]) {
         if (stringMarkers.includes(cssimport[i])) {
           let marker = cssimport[i++];
-          while (cssimport[i] && cssimport[i] !== marker)
-            realImport += cssimport[i++];
+          while (cssimport[i] && cssimport[i] !== marker) src += cssimport[i++];
         } else if (cssimport.slice(i, i + 3) === "url") {
           i += 3;
           while (isSpaceCharac(cssimport[i])) i++;
@@ -64,30 +63,28 @@ function textify(source: PathLike) {
               if (stringMarkers.includes(cssimport[i])) {
                 let marker = cssimport[i++];
                 while (cssimport[i] && cssimport[i] !== marker)
-                  realImport += cssimport[i++];
-              } else realImport += cssimport[i++];
+                  src += cssimport[i++];
+              } else src += cssimport[i++];
             }
           }
-        } else realImport += cssimport[i++];
+        } else src += cssimport[i++];
       }
-      if (realImport.endsWith(")")) realImport = realImport.slice(0, -1);
-      realImport = relativePath(source, realImport);
-      if (realImport.endsWith(".css")) {
-        if (realImport === source) Errors.enc("CSS_SELF_IMPORT", source);
-        if (!existsSync(realImport)) Errors.enc("CSS_NON_EXISTENT", realImport);
-        if (fullImportList.includes(realImport))
-          Errors.enc("CSS_CIRCULAR_IMPORT", realImport);
-        text = textify_core(realImport) + "\n" + text;
-        fullImportList.push(realImport);
-      }
+      if (src.endsWith(")")) src = src.slice(0, -1);
+      if (src.endsWith(".css")) {
+        let realSrc = relativePath(source, src);
+        if (realSrc === source) Errors.enc("CSS_SELF_IMPORT", source);
+        if (!existsSync(realSrc)) Errors.enc("CSS_NON_EXISTENT", realSrc);
+        if (allImports.includes(realSrc))
+          Errors.enc("CSS_CIRCULAR_IMPORT", realSrc);
+        text = textify_core(realSrc) + "\n" + text;
+        allImports.push(realSrc);
+      } else foreignImports.push(`@import url(${src})`);
     });
     return text;
   }
   let result = textify_core(source);
   return (
-    crossSiteImports.join(";\n") +
-    (crossSiteImports.length > 0 ? ";\n" : "") +
-    result
+    foreignImports.join(";") + (foreignImports.length > 0 ? ";" : "") + result
   );
 }
 

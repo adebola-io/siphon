@@ -63,10 +63,12 @@ function formatCSS(
       }
       formattedText += srcText[i];
     } else if (srcText[i] === ";" && srcText[i + 1] !== "}") {
-      formattedText += ";" + "\n" + spacers;
-      if (!isExternalSheet) formattedText += tab;
-      for (let x = 0; x < level; x++) {
-        formattedText += tab;
+      if (srcText[i - 1] !== ";") {
+        formattedText += ";" + "\n" + spacers;
+        if (!isExternalSheet) formattedText += tab;
+        for (let x = 0; x < level; x++) {
+          formattedText += tab;
+        }
       }
     } else formattedText += srcText[i];
   }

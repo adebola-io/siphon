@@ -1,3 +1,0 @@
-const Warnings = {
-  enc() {},
-};
