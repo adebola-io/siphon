@@ -1,10 +1,14 @@
 const { existsSync } = require("fs");
 const path = require("path");
 const params = process.argv.slice(2);
-const Errors = require("./lib/dist/errors").default;
+const colors = require("colors");
 const defaults = require("./lib/dist/defaults").default;
 const siphon = require("./lib/dist").default;
 const watcher = require("./lib/dist/watcher/watcher").default;
+
+colors.setTheme({
+  green: "green",
+});
 
 switch (params[0]) {
   case "watch":
@@ -25,6 +29,6 @@ switch (params[0]) {
     siphon
       .bundler(params[1] ? params[1] : rootPath)
       .into(params[2] ? params[2] : destPath, options);
-    console.log(destPath);
+    console.log(`Bundled ${rootPath} into ${destPath} successfully.`.green);
     break;
 }

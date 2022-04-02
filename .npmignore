@@ -1,3 +1,6 @@
 lib/src
 tsconfig.json
+spnconfig.json
 test
+scripts
+.vscode
