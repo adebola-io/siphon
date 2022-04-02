@@ -14,17 +14,17 @@ The root folder to watch during automatic bundling. The default is `'./src'`
 
 Relations are links between base HTML files in the root directory and their bundled outputs in the output directory. The `relations` parameter in the config file holds an array of these links.
 For example, the config file:
+
 ```json
 {
-   "bundlerOptions": {
-       "rootDir": "src",
-       "outDir": "build",
-       "relations": [
-          {"from": "start.html", "to": "index.html"}
-       ]
-    }
+  "bundlerOptions": {
+    "rootDir": "src",
+    "outDir": "build",
+    "relations": [{ "from": "start.html", "to": "index.html" }]
+  }
 }
 ```
+
 has only one relation.
 
 This instructs the Siphon core compiler to start bundling from `src/start.html` and release the bundled file as `build/index.html`.
@@ -39,10 +39,10 @@ Determines whether the bundler should write all external stylesheets into the HT
 
 #### `deep`
 
-<h6 style='font-size:10pt; font-style: italic'> This parameter is experimental, and could exponentially increase your project load time, so it should only be used with very small projects and files. </h6>
+<p style='font-size:10pt; font-style: italic'> This parameter is experimental, and could exponentially increase your project load time, so it should only be used with very small projects and files. </p>
 
-When set to true, Siphon will compress **ALL** your assets into the HTML file, including all script files, stylesheets and images. The default value is `false`.
+When set to true, Siphon will compress **\*ALL\*** your assets into the HTML file, including all script files, stylesheets and images. The default value is `false`.
 
 #### `formatFiles`
 
-Determines whether the output files should be formatted. The default value is `true`.
+Determines whether the output files should be formatted. The default value is `false`.

@@ -46,7 +46,7 @@ For example, to change the output directory, create the config file and add:
 
 ```json
 {
-  "config": {
+  "bundlerOptions": {
     "outDir": "./dist"
   }
 }
