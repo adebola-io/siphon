@@ -4,6 +4,9 @@ import path = require("path");
 function relativePath(from: PathLike, to: string): string {
   let rootPaths: string[] = path.resolve(from.toString()).split("\\");
   switch (true) {
+    case to.startsWith("http://"):
+    case to.startsWith("https://"):
+      return to;
     case to.startsWith("../"):
       do {
         rootPaths.pop();

@@ -3,6 +3,7 @@ import path = require("path");
 import Errors from "../errors";
 import resolver from "./resolver";
 import transplacer from "./transplacer";
+import assetizer from "./assetizer";
 import createDOMTree from "./parser/html/createDOMTree";
 import { siphonOptions } from "../types";
 
@@ -25,10 +26,13 @@ export function bundler(source: fs.PathLike) {
               fs.mkdirSync(resolvedPath);
             }
           }
-          if (options.internalStyles)
-            htmlTree = resolver.resolveStyles(htmlTree, source);
-          if (options.internalJS)
-            htmlTree = resolver.resolveScripts(htmlTree, source);
+
+          htmlTree = assetizer.assessCSS(htmlTree, source, options);
+
+          // if (options.internalStyles)
+          //   htmlTree = resolver.resolveStyles(htmlTree, source);
+          // if (options.internalJS)
+          //   htmlTree = resolver.resolveScripts(htmlTree, source);
           fs.writeFile(
             destination,
             transplacer.transplaceHTML(htmlTree, options),

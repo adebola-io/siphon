@@ -3,7 +3,6 @@ import colors = require("colors");
 import path = require("path");
 import defaults from "../defaults";
 import siphon from "..";
-import getAllFiles from "../utils/getAllFiles";
 import { newTimeStamp } from "../utils/dating";
 import { siphonOptions } from "../types";
 import Errors from "../errors";
@@ -26,10 +25,19 @@ function startWatcher() {
    */
   function runBundler() {
     options.relations.forEach((relation) => {
+      console.clear();
+      console.log(
+        `${
+          `${newTimeStamp({
+            noDate: true,
+          })}:`.gray
+        }${` File change detected. Starting bundler...`.yellow}`
+      );
       try {
         let source = `${options.rootDir}/${relation.from}`,
           destination = `${options.outDir}/${relation.to}`;
         siphon.bundler(source).into(destination, options);
+        console.log();
         console.log(
           `${
             `${newTimeStamp({
@@ -65,7 +73,5 @@ function startWatcher() {
     }${` Staging Files and starting bundler...`.yellow}`
   );
 }
-
-function filesTracker() {}
 
 export default startWatcher;

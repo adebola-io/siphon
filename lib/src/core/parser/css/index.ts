@@ -1,7 +1,7 @@
-import getStyleImports from "./getStyleImports";
+import textify from "./textify";
 
 const css = {
-  getStyleImports,
+  textify,
 };
 
 export default css;
