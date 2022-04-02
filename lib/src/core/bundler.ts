@@ -1,11 +1,11 @@
 import fs = require("fs");
 import path = require("path");
 import Errors from "../errors";
-import resolver from "./resolver";
 import transplacer from "./transplacer";
 import assetizer from "./assetizer";
 import createDOMTree from "./parser/html/createDOMTree";
 import { siphonOptions } from "../types";
+import forceCreatePath from "../utils/forceMkDir";
 
 export function bundler(source: fs.PathLike) {
   return {
@@ -17,17 +17,13 @@ export function bundler(source: fs.PathLike) {
         case ".xhtml":
         case ".mhtml":
           var htmlTree = createDOMTree(source);
-          let destinationRoutes = path
-            .resolve(destination.toString())
-            .split(/\\|\//);
-          for (let index = 1; destinationRoutes[index]; index++) {
-            let resolvedPath = destinationRoutes.slice(0, index).join("/");
-            if (!fs.existsSync(resolvedPath)) {
-              fs.mkdirSync(resolvedPath);
-            }
-          }
-
-          htmlTree = assetizer.assessCSS(htmlTree, source, options);
+          forceCreatePath(destination);
+          htmlTree = assetizer.assessCSS(
+            htmlTree,
+            source,
+            options,
+            destination
+          );
 
           // if (options.internalStyles)
           //   htmlTree = resolver.resolveStyles(htmlTree, source);

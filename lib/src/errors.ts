@@ -1,7 +1,7 @@
 import fs = require("fs");
 import path = require("path");
 import { isSpaceCharac } from "./core/parser/html/parseUtils";
-import { Clauses } from "./types";
+import { ErrorTypes } from "./types";
 function err(message: string, source?: fs.PathLike, charac?: number): void {
   var sourceText: any;
   let i = 1,
@@ -19,16 +19,18 @@ function err(message: string, source?: fs.PathLike, charac?: number): void {
     }
   }
   message = `${message} ${
-    source && charac
-      ? `\n    at ${path.resolve(source.toString())}:${j}:${k}`
+    source
+      ? `\n    at ${path.resolve(source.toString())}${
+          charac ? `:${j}:${k}` : ""
+        }`
       : ""
   }`;
   throw new Error(message);
 }
 
 const Errors = {
-  enc(clause: Clauses, source: fs.PathLike, charac?: number, options?: any) {
-    switch (clause) {
+  enc(type: ErrorTypes, source: fs.PathLike, charac?: number, options?: any) {
+    switch (type) {
       case "FILE_NON_EXISTENT":
         err(`Siphon could not find ${source.toString()}.`);
         break;
@@ -36,14 +38,20 @@ const Errors = {
         err(`The rootDir '${source}' does not exist.`);
         break;
       case "CSS_NON_EXISTENT":
+        err(`The stylesheet '${source.toString()}' cannot be found.`);
+        break;
+      case "CSS_SELF_IMPORT":
         err(
-          `You are trying to import '${source.toString()}', which cannot be found.`
+          `recursion_hell: The stylesheet ${source.toString()} has an import to itself.`
+        );
+        break;
+      case "CSS_CIRCULAR_IMPORT":
+        err(
+          `The stylesheet ${source.toString()} has already been imported into this project.`
         );
         break;
       case "NOT_A_DIRECTORY":
-        err(
-          `The given path ${source.toString()} does not lead to a directory.`
-        );
+        err(`The path ${source.toString()} does not lead to a directory.`);
         break;
       case "COMMENT_UNCLOSED":
         err(`Siphon encountered an unclosed comment.`, source, charac);
@@ -61,7 +69,7 @@ const Errors = {
         err(`'${options.name}' cannot be used as a void tag.`, source, charac);
         break;
       case "ABRUPT":
-        err(`Unexpected end of file.`);
+        err(`Unexpected end of file.`, source);
         break;
       case "CLOSING_TAG_ATTR":
         err(`Attributes are not allowed in the closing tag.`, source, charac);

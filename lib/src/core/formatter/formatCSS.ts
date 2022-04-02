@@ -10,7 +10,8 @@ import { checkForEnd } from "../../core/parser/html/parseUtils";
 function formatCSS(
   srcText: string,
   spacers: string = "",
-  tab: string = ""
+  tab: string = "",
+  isExternalSheet = false
 ): string {
   srcText = minifier.minifyCSS(srcText);
   let formattedText: string = "";
@@ -32,7 +33,8 @@ function formatCSS(
       // entry of new class.
       level++;
       formattedText += srcText[i++];
-      formattedText += " {" + "\n" + spacers + tab;
+      formattedText += " {" + "\n" + spacers;
+      if (!isExternalSheet) formattedText += tab;
       for (let x = 0; x < level; x++) {
         formattedText += tab;
       }
@@ -47,19 +49,22 @@ function formatCSS(
       }
       formattedText += "\n" + spacers;
       let x = 0;
+      if (isExternalSheet) x = 1;
       for (x; x < level; x++) {
         formattedText += tab;
       }
       level--;
       formattedText += "}";
     } else if (srcText[i - 1] === "}" || srcText[i - 1] === undefined) {
-      formattedText += "\n" + spacers + tab;
+      formattedText += "\n" + spacers;
+      if (!isExternalSheet) formattedText += tab;
       for (let x = 0; x < level; x++) {
         formattedText += tab;
       }
       formattedText += srcText[i];
     } else if (srcText[i] === ";" && srcText[i + 1] !== "}") {
-      formattedText += ";" + "\n" + spacers + tab;
+      formattedText += ";" + "\n" + spacers;
+      if (!isExternalSheet) formattedText += tab;
       for (let x = 0; x < level; x++) {
         formattedText += tab;
       }

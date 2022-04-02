@@ -11,7 +11,7 @@ import {
   stringMarkers,
 } from "./parseUtils";
 /**
- * Verify the syntax of the HTML File.
+ * Go through an HTML file and return its content as an array of nodes.
  */
 function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
   let srcText: string = fs.readFileSync(source).toString();
@@ -47,6 +47,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
       type: "element",
       parent: tagStack.top(),
       attributes: attrs ? getNodeAttributes(attrs) : undefined,
+      attributeList: attrs ? attrs : undefined,
       tagName: startTag,
       content: content === "" ? undefined : content,
     };
@@ -143,6 +144,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
                 isVoid: isVoid(startofTag) ? true : undefined,
                 tagName: startofTag,
                 attributes: getNodeAttributes(attributeList),
+                attributeList,
               };
               nodes.push(node);
             }
@@ -159,6 +161,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
               parent: tagStack.top(),
               isVoid: isVoid(startofTag) ? true : undefined,
               attributes: getNodeAttributes(attributeList),
+              attributeList
             };
             nodes.push(node);
             if (!isVoid(startofTag))

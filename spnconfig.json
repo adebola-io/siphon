@@ -5,6 +5,6 @@
     "formatFiles": true,
     "relations": [{ "from": "start.html", "to": "index.html" }],
     "internalJS": true,
-    "internalStyles": true
+    "internalStyles": false
   }
 }

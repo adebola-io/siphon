@@ -1,8 +1,10 @@
 import { PathLike } from "fs";
-export type Clauses =
+export type ErrorTypes =
   | "FILE_NON_EXISTENT"
   | "NO_ROOTDIR"
   | "CSS_NON_EXISTENT"
+  | "CSS_SELF_IMPORT"
+  | "CSS_CIRCULAR_IMPORT"
   | "NOT_A_DIRECTORY"
   | "COMMENT_UNCLOSED"
   | "TAG_UNCLOSED"

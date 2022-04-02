@@ -1,5 +1,4 @@
-@import url(https://webpack.com.css);
-@import url(./style3.css);
+@import url(./style2.css);
 body {
-  margin: 0;
+  margin: 10px;
 }

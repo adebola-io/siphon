@@ -1,4 +1,5 @@
-import { PathLike, readFileSync } from "fs";
+import { existsSync, PathLike, readFileSync } from "fs";
+import Errors from "../../../errors";
 import relativePath from "../../../utils/relativePath";
 import { isSpaceCharac, stringMarkers } from "../html/parseUtils";
 
@@ -9,11 +10,12 @@ import { isSpaceCharac, stringMarkers } from "../html/parseUtils";
  */
 function textify(source: PathLike) {
   let crossSiteImports: string[] = [];
+  let fullImportList: string[] = [source.toString()];
   function textify_core(source: PathLike) {
     let cssText = readFileSync(source).toString();
     let store = "";
     let text = "";
-    let baseimports = [];
+    let cssFileImports = [];
     for (let i = 0; cssText[i]; i++) {
       //   Ignore comments.
       if (cssText.slice(i, i + 2) === "/*") {
@@ -40,12 +42,12 @@ function textify(source: PathLike) {
         }
         if (store.includes("https://") || store.includes("http://")) {
           crossSiteImports.push("@import " + store);
-        } else baseimports.push(store);
+        } else cssFileImports.push(store);
         store = "";
         while (isSpaceCharac(cssText[i])) i++;
       } else text += cssText[i];
     }
-    baseimports.forEach(function (cssimport) {
+    cssFileImports.forEach(function (cssimport) {
       let realImport = "";
       let i = 0;
       while (cssimport[i]) {
@@ -69,7 +71,15 @@ function textify(source: PathLike) {
         } else realImport += cssimport[i++];
       }
       if (realImport.endsWith(")")) realImport = realImport.slice(0, -1);
-      text = textify_core(relativePath(source, realImport)) + "\n" + text;
+      realImport = relativePath(source, realImport);
+      if (realImport.endsWith(".css")) {
+        if (realImport === source) Errors.enc("CSS_SELF_IMPORT", source);
+        if (!existsSync(realImport)) Errors.enc("CSS_NON_EXISTENT", realImport);
+        if (fullImportList.includes(realImport))
+          Errors.enc("CSS_CIRCULAR_IMPORT", realImport);
+        text = textify_core(realImport) + "\n" + text;
+        fullImportList.push(realImport);
+      }
     });
     return text;
   }
