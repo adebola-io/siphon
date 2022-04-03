@@ -1,6 +1,7 @@
 lib/src
 tsconfig.json
 spnconfig.json
+siphon_proto.png
 test
 scripts
 .vscode
