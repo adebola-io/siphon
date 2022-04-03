@@ -8,7 +8,7 @@
 
 Siphon is a Node JS web bundler that reads HTML documents and resolves their assets into fewer files for production.
 
-Unlike Webpack and Rollup, Siphon is document based, ergo it's entry point is a HTML file, rather than a Javascript one.
+It can also format and minify your source code.
 
 ---
 
