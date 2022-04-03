@@ -1,5 +1,5 @@
 {
-  "name": "siphon",
+  "name": "siphon.cli",
   "version": "0.0.0",
   "start-date": "25/3/22",
   "description": "Format, minify and bundle up your HTML source code.",

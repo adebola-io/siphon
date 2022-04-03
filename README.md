@@ -17,7 +17,7 @@ It can also format and minify your source code.
 To get started, install Siphon with the node command:
 
 ```shell
-npm install -g siphon-js
+npm install -g siphon.cli
 ```
 
 Once it is installed, you can cd into a project folder with an `index.html` file and run the command:
