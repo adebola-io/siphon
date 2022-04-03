@@ -32,10 +32,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adebola-xyz/barrel.js.git"
+    "url": "git+https://github.com/adebola-xyz/siphon.git"
   },
   "bugs": {
-    "url": "https://github.com/adebola-xyz/barrel.js/issues"
+    "url": "https://github.com/adebola-xyz/siphon/issues"
   },
-  "homepage": "https://github.com/adebola-xyz/barrel.js#readme"
+  "homepage": "https://github.com/adebola-xyz/siphon#readme"
 }
