@@ -1,6 +1,6 @@
 <p align=center>
-  <p align=center>
   <img width=200 height=200 src="./siphon_proto.png"></img>
+  <p align=center>
   <a href="https://www.npmjs.com/package/siphpn.cli">
     <img src="https://img.shields.io/npm/v/siphon.cli.svg" alt="npm version" >
   </a>
