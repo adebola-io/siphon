@@ -2,9 +2,13 @@
 <img width=200 height=200 src="./siphon_proto.png"></img>
 </p>
 
+[![npm version](https://badge.fury.io/js/siphon.cli.svg)](https://www.npmjs.com/package/siphon.cli)
+
 <h1 align=center> Siphon </h1>
 
-<p align=center style='font-style: italic'>Siphon is still in an early stage of development.</p>
+<p align=center style='font-style: italic'>Siphon is still in an early stage of development.
+
+</p>
 
 Siphon is a Node JS web bundler that reads HTML documents and resolves their assets into fewer files for production.
 
