@@ -1,17 +1,35 @@
-<p align=center>
-<img width=200 height=200 src="./siphon_proto.png"></img>
-</p>
+<p align=center><img width=200 height=200 src="./siphon_proto.png"></img></p>
 
+---
+ 
+ ​<p align="center"> 
+ ​  <a href="https://www.npmjs.com/package/rollup"> 
+ ​    <img src="https://img.shields.io/npm/v/rollup.svg" alt="npm version"></img>
+ ​  </a> 
+ ​  <a href="https://packagephobia.now.sh/result?p=rollup"> 
+ ​    <img src="https://packagephobia.now.sh/badge?p=rollup" alt="install size" > 
+ ​  </a> 
+ ​  <a href="https://codecov.io/gh/rollup/rollup"> 
+ ​    <img src="https://codecov.io/gh/rollup/rollup/graph/badge.svg" alt="code coverage" > 
+ ​  </a> 
+ ​  <a href="#backers" alt="sponsors on Open Collective"> 
+ ​      <img src="https://opencollective.com/rollup/backers/badge.svg" alt="backers" > 
+ ​  </a>  
+ ​  <a href="#sponsors" alt="Sponsors on Open Collective"> 
+ ​    <img src="https://opencollective.com/rollup/sponsors/badge.svg" alt="sponsors" > 
+ ​  </a>  
+ ​  <a href="https://github.com/rollup/rollup/blob/master/LICENSE.md"> 
+ ​    <img src="https://img.shields.io/npm/l/rollup.svg" alt="license"> 
+ ​  </a> 
+ ​  <a href="https://david-dm.org/rollup/rollup"> 
+ ​    <img src="https://david-dm.org/rollup/rollup/status.svg" alt="dependency status"> 
+ ​  </a> 
+ ​  <a href='https://is.gd/rollup_chat?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge'> 
+ ​    <img src='https://img.shields.io/discord/466787075518365708?color=778cd1&label=chat' alt='Join the chat at https://is.gd/rollup_chat'> 
+ ​  </a> 
+ ​</p>
 
-<p align=center>
- ​  <a href="https://packagephobia.now.sh/result?p=siphon.cli"> 
- ​    <img src="https://packagephobia.now.sh/badge?p=siphon.cli" alt="install size" ></img>
- ​  </a>
- ​  <a href="https://www.npmjs.com/package/siphon.cli"> 
- ​    <img src="https://badge.fury.io/js/siphon.cli.svg" alt="install size" ></img>
- ​  </a>
-</p>
-
+---
 
 <h1 align=center> Siphon </h1>
 
