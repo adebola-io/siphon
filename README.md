@@ -4,7 +4,7 @@
 
 <h1 align=center> Siphon </h1>
 
-<p align=center style='font-style: italic'>Siphon is stil in an early stage of development.</p>
+<p align=center style='font-style: italic'>Siphon is still in an early stage of development.</p>
 
 Siphon is a Node JS web bundler that reads HTML documents and resolves their assets into fewer files for production.
 
