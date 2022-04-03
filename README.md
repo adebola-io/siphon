@@ -2,7 +2,16 @@
 <img width=200 height=200 src="./siphon_proto.png"></img>
 </p>
 
-[![npm version](https://badge.fury.io/js/siphon.cli.svg)](https://www.npmjs.com/package/siphon.cli)
+
+<p align=center>
+ ​  <a href="https://packagephobia.now.sh/result?p=siphon.cli"> 
+ ​    <img src="https://packagephobia.now.sh/badge?p=siphon.cli" alt="install size" ></img>
+ ​  </a>
+ ​  <a href="https://www.npmjs.com/package/siphon.cli"> 
+ ​    <img src="https://badge.fury.io/js/siphon.cli.svg" alt="install size" ></img>
+ ​  </a>
+</p>
+
 
 <h1 align=center> Siphon </h1>
 
