@@ -28,6 +28,7 @@ function textify(source: PathLike) {
         text += marker;
         while (cssText[i] && cssText[i] !== marker) text += cssText[i++];
         text += cssText[i++];
+        // Import statements.
       } else if (cssText.slice(i, i + 7) === "@import") {
         i += 8;
         while (isSpaceCharac(cssText[i])) i++;

@@ -1,8 +1,6 @@
-import { link, PathLike, writeFileSync } from "fs";
-import path = require("path");
+import { PathLike, writeFileSync } from "fs";
 import { HTMLDocumentNode, siphonOptions } from "../types";
 import fileName from "../utils/fileName";
-import forceCreatePath from "../utils/forceMkDir";
 import relativePath from "../utils/relativePath";
 import formatter from "./formatter";
 import minifier from "./minifier";

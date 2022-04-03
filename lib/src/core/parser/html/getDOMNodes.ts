@@ -1,7 +1,7 @@
 import fs = require("fs");
 import Errors from "../../../errors";
 import { HTMLDocumentNode } from "../../../types";
-import Stack from "../../../utils/stack";
+import Structures from "../../../../structures";
 import getNodeAttributes from "./getNodeAttributes";
 import {
   checkForEnd,
@@ -15,7 +15,7 @@ import {
  */
 function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
   let srcText: string = fs.readFileSync(source).toString();
-  let tagStack = new Stack();
+  let tagStack = new Structures.Stack();
   let node: HTMLDocumentNode = {
     type: "",
     parent: null,
@@ -161,7 +161,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
               parent: tagStack.top(),
               isVoid: isVoid(startofTag) ? true : undefined,
               attributes: getNodeAttributes(attributeList),
-              attributeList
+              attributeList,
             };
             nodes.push(node);
             if (!isVoid(startofTag))

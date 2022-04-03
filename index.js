@@ -9,7 +9,6 @@ const watcher = require("./lib/dist/watcher/watcher").default;
 colors.setTheme({
   green: "green",
 });
-
 switch (params[0]) {
   case "watch":
     watcher();

@@ -5,7 +5,8 @@
   "description": "Format, minify and bundle up your HTML source code.",
   "main": "index.js",
   "scripts": {
-    "test": "node scripts/testing.js"
+    "test": "node scripts/testing.js",
+    "build": "tsc --declaration"
   },
   "keywords": [
     "node",

@@ -5,7 +5,7 @@ import transplacer from "./transplacer";
 import assetizer from "./assetizer";
 import createDOMTree from "./parser/html/createDOMTree";
 import { siphonOptions } from "../types";
-import forceCreatePath from "../utils/forceMkDir";
+import forceCreatePath from "../utils/forceCreatePath";
 
 export function bundler(source: fs.PathLike) {
   return {
