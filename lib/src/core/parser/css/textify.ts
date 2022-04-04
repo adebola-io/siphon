@@ -1,7 +1,8 @@
 import { existsSync, PathLike, readFileSync } from "fs";
+import path = require("path");
 import Errors from "../../../errors";
 import relativePath from "../../../utils/relativePath";
-import { isSpaceCharac, stringMarkers } from "../html/parseUtils";
+import { checkForEnd, isSpaceCharac, stringMarkers } from "../html/parseUtils";
 
 /**
  * Runs through a CSS file, resolves its imports and removes comments.
@@ -10,6 +11,7 @@ import { isSpaceCharac, stringMarkers } from "../html/parseUtils";
  */
 function textify(source: PathLike) {
   let foreignImports: string[] = [];
+  let weirdImports: { srcpath: string; name: string }[] = [];
   let allImports: string[] = [source.toString()];
   function textify_core(source: PathLike) {
     let cssText = readFileSync(source).toString();
@@ -46,6 +48,36 @@ function textify(source: PathLike) {
         } else cssFileImports.push(store);
         store = "";
         while (isSpaceCharac(cssText[i])) i++;
+      } else if (cssText.slice(i, i + 4) === "url(") {
+        text += "url(";
+        i += 4;
+        while (cssText[i] && cssText[i] !== ")") {
+          if (stringMarkers.includes(cssText[i])) {
+            let marker = cssText[i++];
+            store += marker;
+            while (cssText[i] && cssText[i] !== marker) {
+              store += cssText[i++];
+            }
+            checkForEnd(cssText[i], source);
+            store += marker;
+          } else store += cssText[i];
+          i++;
+        }
+        checkForEnd(cssText[i], source);
+        if (store.includes("https://") || store.includes("http://")) {
+          text += store + ")";
+        } else {
+          if (stringMarkers.includes(store[0])) {
+            store = store.slice(1, store.lastIndexOf(store[0]));
+          }
+          let truePath = relativePath(source, store);
+          weirdImports.push({
+            srcpath: truePath,
+            name: path.basename(truePath),
+          });
+          text += `"./${path.basename(truePath)}")`;
+        }
+        store = "";
       } else text += cssText[i];
     }
     cssFileImports.forEach(function (cssimport) {
@@ -84,9 +116,13 @@ function textify(source: PathLike) {
     return text;
   }
   let result = textify_core(source);
-  return (
-    foreignImports.join(";") + (foreignImports.length > 0 ? ";" : "") + result
-  );
+  return {
+    text:
+      foreignImports.join(";") +
+      (foreignImports.length > 0 ? ";" : "") +
+      result,
+    links: weirdImports,
+  };
 }
 
 export default textify;

@@ -1,4 +1,3 @@
-@import url(./style2.css);
 :root {
   --theme: rgb(255, 194, 72);
   --themeDark: rgb(217, 147, 0);
@@ -41,7 +40,6 @@ header > .drop_down_button > hr {
   border: 1px solid var(--theme);
   border-radius: 4px;
 }
-
 main {
   height: 100vh;
   width: 100vw;
@@ -49,11 +47,10 @@ main {
   justify-content: center;
   align-items: center;
 }
-
 div {
   height: 190px;
   width: 190px;
-  background-image: url(../../siphon_proto.png);
+  background-image: url("./siphon_proto.png");
   background-size: cover;
   background-position: center;
 }

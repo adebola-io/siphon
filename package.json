@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node scripts/testing.js",
+    "watch": "siphon watch",
     "build": "tsc --declaration"
   },
   "keywords": [

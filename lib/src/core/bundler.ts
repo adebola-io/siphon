@@ -2,7 +2,7 @@ import fs = require("fs");
 import path = require("path");
 import Errors from "../errors";
 import transplacer from "./transplacer";
-import assetizer from "./assetizer";
+import Resolver from "./resolver";
 import createDOMTree from "./parser/html/createDOMTree";
 import { siphonOptions } from "../types";
 import forceCreatePath from "../utils/forceCreatePath";
@@ -18,17 +18,8 @@ export function bundler(source: fs.PathLike) {
         case ".mhtml":
           var htmlTree = createDOMTree(source);
           forceCreatePath(destination);
-          htmlTree = assetizer.assessCSS(
-            htmlTree,
-            source,
-            options,
-            destination
-          );
-
-          // if (options.internalStyles)
-          //   htmlTree = resolver.resolveStyles(htmlTree, source);
-          // if (options.internalJS)
-          //   htmlTree = resolver.resolveScripts(htmlTree, source);
+          let resolver = new Resolver(source, destination, options);
+          htmlTree = resolver.resolve(htmlTree)
           fs.writeFile(
             destination,
             transplacer.transplaceHTML(htmlTree, options),

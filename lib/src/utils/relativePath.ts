@@ -2,7 +2,10 @@ import { PathLike } from "fs";
 import path = require("path");
 
 function relativePath(from: PathLike, to: string): string {
-  let rootPaths: string[] = path.resolve(from.toString()).split("\\");
+  let rootPaths: string[] = path
+    .resolve(from.toString())
+    .split("\\")
+    .filter((route) => route !== "");
   switch (true) {
     case to.startsWith("http://"):
     case to.startsWith("https://"):
