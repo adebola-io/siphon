@@ -7,10 +7,10 @@ const task = new Task(process.argv);
 /** @type {siphonOptions} */
 var options;
 
-if (existsSync("spnconfig.json")) {
+if (existsSync("siphon.config.js")) {
   options = {
     ...siphon.defaults,
-    ...require(resolve("spnconfig.json")).bundlerOptions,
+    ...require(resolve("siphon.config.js")),
   };
 } else options = siphon.defaults;
 

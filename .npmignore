@@ -1,6 +1,7 @@
-lib/src
+src
 tsconfig.json
-spnconfig.json
+siphon.config.js
 test
 scripts
 .vscode
+.gitgnore

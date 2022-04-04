@@ -1,8 +1,7 @@
 import { existsSync, PathLike, readFileSync } from "fs";
 import * as path from "path";
 import Errors from "../../../errors";
-import getFileName from "../../../utils/getFileName";
-import relativePath from "../../../utils/relativePath";
+import { relativePath, getFileName } from "../../../utils";
 import { checkForEnd, isSpaceCharac, stringMarkers } from "../html/parseUtils";
 
 /**

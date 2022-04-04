@@ -1,7 +1,7 @@
 import { existsSync, watch } from "fs";
 import * as colors from "colors";
 import core from "../core";
-import { newTimeStamp } from "../utils/dating";
+import { newTimeStamp } from "../utils";
 import { siphonOptions } from "../types";
 import Errors from "../errors";
 colors.setTheme({

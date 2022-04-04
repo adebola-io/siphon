@@ -1,16 +1,8 @@
-import {
-  existsSync,
-  lstatSync,
-  PathLike,
-  readFileSync,
-  writeFile,
-  writeFileSync,
-} from "fs";
+import { existsSync, PathLike, writeFileSync } from "fs";
 import { basename, extname } from "path";
 import Errors from "../../errors";
 import { HTMLDocumentNode, siphonOptions } from "../../types";
-import getFileName from "../../utils/getFileName";
-import relativePath from "../../utils/relativePath";
+import { fileExists, copy, relativePath, getFileName } from "../../utils";
 import formatter from "../formatter";
 import minifier from "../minifier";
 import parser from "../parser";
@@ -51,21 +43,11 @@ class Resolver {
     let cssContent: string = "";
     styleLinks.forEach((link) => {
       let truePath = relativePath(this.source, link.attributes?.href);
-      this.assets[basename(link.attributes?.href)] = truePath;
       let resource = parser.css.textify(truePath, { ...this.assets });
       this.assets = resource.assets;
       resource.links.forEach((resourceLink) => {
-        if (
-          existsSync(resourceLink.srcpath) &&
-          !lstatSync(resourceLink.srcpath).isDirectory()
-        ) {
-          writeFile(
-            `${this.outDir}/${resourceLink.name}`,
-            readFileSync(resourceLink.srcpath),
-            "base64",
-            () => {}
-          );
-          this.assets[resourceLink.name] = resourceLink.srcpath;
+        if (fileExists(resourceLink.srcpath)) {
+          copy(resourceLink.srcpath, `${this.outDir}/${resourceLink.name}`);
         } else Errors.enc("FILE_NON_EXISTENT", resourceLink.srcpath);
       });
       if (this.options.internalStyles) {

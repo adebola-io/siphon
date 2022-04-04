@@ -5,7 +5,7 @@ import Generator from "../generator";
 import Resolver from "../resolver";
 import createDOMTree from "../parser/html/createDOMTree";
 import { siphonOptions } from "../../types";
-import forceCreatePath from "../../utils/forceCreatePath";
+import { forceCreatePath } from "../../utils";
 
 function bundler(source: fs.PathLike) {
   return {
