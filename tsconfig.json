@@ -8,9 +8,9 @@
     "module": "commonjs",
     "target": "ES5",
     "lib": ["ES5", "DOM"],
-    "rootDir": "lib/src",
-    "outDir": "lib/dist"
+    "rootDir": "src",
+    "outDir": "lib"
   },
-  "include": ["lib/src"],
-  "exclude": ["node_modules", "lib/dist"]
+  "include": ["src"],
+  "exclude": ["node_modules", "lib"]
 }

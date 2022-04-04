@@ -2,9 +2,9 @@
   "bundlerOptions": {
     "rootDir": "test/src",
     "outDir": "test/build",
-    "formatFiles": true,
+    "formatFiles": false,
     "relations": [{ "from": "start.html", "to": "index.html" }],
     "internalJS": true,
-    "internalStyles": false
+    "internalStyles": true
   }
 }

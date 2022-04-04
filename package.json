@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node scripts/testing.js",
-    "watch": "siphon watch",
+    "watch": "siphon.cli --watch",
     "build": "tsc --declaration"
   },
   "keywords": [
@@ -16,12 +16,12 @@
     "cli"
   ],
   "author": "Adebola Akomolafe",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "colors": "^1.4.0"
   },
   "bin": {
-    "siphon": "bin/siphon"
+    "siphon.cli": "bin/siphon"
   },
   "devDependencies": {
     "@types/node": "^17.0.23",
