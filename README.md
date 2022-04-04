@@ -1,14 +1,23 @@
 <p align=center>
-<img width=200 height=200 src="./siphon_proto.png"></img>
+  <img width=200 height=200 src="./siphon_proto.png"></img>
+  <p align=center>
+  <a href="https://www.npmjs.com/package/siphpn.cli">
+    <img src="https://img.shields.io/npm/v/siphon.cli.svg" alt="npm version" >
+  </a>
+  <a href="https://packagephobia.now.sh/result?p=siphon.cli">
+    <img src="https://packagephobia.now.sh/badge?p=siphon.cli" alt="install size" >
+  </a>
+  <a href="https://github.com/adebola-xyz/siphon/blob/master/LICENSE.txt">
+    <img src="https://img.shields.io/npm/l/siphon.cli.svg" alt="license">
+  </a>
+  </p>
 </p>
-
-[![npm version](https://badge.fury.io/js/siphon.cli.svg)](https://www.npmjs.com/package/siphon.cli)
 
 <h1 align=center> Siphon </h1>
 
-<p align=center style='font-style: italic'>Siphon is still in an early stage of development.
+_Siphon is still in an early stage of development._
 
-</p>
+## Overview
 
 Siphon is a Node JS web bundler that reads HTML documents and resolves their assets into fewer files for production.
 
