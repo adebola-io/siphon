@@ -6,6 +6,7 @@ import {
   writeFile,
   writeFileSync,
 } from "fs";
+import { basename, extname } from "path";
 import Errors from "../../errors";
 import { HTMLDocumentNode, siphonOptions } from "../../types";
 import getFileName from "../../utils/getFileName";
@@ -13,6 +14,7 @@ import relativePath from "../../utils/relativePath";
 import formatter from "../formatter";
 import minifier from "../minifier";
 import parser from "../parser";
+import { imageExts } from "../parser/html/parseUtils";
 import tagNameSearch from "../parser/html/tagNameSearch";
 
 class Resolver {
@@ -49,22 +51,22 @@ class Resolver {
     let cssContent: string = "";
     styleLinks.forEach((link) => {
       let truePath = relativePath(this.source, link.attributes?.href);
-      let resource = parser.css.textify(truePath);
+      this.assets[basename(link.attributes?.href)] = truePath;
+      let resource = parser.css.textify(truePath, { ...this.assets });
+      this.assets = resource.assets;
       resource.links.forEach((resourceLink) => {
-        if (!this.assets[resourceLink.name]) {
-          if (
-            existsSync(resourceLink.srcpath) &&
-            !lstatSync(resourceLink.srcpath).isDirectory()
-          ) {
-            writeFile(
-              `${this.outDir}/${resourceLink.name}`,
-              readFileSync(resourceLink.srcpath),
-              "base64",
-              () => {}
-            );
-            this.assets[resourceLink.name] = resourceLink.srcpath;
-          } else Errors.enc("FILE_NON_EXISTENT", resourceLink.srcpath);
-        }
+        if (
+          existsSync(resourceLink.srcpath) &&
+          !lstatSync(resourceLink.srcpath).isDirectory()
+        ) {
+          writeFile(
+            `${this.outDir}/${resourceLink.name}`,
+            readFileSync(resourceLink.srcpath),
+            "base64",
+            () => {}
+          );
+          this.assets[resourceLink.name] = resourceLink.srcpath;
+        } else Errors.enc("FILE_NON_EXISTENT", resourceLink.srcpath);
       });
       if (this.options.internalStyles) {
         link.tagName = "style";
@@ -101,8 +103,35 @@ class Resolver {
     }
     return nodes;
   }
+  resolveImages(nodes: HTMLDocumentNode[]) {
+    const images: HTMLDocumentNode[] = tagNameSearch(nodes, "img").filter(
+      (images) => {
+        return !(
+          images.attributes?.src.startsWith("http://") ||
+          images.attributes?.src.startsWith("http://")
+        );
+      }
+    );
+    images.forEach((image) => {
+      let src = image.attributes?.src;
+      if (!imageExts.includes(extname(src))) {
+        if (this.options.checkImageTypes)
+          Errors.enc("UNSUPPORTED_IMAGE_FORMAT", this.source, image.start, {
+            src,
+          });
+      } else {
+        let truePath = relativePath(this.source, src);
+        if (!existsSync(truePath)) Errors.enc("FILE_NON_EXISTENT", truePath);
+        let fileMarker = basename(src);
+        if (this.assets[fileMarker]) {
+        }
+      }
+    });
+    return nodes;
+  }
   resolve(nodes: HTMLDocumentNode[]) {
     nodes = this.resolveStyles(nodes);
+    this.resolveImages(nodes);
     return nodes;
   }
 }
