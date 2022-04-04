@@ -44,3 +44,7 @@ export interface siphonOptions {
   checkImageTypes: boolean;
   preserveComments: boolean;
 }
+export interface fileGetterOptions {
+  ext?: string;
+  exclude?: Array<PathLike>;
+}

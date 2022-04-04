@@ -1,8 +1,13 @@
 import { existsSync, PathLike, readFileSync } from "fs";
 import * as path from "path";
 import Errors from "../../../errors";
-import { relativePath, getFileName } from "../../../utils";
-import { checkForEnd, isSpaceCharac, stringMarkers } from "../html/parseUtils";
+import {
+  relativePath,
+  getFileName,
+  checkForEnd,
+  isSpaceCharac,
+  stringMarkers,
+} from "../../../utils";
 
 /**
  * Runs through a CSS file, resolves its imports and removes comments.

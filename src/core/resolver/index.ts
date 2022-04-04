@@ -2,11 +2,16 @@ import { existsSync, PathLike, writeFileSync } from "fs";
 import { basename, extname } from "path";
 import Errors from "../../errors";
 import { HTMLDocumentNode, siphonOptions } from "../../types";
-import { fileExists, copy, relativePath, getFileName } from "../../utils";
+import {
+  fileExists,
+  copy,
+  relativePath,
+  getFileName,
+  imageExts,
+} from "../../utils";
 import formatter from "../formatter";
 import minifier from "../minifier";
 import parser from "../parser";
-import { imageExts } from "../parser/html/parseUtils";
 import tagNameSearch from "../parser/html/tagNameSearch";
 
 class Resolver {

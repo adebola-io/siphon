@@ -1,4 +1,4 @@
-import { isForeignTag, isVoid } from "../parser/html/parseUtils";
+import { isForeignTag, isVoid } from "../../utils";
 import { HTMLDocumentNode, siphonOptions } from "../../types";
 import formatter from "../formatter";
 import minifier from "../minifier";

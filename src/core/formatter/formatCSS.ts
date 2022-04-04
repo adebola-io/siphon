@@ -1,5 +1,5 @@
 import minifier from "../minifier";
-import { checkForEnd } from "../../core/parser/html/parseUtils";
+import { checkForEnd } from "../../utils";
 /**
  * Formats CSS text.
  * @param srcText Source CSS text.

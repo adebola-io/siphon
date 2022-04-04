@@ -1,4 +1,4 @@
-import { stringMarkers } from "./parseUtils";
+import { stringMarkers } from "../../../utils";
 function getNodeAttributes(list: string) {
   let i = 0,
     key: string = "",

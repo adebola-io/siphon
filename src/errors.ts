@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { isSpaceCharac } from "./core/parser/html/parseUtils";
+import { isSpaceCharac } from "./utils";
 import { ErrorTypes } from "./types";
 function err(message: string, source?: fs.PathLike, charac?: number): void {
   var sourceText: any;

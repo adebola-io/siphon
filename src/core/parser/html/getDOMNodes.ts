@@ -9,7 +9,7 @@ import {
   isSpaceCharac,
   isVoid,
   stringMarkers,
-} from "./parseUtils";
+} from "../../../utils";
 /**
  * Go through an HTML file and return its content as an array of nodes.
  */
