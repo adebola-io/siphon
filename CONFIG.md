@@ -15,12 +15,11 @@ The root folder to watch during automatic bundling. The default is `'./src'`
 Relations are links between base HTML files in the root directory and their bundled outputs in the output directory. The `relations` parameter in the config file holds an array of these links.
 For example, the config file:
 
-```json
-{
-  "bundlerOptions": {
-    "rootDir": "src",
-    "outDir": "build",
-    "relations": [{ "from": "start.html", "to": "index.html" }]
+```js
+ module.exports = {
+    rootDir: "src",
+    outDir: "build",
+    relations: [{ from: "start.html", to: "index.html" }]
   }
 }
 ```

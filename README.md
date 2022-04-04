@@ -1,14 +1,14 @@
 <p align=center>
-  <img width=200 height=200 src="./siphon_proto.png"></img>
+  <img width=200 height=200 src="./img/siphon_proto.png"></img>
   <p align=center>
-  <a href="https://www.npmjs.com/package/siphpn.cli">
-    <img src="https://img.shields.io/npm/v/siphon.cli.svg" alt="npm version" >
+  <a href="https://www.npmjs.com/package/siphon-cli">
+    <img src="https://img.shields.io/npm/v/siphon-cli.svg" alt="npm version" >
   </a>
-  <a href="https://packagephobia.now.sh/result?p=siphon.cli">
-    <img src="https://packagephobia.now.sh/badge?p=siphon.cli" alt="install size" >
+  <a href="https://packagephobia.now.sh/result?p=siphon-cli">
+    <img src="https://packagephobia.now.sh/badge?p=siphon-cli" alt="install size" >
   </a>
   <a href="https://github.com/adebola-xyz/siphon/blob/master/LICENSE.txt">
-    <img src="https://img.shields.io/npm/l/siphon.cli.svg" alt="license">
+    <img src="https://img.shields.io/npm/l/siphon-cli.svg" alt="license">
   </a>
   </p>
 </p>
@@ -59,16 +59,14 @@ siphon-cli --watch
 
 ## Configuration
 
-You can reconfigure the behavior of the bundler by including an `spnconfig.json` file in the root of your project.
+You can reconfigure the behavior of the bundler by including a `siphon.config.js` file in the root of your project.
 
 For example, to change the output directory, create the config file and add:
 
-```json
-{
-  "bundlerOptions": {
-    "outDir": "./dist"
-  }
-}
+```js
+module.exports = {
+  outDir: "./dist",
+};
 ```
 
 When the bundler is run, it will bundle files into a `dist` folder, rather than the default `build`.
