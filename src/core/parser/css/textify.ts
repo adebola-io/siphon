@@ -1,6 +1,7 @@
 import { existsSync, PathLike, readFileSync } from "fs";
 import * as path from "path";
 import Errors from "../../../errors";
+import getFileName from "../../../utils/getFileName";
 import relativePath from "../../../utils/relativePath";
 import { checkForEnd, isSpaceCharac, stringMarkers } from "../html/parseUtils";
 
@@ -9,7 +10,7 @@ import { checkForEnd, isSpaceCharac, stringMarkers } from "../html/parseUtils";
  * @param source The CSS file to parse through.
  * @returns compiled css text.
  */
-function textify(source: PathLike) {
+function textify(source: PathLike, assets: any) {
   let foreignImports: string[] = [];
   let weirdImports: { srcpath: string; name: string }[] = [];
   let allImports: string[] = [source.toString()];
@@ -71,11 +72,34 @@ function textify(source: PathLike) {
             store = store.slice(1, store.lastIndexOf(store[0]));
           }
           let truePath = relativePath(source, store);
-          weirdImports.push({
-            srcpath: truePath,
-            name: path.basename(truePath),
-          });
-          text += `"./${path.basename(truePath)}")`;
+          if (assets[path.basename(truePath)] === undefined) {
+            weirdImports.push({
+              srcpath: truePath,
+              name: path.basename(truePath),
+            });
+            assets[path.basename(truePath)] = truePath;
+            text += `"./${path.basename(truePath)}")`;
+          } else if (
+            assets[path.basename(truePath)] &&
+            assets[path.basename(truePath)] === truePath
+          ) {
+            text += `"./${path.basename(truePath)}")`;
+          } else {
+            let a = 1;
+            while (
+              assets[getFileName(truePath) + "-" + a + path.extname(truePath)]
+            ) {
+              a++;
+            }
+            let newname =
+              getFileName(truePath) + "-" + a + path.extname(truePath);
+            weirdImports.push({
+              srcpath: truePath,
+              name: newname,
+            });
+            text += `"./${newname}")`;
+            assets[newname] = truePath;
+          }
         }
         store = "";
       } else text += cssText[i];
@@ -117,6 +141,7 @@ function textify(source: PathLike) {
   }
   let result = textify_core(source);
   return {
+    assets,
     text:
       foreignImports.join(";") +
       (foreignImports.length > 0 ? ";" : "") +

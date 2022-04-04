@@ -6,6 +6,7 @@ export type ErrorTypes =
   | "CSS_SELF_IMPORT"
   | "CSS_CIRCULAR_IMPORT"
   | "NOT_A_DIRECTORY"
+  | "UNSUPPORTED_IMAGE_FORMAT"
   | "COMMENT_UNCLOSED"
   | "TAG_UNCLOSED"
   | "HTML_FRAGMENT"
@@ -19,7 +20,8 @@ export interface HTMLDocumentNode {
   identifier?: number;
   type?: string;
   isVoid?: boolean;
-  lookupInFile?: number;
+  start?: number;
+  stop?: number;
   tagName?: string;
   parent?: string | null;
   attributeList?: string;
@@ -39,5 +41,6 @@ export interface siphonOptions {
   formatFiles: boolean;
   internalJS: boolean;
   internalStyles: boolean;
+  checkImageTypes: boolean;
   preserveComments: boolean;
 }

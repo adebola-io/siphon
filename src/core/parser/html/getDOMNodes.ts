@@ -16,6 +16,7 @@ import {
 function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
   let srcText: string = fs.readFileSync(source).toString();
   let tagStack = new Structures.Stack();
+  let start = 0;
   let node: HTMLDocumentNode = {
     type: "",
     parent: null,
@@ -49,6 +50,8 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
       attributes: attrs ? getNodeAttributes(attrs) : undefined,
       attributeList: attrs ? attrs : undefined,
       tagName: startTag,
+      start: i,
+      stop: j,
       content: content === "" ? undefined : content,
     };
     nodes.push(node);
@@ -96,6 +99,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
           Errors.enc("UNEXPECTED_CLOSE", source, i);
         tagStack.pop();
       } else {
+        start = i;
         //   Start of opening tags.
         if (srcText[i] === ">") Errors.enc("HTML_FRAGMENT", source, i);
         let startofTag: string = "";
@@ -142,6 +146,8 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
                     : "element",
                 parent: tagStack.top(),
                 isVoid: isVoid(startofTag) ? true : undefined,
+                start,
+                stop: i,
                 tagName: startofTag,
                 attributes: getNodeAttributes(attributeList),
                 attributeList,
@@ -162,8 +168,11 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
               isVoid: isVoid(startofTag) ? true : undefined,
               attributes: getNodeAttributes(attributeList),
               attributeList,
+              start,
+              stop: i,
             };
             nodes.push(node);
+
             if (!isVoid(startofTag))
               Errors.enc("INVALID_VOID_TAG", source, i, { name: startofTag });
           }
@@ -178,6 +187,8 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
               type: "element",
               tagName: startofTag,
               parent: tagStack.top(),
+              start,
+              stop: i,
             };
             nodes.push(node);
           }

@@ -41,3 +41,4 @@ export function isVoid(tagName: string | undefined): boolean {
   else return false;
 }
 export const stringMarkers: Array<string> = ["'", "`", '"'];
+export const imageExts: Array<string> = [".png", ".jpeg", ".jpg", ".bmp"];

@@ -8,6 +8,7 @@ const defaults: siphonOptions = {
   formatFiles: true,
   internalJS: false,
   internalStyles: false,
+  checkImageTypes: true,
   preserveComments: false,
 };
 

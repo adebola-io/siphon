@@ -1,3 +1,4 @@
+@import url(./style2.css);
 :root {
   --theme: rgb(255, 194, 72);
   --themeDark: rgb(217, 147, 0);
@@ -43,4 +44,5 @@ header > .drop_down_button > hr {
 
 main {
   margin-top: var(--headerSize);
+  background-image: url(../../siphon_proto.png);
 }
