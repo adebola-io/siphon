@@ -58,6 +58,7 @@ declare interface TaskArgs {
 declare class Task {
   constructor(argv: string[]);
   args: TaskArgs;
+  inputs: string[];
 }
 declare module structures {
   export { Stack };

@@ -1,7 +1,5 @@
 import { existsSync, watch } from "fs";
 import * as colors from "colors";
-import * as path from "path";
-import defaults from "../defaults";
 import core from "../core";
 import { newTimeStamp } from "../utils/dating";
 import { siphonOptions } from "../types";
@@ -12,14 +10,7 @@ colors.setTheme({
   green: "green",
   yellow: "yellow",
 });
-function watcher() {
-  let options: siphonOptions = defaults;
-  if (existsSync("spnconfig.json")) {
-    options = {
-      ...defaults,
-      ...require(path.resolve("spnconfig.json")).bundlerOptions,
-    };
-  }
+function watcher(options: siphonOptions) {
   /**
    * Core bundler.
    */
@@ -70,7 +61,7 @@ function watcher() {
       `${newTimeStamp({
         noDate: true,
       })}:`.gray
-    }${` Staging Files and starting bundler...`.yellow}`
+    }${` Staging Files and starting Siphon in watch mode...`.yellow}`
   );
 }
 

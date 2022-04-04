@@ -1,5 +1,5 @@
 {
-  "name": "siphon.cli",
+  "name": "siphon-cli",
   "version": "0.0.0",
   "start-date": "25/3/22",
   "description": "Format, minify and bundle up your HTML source code.",
@@ -21,7 +21,7 @@
     "colors": "^1.4.0"
   },
   "bin": {
-    "siphon.cli": "bin/siphon"
+    "siphon-cli": "bin/siphon"
   },
   "devDependencies": {
     "@types/node": "^17.0.23",

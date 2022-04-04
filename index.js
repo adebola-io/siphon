@@ -1,25 +1,21 @@
-// colors.setTheme({
-//   green: "green",
-// });
-// switch (params[0]) {
-//   case "--watch":
-//     watcher();
-//     break;
-//   case "bundle":
-//     let options = {};
-//     if (!existsSync("spnconfig.json")) {
-//       options = defaults;
-//     } else {
-//       options = {
-//         ...defaults,
-//         ...require(path.resolve("spnconfig.json")).bundlerOptions,
-//       };
-//     }
-//     let rootPath = `${options.rootDir}/${options.relations[0].from}`;
-//     let destPath = `${options.outDir}/${options.relations[0].to}`;
-//     siphon
-//       .bundler(params[1] ? params[1] : rootPath)
-//       .into(params[2] ? params[2] : destPath, options);
-//     console.log(`Bundled ${rootPath} into ${destPath} successfully.`.green);
-//     break;
-// }
+const { Task } = require("./structures");
+const siphon = require("./lib");
+const { siphonOptions } = require("./lib/types");
+const { existsSync } = require("fs");
+const { resolve } = require("path");
+const task = new Task(process.argv);
+/** @type {siphonOptions} */
+var options;
+
+if (existsSync("spnconfig.json")) {
+  options = {
+    ...siphon.defaults,
+    ...require(resolve("spnconfig.json")).bundlerOptions,
+  };
+} else options = siphon.defaults;
+
+switch (true) {
+  case task.args.watch || task.inputs.length === 0:
+    siphon.watcher(options);
+    break;
+}

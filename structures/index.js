@@ -90,16 +90,13 @@ exports.Task = /** @class */ (function () {
    */
   function Task(argv) {
     argv = argv.slice(2);
-    console.log(argv);
-    this.args = {
-      watch: true,
-    };
+    this.args = {};
+    this.inputs = [];
     argv.forEach((argument) => {
       if (argument.startsWith("--")) {
         this.args[argument.slice(2)] = true;
-      }
+      } else this.inputs.push(argument);
     });
-    console.log(this.args);
   }
   return Task;
 })();

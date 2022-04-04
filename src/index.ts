@@ -1,3 +1,5 @@
 import core from "./core";
+import watcher from "./watcher";
+import defaults from "./defaults";
 
-console.log(9);
+export { core, watcher, defaults };
