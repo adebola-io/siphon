@@ -29,13 +29,13 @@ It can also format and minify your source code.
 
 To get started, install Siphon with the node command:
 
-```shell
+```console
 npm install -g siphon-cli
 ```
 
 Once it is installed, you can cd into a project folder with an `index.html` file and run the command:
 
-```shell
+```console
 siphon-cli bundle index.html
 ```
 
@@ -51,7 +51,7 @@ Running Siphon in watch mode will set it to automatically bundle up your project
 
 To run Siphon in watch mode, cd to the root of your project and run the command:
 
-```shell
+```console
 siphon-cli bundle --watch
 ```
 
