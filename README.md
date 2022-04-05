@@ -1,11 +1,11 @@
 <p align=center>
   <img width=200 height=200 src="./siphon_proto.png"></img>
   <p align=center>
-  <a href="https://www.npmjs.com/package/siphpn.cli">
+  <a href="https://www.npmjs.com/package/siphon-cli">
     <img src="https://img.shields.io/npm/v/siphon.cli.svg" alt="npm version" >
   </a>
-  <a href="https://packagephobia.now.sh/result?p=siphon.cli">
-    <img src="https://packagephobia.now.sh/badge?p=siphon.cli" alt="install size" >
+  <a href="https://packagephobia.now.sh/result?p=siphon-cli">
+    <img src="https://packagephobia.now.sh/badge?p=siphon-cli" alt="install size" >
   </a>
   <a href="https://github.com/adebola-xyz/siphon/blob/master/LICENSE.txt">
     <img src="https://img.shields.io/npm/l/siphon.cli.svg" alt="license">
@@ -52,7 +52,7 @@ Running Siphon in watch mode will set it to automatically bundle up your project
 To run Siphon in watch mode, cd to the root of your project and run the command:
 
 ```shell
-siphon-cli --watch
+siphon-cli bundle --watch
 ```
 
 ---
