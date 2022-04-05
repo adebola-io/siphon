@@ -19,7 +19,7 @@ _Siphon is still in an early stage of development._
 
 ## Overview
 
-Siphon is a Node JS web bundler that reads HTML documents and resolves their assets into fewer files for production.
+Siphon is a simple Vanilla JS web bundler that reads HTML documents and resolves their assets into fewer files for production.
 
 It can also format and minify your source code.
 
@@ -59,15 +59,13 @@ siphon-cli --watch
 
 ## Configuration
 
-You can reconfigure the behavior of the bundler by including an `spnconfig.json` file in the root of your project.
+You can reconfigure the behavior of the bundler by including an `siphon.config.js` file in the root of your project.
 
 For example, to change the output directory, create the config file and add:
 
-```json
-{
-  "bundlerOptions": {
-    "outDir": "./dist"
-  }
+```js
+module.exports = {
+   outDir: "./dist"
 }
 ```
 
