@@ -16,11 +16,18 @@ Relations are links between base HTML files in the root directory and their bund
 For example, the config file:
 
 ```js
+<<<<<<< HEAD
  module.exports = {
     rootDir: "src",
     outDir: "build",
     relations: [{ from: "start.html", to: "index.html" }]
   }
+=======
+module.exports = {
+  rootDir: "src",
+  outDir": "build",
+  relations": [{ from: "start.html", to: "index.html" }]
+>>>>>>> 559c3c8224b757683b278dc92a5b933aab302af6
 }
 ```
 

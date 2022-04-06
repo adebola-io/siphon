@@ -2,7 +2,7 @@
   <img width=200 height=200 src="./img/siphon_proto.png"></img>
   <p align=center>
   <a href="https://www.npmjs.com/package/siphon-cli">
-    <img src="https://img.shields.io/npm/v/siphon-cli.svg" alt="npm version" >
+    <img src="https://img.shields.io/npm/v/siphon.cli.svg" alt="npm version" >
   </a>
   <a href="https://packagephobia.now.sh/result?p=siphon-cli">
     <img src="https://packagephobia.now.sh/badge?p=siphon-cli" alt="install size" >
@@ -19,7 +19,7 @@ _Siphon is still in an early stage of development._
 
 ## Overview
 
-Siphon is a simple bundler for vanilla projects that reads HTML documents and resolves their assets into fewer files for production.
+Siphon is a simple Vanilla JS web bundler that reads HTML documents and resolves their assets into fewer files for production.
 
 It can also format and minify your source code.
 
@@ -29,13 +29,13 @@ It can also format and minify your source code.
 
 To get started, install Siphon with the node command:
 
-```shell
+```console
 npm install -g siphon-cli
 ```
 
 Once it is installed, you can cd into a project folder with an `index.html` file and run the command:
 
-```shell
+```console
 siphon-cli bundle index.html
 ```
 
@@ -51,15 +51,15 @@ Running Siphon in watch mode will set it to automatically bundle up your project
 
 To run Siphon in watch mode, cd to the root of your project and run the command:
 
-```shell
-siphon-cli --watch
+```console
+siphon-cli bundle --watch
 ```
 
 ---
 
 ## Configuration
 
-You can reconfigure the behavior of the bundler by including a `siphon.config.js` file in the root of your project.
+You can reconfigure the behavior of the bundler by including an `siphon.config.js` file in the root of your project.
 
 For example, to change the output directory, create the config file and add:
 
