@@ -1,30 +1,23 @@
 import * as fs from "fs";
 import * as path from "path";
-import { isSpaceCharac } from "./utils";
+import { trace } from "./utils";
+import { red, bold } from "colors";
 import { ErrorTypes } from "./types";
+
 function err(message: string, source?: fs.PathLike, charac?: number): void {
-  var sourceText: any;
-  let i = 1,
-    j = 1,
-    k = 0;
-  if (source && charac) {
-    sourceText = fs.readFileSync(source).toString();
-    while (i < charac) {
-      if (sourceText[i] === "\n") {
-        j++;
-        k = 0;
-      }
-      if (!isSpaceCharac(sourceText[i])) k++;
-      i++;
-    }
-  }
-  message = `${message} ${
-    source
-      ? `\n    at ${path.resolve(source.toString())}${
-          charac ? `:${j}:${k}` : ""
-        }`
-      : ""
-  }`;
+  var pos: any;
+  if (source && charac) pos = trace(source, charac);
+  message = bold(
+    red(
+      `${message} ${
+        source
+          ? `\n    at ${path.resolve(source.toString())}${
+              charac ? `:${pos.line}:${pos.col}` : ""
+            }`
+          : ""
+      }`
+    )
+  );
   throw new Error(message);
 }
 
@@ -68,6 +61,26 @@ const Errors = {
       case "UNSUPPORTED_IMAGE_FORMAT":
         err(
           `${options.src} is not a supported image format. \n\n To stop image checking, set checkImageTypes to false in your config file.`,
+          source,
+          charac
+        );
+      case "UNTERMINATED_STRING_LITERAL":
+        err(
+          `Siphon encountered an unterminated string literal.`,
+          source,
+          charac
+        );
+      case "COMMA_EXPECTED":
+        err(`A ',' was expected.`, source, charac);
+      case "EXPRESSION_EXPECTED":
+        err("An expression was expected.", source, charac);
+      case "VARIABLE_DECLARATION_EXPECTED":
+        err("Variable declaration expected.", source, charac);
+      case "EMPTY_CONST_DECLARATION":
+        err("'const' declarations must be initialized.", source, charac);
+      case "ID_FOLLOWS_LITERAL":
+        err(
+          "An identifier or keyword cannot immediately follow a numeric literal.",
           source,
           charac
         );

@@ -140,3 +140,87 @@ export function isVoid(tagName: string | undefined): boolean {
 }
 export const stringMarkers: Array<string> = ["'", "`", '"'];
 export const imageExts: Array<string> = [".png", ".jpeg", ".jpg", ".bmp"];
+
+export function isNum(char: string) {
+  return char.replace(/[0-9]/g, "").replace(/./, "") === "";
+}
+
+export const reservedKeyWord = [
+  "arguments",
+  "await",
+  "break",
+  "case",
+  "catch",
+  "class",
+  "const",
+  "continue",
+  "debugger",
+  "default",
+  "delete",
+  "do",
+  "else",
+  "eval",
+  "extends",
+  "import",
+  "export",
+  "false",
+  "finally",
+  "for",
+  "function",
+  "if",
+  "implements",
+  "import",
+  "return",
+  "in",
+  "instanceof",
+  "interface",
+  "let",
+  "new",
+  "null",
+  "package",
+  "private",
+  "protected",
+  "public",
+  "return",
+  "static",
+  "super",
+  "switch",
+  "synchronized",
+  "this",
+  "try",
+  "typeof",
+  "var",
+  "void",
+  "while",
+  "with",
+  "yield",
+];
+export const statementTerminators = [",", ";"];
+export const operands = ["+", "-", "*", "/"];
+export function isValidStart(character: string) {
+  return !/\*|^|\%/.test(character);
+}
+/**
+ * Find the column number and line number of a character in a file.
+ * @param source The file to search through
+ * @param character The number to find.
+ */
+export function trace(source: PathLike, character: number) {
+  let i = 1,
+    line = 1,
+    col = 2;
+  let sourceText = readFileSync(source).toString();
+  while (i < character) {
+    if (sourceText[i] === "\n") {
+      line++;
+      col = 0;
+    }
+    i++;
+    col++;
+  }
+  return { line, col };
+}
+
+export function isAlphaNumeric(character: string) {
+  return /[A-Za-z0-9]/.test(character);
+}

@@ -1,0 +1,39 @@
+{
+  "start": 0,
+  "type": "Program",
+  "body": [
+    {
+      "start": 0,
+      "type": "DeclarationList",
+      "kind": "const",
+      "declarations": [
+        {
+          "start": 5,
+          "type": "Declaration",
+          "id": { "start": 5, "type": "VariableIdentifier", "value": "name" },
+          "init": { "start": 10, "value": "\"Sefunmi\"" }
+        },
+        {
+          "start": 21,
+          "type": "Declaration",
+          "id": {
+            "start": 21,
+            "type": "VariableIdentifier",
+            "value": "malevolent"
+          },
+          "init": { "start": 32, "value": "90" }
+        },
+        {
+          "start": 36,
+          "type": "Declaration",
+          "id": {
+            "start": 36,
+            "type": "VariableIdentifier",
+            "value": "baloney"
+          }
+        }
+      ]
+    }
+  ],
+  "end": 44
+}
