@@ -1,164 +1,144 @@
-import { isSpaceCharac } from "../../../utils";
+import { PathLike } from "fs";
+import Errors from "../../../errors";
+import { Token } from "./tokenizer";
 
-class AST {
-  constructor(tokens: Array<string>) {
-    this.tokens = tokens;
-    this.tree = new Program(this.character);
-    this.currentScope = this.tree;
-    for (let i = 0; tokens[i]; i++) {
-      if (tokens[i].startsWith("//") || tokens[i].startsWith("/*")) {
-        let kind: "line" | "block" = tokens[i].startsWith("//")
-          ? "line"
-          : "block";
-        let comment = new Comment(this.character, kind, tokens[i]);
-        comment.end = this.character + tokens[i].length;
-        this.tree.body.push(comment);
-      } else if (
-        tokens[i] === "var" ||
-        tokens[i] === "const" ||
-        tokens[i] === "let"
-      ) {
-        i = this.declareVariables(i, tokens[i]);
+const addons = ["--", "++"];
+const wait = ["===", "!==", "--", ")", "++"];
+const continues = (value?: string) => {
+  return value ? wait.includes(value) : false;
+};
+
+class SyntaxTree {
+  constructor(tokens: Token[], sourceFile: PathLike) {
+    this.sourceFile = sourceFile;
+    this.input = tokens;
+    this.value = tokens.map((token) => token.raw);
+    this.result = new Program();
+    this.currentScope = this.result.content;
+    for (let i = 0; this.input[i]; i++) {
+      switch (true) {
+        case this.input[i].type === "LineComment":
+        case this.input[i].type === "BlockComment":
+          this.currentScope.body.push(this.input[i]);
+          break;
+        case this.value[i] === "const":
+        case this.value[i] === "let":
+        case this.value[i] === "var":
+          i = this.declareVariables(i);
+          break;
       }
-      this.character += tokens[i].length;
-      this.tree.end = this.character;
     }
+    this.result.end = this.input.slice(-1)[0].end;
   }
-  tokens: Array<string>;
-  character = 0;
-  getExpression(i: number) {
-    i++;
-    let s = "";
-    const expressionParser = () => {
-      while (this.tokens[i] && this.tokens[i] !== ")") {
-        this.character += this.tokens[i].length;
-        s += this.tokens[i];
-      }
-    };
-
+  skipSpaces(i: number) {
+    do i++;
+    while (this.value[i] === "\n");
     return i;
   }
-  declareVariables(i: number, type: string) {
-    let decList = new DeclarationList(this.character, this.tokens[i]);
-    decList.declarations = [];
-    this.character += this.tokens[i].length;
-    i++;
-    const coreDeclarator = () => {
-      let dec = new Declaration(this.character);
-      dec.id = new Identifier(this.character, this.tokens[i]);
-      do {
-        this.character += this.tokens[i].length;
-        i++;
-      } while (isSpaceCharac(this.tokens[i]));
-      if (this.tokens[i] === "=") {
-        do {
-          this.character += this.tokens[i].length;
-          i++;
-        } while (isSpaceCharac(this.tokens[i]));
-        if (this.tokens[i] === "(") {
-          i = this.getExpression(i);
-        } else dec.init = new Literal(this.character, this.tokens[i]);
-        decList.declarations?.push(dec);
-        do {
-          this.character += this.tokens[i].length;
-          i++;
-        } while (isSpaceCharac(this.tokens[i]));
-        if (this.tokens[i] === ",") {
-          do {
-            this.character += this.tokens[i].length;
-            i++;
-          } while (isSpaceCharac(this.tokens[i]));
-          coreDeclarator();
-        }
-      } else if (this.tokens[i] === ",") {
-        decList.declarations?.push(dec);
-        do {
-          this.character += this.tokens[i].length;
-          i++;
-        } while (isSpaceCharac(this.tokens[i]));
-        coreDeclarator();
-      } else if (this.tokens[i] === ";") {
-        decList.declarations?.push(dec);
-        i++;
+  declareVariables(i: number) {
+    let decList = new DeclarationList();
+    const readID = (dec: Declaration) => {
+      dec.start = this.input[i].start;
+      switch (this.value[i]) {
+        case "{":
+        case "[":
+          dec.destrutured = true;
+          dec.start++;
+          let marker = this.value[i] === "{" ? "}" : "]";
+          dec.identifier += this.value[i++];
+          while (this.value[i] && this.value[i] !== marker) {
+            dec.identifier += this.value[i++];
+          }
+          dec.identifier += this.value[i++];
+          i = this.skipSpaces(i);
+          if (this.value[i] !== "=") {
+            Errors.enc(
+              "MISSING_DESC_INITIALIZER",
+              this.sourceFile,
+              this.input[i - 1].end
+            );
+          }
+          break;
+        default:
+          dec.identifier += this.value[i];
+          break;
+      }
+      i = this.skipSpaces(i);
+      switch (this.value[i]) {
+        case "=":
+          readVariable(dec);
+          break;
+        case ",":
+          decList.declarations.push(dec);
+          declarer();
+          break;
+        case "\n":
+          decList.declarations.push(dec);
+          break;
       }
     };
-    coreDeclarator();
+    const readExp = () => {
+      while (this.value[i] && this.value[i] !== ")") {
+        if (this.value[i] === "(") readExp();
+      }
+    };
+    const readVariable = (dec: Declaration) => {
+      i = this.skipSpaces(i);
+      switch (this.value[i]) {
+        case "(":
+          break;
+      }
+    };
+    const declarer = () => {
+      i = this.skipSpaces(i);
+      let dec = new Declaration();
+      readID(dec);
+    };
+    declarer();
     this.currentScope.body.push(decList);
     return i;
   }
-  tree: Program;
-  currentScope: Program | BlockStatement;
+  sourceFile: PathLike;
+  currentScope: Block;
+  value: Array<string | undefined>;
+  input: Token[];
+  result: Program;
 }
-class SyntaxTreeNode {
-  constructor(start: number) {
-    this.start = start;
-  }
-  start: number;
+class SyntaxNode {
+  id = "SyntaxNode";
+  start?: number;
   end?: number;
 }
-class Program extends SyntaxTreeNode {
-  type = "Program";
+class Program extends SyntaxNode {
+  constructor() {
+    super();
+    this.content = new Block();
+  }
+  id = "Program";
+  start = 0;
+  end? = 0;
+  content: Block;
+}
+class Block extends SyntaxNode {
+  id = "Block";
   body: Array<any> = [];
 }
-class Comment extends SyntaxTreeNode {
-  constructor(start: number, commentType: "line" | "block", content: string) {
-    super(start);
-    this.kind = commentType;
-    this.content = content;
-  }
-  type = "Comment";
-  kind: "line" | "block";
-  content: string;
+class DeclarationList extends SyntaxNode {
+  id = "DeclarationList";
+  declarations: Declaration[] = [];
 }
-class DeclarationList extends SyntaxTreeNode {
-  constructor(start: number, kind: string) {
-    super(start);
-    this.kind = kind;
-  }
-  type = "DeclarationList";
-  kind: string;
-  declarations?: Declaration[];
+class Declaration extends SyntaxNode {
+  id = "Declaration";
+  identifier: string = "";
+  type?: "array" | "string" | "number" | "boolean" | "object" | "function";
+  value?: string | FunctionInitializer | _Array;
+  destrutured?: boolean;
 }
-class Declaration extends SyntaxTreeNode {
-  type = "Declaration";
-  id?: Identifier;
-  init?: Literal | FunctionInit | ArrowFunctionInit;
+class FunctionInitializer {
+  id = "FunctionInitializer";
+  type?: string;
 }
-class Identifier extends SyntaxTreeNode {
-  constructor(start: number, value: string) {
-    super(start);
-    this.value = value;
-  }
-  type = "VariableIdentifier";
-  value: string;
+class _Array {
+  id = "Array";
 }
-class Literal extends SyntaxTreeNode {
-  constructor(start: number, value: string) {
-    super(start);
-    this.value = value;
-  }
-  value: string;
-}
-class FunctionInit extends SyntaxTreeNode {
-  constructor(start: number, isAsync: boolean) {
-    super(start);
-    this.isAsync = isAsync;
-  }
-  params: DeclarationList | null = null;
-  isAsync: boolean;
-  body?: BlockStatement;
-}
-class ArrowFunctionInit extends SyntaxTreeNode {
-  constructor(start: number, isAsync: boolean) {
-    super(start);
-    this.isAsync = isAsync;
-  }
-  params: DeclarationList | null = null;
-  isAsync: boolean;
-  body?: BlockStatement;
-}
-class ExpressionInit extends SyntaxTreeNode {}
-class BlockStatement extends SyntaxTreeNode {
-  body: Array<any> = [];
-}
-export default AST;
+export default SyntaxTree;

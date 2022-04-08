@@ -70,12 +70,18 @@ const Errors = {
           source,
           charac
         );
+      case "UNTERMINATED_REGEX_LITERAL":
+        err(
+          `Siphon encountered an unterminated regular expression literal.`,
+          source,
+          charac
+        );
       case "COMMA_EXPECTED":
         err(`A ',' was expected.`, source, charac);
       case "EXPRESSION_EXPECTED":
         err("An expression was expected.", source, charac);
       case "VARIABLE_DECLARATION_EXPECTED":
-        err("Variable declaration expected.", source, charac);
+        err("Variable declaration or statement expected.", source, charac);
       case "EMPTY_CONST_DECLARATION":
         err("'const' declarations must be initialized.", source, charac);
       case "ID_FOLLOWS_LITERAL":
@@ -84,6 +90,10 @@ const Errors = {
           source,
           charac
         );
+      case "MISSING_DESC_INITIALIZER":
+        err("Destructured variables must have an initializer.", source, charac);
+      case "INVALID_ASSIGNMENT_LEFT":
+        err("Invalid left-hand side in assignment.", source, charac);
     }
   },
 };

@@ -37,6 +37,10 @@ export function newTimeStamp(options?: datingOptions) {
     options?.noDate ? "" : `|${d.getDay()}-${d.getMonth()}-${d.getFullYear()}`
   }`;
 }
+/**
+ * Forcefully create a path that may or may not exist.
+ * @param source The path to create.
+ */
 export function forceCreatePath(source: PathLike) {
   let routes = resolve(source.toString()).split(/\\|\//);
   for (let index = 1; routes[index]; index++) {
@@ -46,7 +50,6 @@ export function forceCreatePath(source: PathLike) {
     }
   }
 }
-
 /**
  * Returns the filename of a file without its extension.
  */
@@ -75,7 +78,12 @@ export function getAllFiles(
   });
   return fileList.flat(1);
 }
-
+/**
+ * Resolves a relative path between two files.
+ * @param from The source where the path is specified from.
+ * @param to The path specified.
+ * @returns The absolute path.
+ */
 export function relativePath(from: PathLike, to: string): string {
   let rootPaths: string[] = resolve(from.toString())
     .split("\\")
@@ -98,15 +106,19 @@ export function relativePath(from: PathLike, to: string): string {
       return rootPaths.slice(0, -1).join("\\") + "\\" + to;
   }
 }
-
+/**
+ * Checks if a character belongs to a list of space characters. e.g. spaces and new lines.
+ * @param character Character to check.
+ * @returns true | false.
+ */
 export function isSpaceCharac(character: string): boolean {
   return /\u0020|\u0009|\u000A|\u000C|\u000D/.test(character);
 }
-
-export function illegalCSSIdentifierCharacter(character: string) {
-  return /\u0020|\u0009|\u000A|\u000C|\u000D|"/.test(character);
-}
-
+/**
+ * Checks if a character exists in the text of a source file and throws an error if it is undefined.
+ * @param character The character to check.
+ * @param source The source file text to throw an error from.
+ */
 export function checkForEnd(character: string, source: PathLike): void {
   if (!character) Errors.enc("ABRUPT", source);
 }
@@ -116,36 +128,35 @@ export function isForeignTag(tagName: string | undefined): boolean {
 }
 
 export function isVoid(tagName: string | undefined): boolean {
-  if (tagName)
-    return [
-      "!DOCTYPE",
-      "area",
-      "base",
-      "br",
-      "col",
-      "command",
-      "embed",
-      "hr",
-      "img",
-      "input",
-      "keygen",
-      "link",
-      "meta",
-      "param",
-      "source",
-      "track",
-      "wbr",
-    ].includes(tagName);
-  else return false;
+  return tagName
+    ? [
+        "!DOCTYPE",
+        "area",
+        "base",
+        "br",
+        "col",
+        "command",
+        "embed",
+        "hr",
+        "img",
+        "input",
+        "keygen",
+        "link",
+        "meta",
+        "param",
+        "source",
+        "track",
+        "wbr",
+      ].includes(tagName)
+    : false;
 }
 export const stringMarkers: Array<string> = ["'", "`", '"'];
 export const imageExts: Array<string> = [".png", ".jpeg", ".jpg", ".bmp"];
 
-export function isNum(char: string) {
-  return char.replace(/[0-9]/g, "").replace(/./, "") === "";
+export function isNum(char: string | undefined) {
+  return char ? char.replace(/[0-9]/g, "").replace(/\./, "") === "" : false;
 }
-
-export const reservedKeyWord = [
+export const keywords = [
   "arguments",
   "await",
   "break",
@@ -195,8 +206,63 @@ export const reservedKeyWord = [
   "with",
   "yield",
 ];
-export const statementTerminators = [",", ";"];
-export const operands = ["+", "-", "*", "/"];
+export const declarators = ["const", "var", "let"];
+export const operators = {
+  /** Single character operators that ignore space charaters before and after. */
+  _ignore1_: [
+    "+",
+    "-",
+    "*",
+    "/",
+    "%",
+    "|",
+    ":",
+    "&",
+    "^",
+    "=",
+    ".",
+    "^",
+    ">",
+    "<",
+    ",",
+    ";",
+  ],
+  /** Single character operators that only ignore the succeeding space characters. */
+  _suceeding1_: ["!", "~", "{"],
+  /** Single character operators that only ignore the preceeding space characters. */
+  _preceeding1_: ["}", "]"],
+  /** Double character operators that ignore space characters before and after. */
+  _ignore2_: [
+    "&&",
+    "||",
+    "??",
+    "~~",
+    "**",
+    "+=",
+    "-=",
+    "?.",
+    "|=",
+    "!=",
+    "*=",
+    "%=",
+    "&=",
+    "^=",
+    ">=",
+    "<=",
+    "==",
+    ">>",
+    "<<",
+  ],
+  /**Double character operators that only ignore the succeeding space characters. */
+  _suceeding2_: ["++", "--"],
+  /** Triple character operators that ignore space characters before and after */
+  _ignore3_: ["===", "!==", "<<=", "**=", ">>>", "||=", "&&=", "??="],
+  /** Triple character operators that ignore the succeeding space characters */
+  _suceeding3_: ["..."],
+  /** Quadruple character operators that ignore space characters before and after */
+  _ignore4_: [">>>="],
+};
+
 export function isValidStart(character: string) {
   return !/\*|^|\%/.test(character);
 }
@@ -220,7 +286,6 @@ export function trace(source: PathLike, character: number) {
   }
   return { line, col };
 }
-
 export function isAlphaNumeric(character: string) {
   return /[A-Za-z0-9]/.test(character);
 }
