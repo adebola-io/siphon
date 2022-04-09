@@ -228,7 +228,7 @@ export const operators = {
     ";",
   ],
   /** Single character operators that only ignore the succeeding space characters. */
-  _suceeding1_: ["!", "~", "{"],
+  _suceeding1_: ["!", "~"],
   /** Single character operators that only ignore the preceeding space characters. */
   _preceeding1_: ["}", "]"],
   /** Double character operators that ignore space characters before and after. */
@@ -239,6 +239,7 @@ export const operators = {
     "~~",
     "**",
     "+=",
+    "=>",
     "-=",
     "?.",
     "|=",

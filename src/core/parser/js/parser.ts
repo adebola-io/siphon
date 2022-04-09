@@ -231,6 +231,7 @@ class Parser {
         a--;
       }
     }
+
     // 18/17. New Operator, Function Calls & Optional Chains.
     for (let b = 0; this.tokens[b]; b++) {
       if (this.tokens[b].raw === "new" && this.tokens[b + 2].type === "Group") {
@@ -298,6 +299,41 @@ class Parser {
         };
         this.tokens.splice(b - 1, 3, newNode);
         b -= 2;
+      }
+    }
+    for (let y = 0; this.tokens[y]; y++) {
+      if (
+        this.tokens[y].type === "CallExpression" &&
+        this.tokens[y].details.callee.raw === "function"
+      ) {
+        console.log(9);
+        if (this.tokens[y + 1].type !== "Block") {
+          Errors.enc(
+            "OPEN_CURLY_EXPECTED",
+            this.sourceFile,
+            this.tokens[y + 1].end
+          );
+        }
+        previous = this.tokens[y - 1];
+        next = this.tokens[y + 1];
+        newNode = {
+          type: "FunctionExpression",
+          start: this.tokens[y].start,
+          raw: this.tokens[y].raw + next.raw,
+          end: next.end,
+          details: {
+            expression: true,
+            async: previous?.raw === "async",
+            params: this.tokens[y].details.arguments,
+            body: next,
+          },
+        };
+        this.tokens.splice(
+          previous?.raw === "async" ? y - 1 : y,
+          previous.raw === "async" ? 3 : 2,
+          newNode
+        );
+        y -= 2;
       }
     }
     // 16. Postfix Increment and Decrement.
@@ -666,6 +702,26 @@ class Parser {
     // 2. Assignment.
     for (let q = this.tokens.length - 1; this.tokens[q]; q--) {
       switch (this.tokens[q].raw) {
+        case "=>":
+          previous = this.tokens[q - 1];
+          next = this.tokens[q + 1];
+          newNode = {
+            type: "ArrowFunctionExpression",
+            start: previous.start,
+            end: next.end,
+            raw: previous.raw + " " + this.tokens[q].raw + " " + next.raw,
+            details: {
+              operator: this.tokens[q].raw,
+              id: null,
+              generator: false,
+              async: previous.details?.callee?.raw === "async",
+              params:
+                previous.type === "Group" ? previous.details.inner : previous,
+              body: next,
+            },
+          };
+          this.tokens.splice(q - 1, 3, newNode);
+          break;
         case "=":
         case "+=":
         case "-=":
@@ -861,15 +917,96 @@ class Parser {
     return i - 1;
   }
   constructASTTree() {
-    for (let s = 0; this.tokens[s]; s++) {
-      if (declarators.includes(this.tokens[s].raw)) {
-        if (this.parent.type === "ArrScope") {
+    var next: Token;
+    var newNode: Token;
+    var previous: Token;
+    // Variable Declarations.
+    for (let t = 0; this.tokens[t]; t++) {
+      if (declarators.includes(this.tokens[t].raw)) {
+        next = this.tokens[t + 1];
+        if (this.parent.type === "ArrScope")
           Errors.enc(
             "EXPRESSION_EXPECTED",
             this.sourceFile,
-            this.tokens[s].start
+            this.tokens[t].start
           );
+        newNode = {
+          type: "VariableDeclaration",
+          start: this.tokens[t].start,
+          end: next.end,
+          raw: "",
+          details: {
+            kind: this.tokens[t].raw,
+            declarations: [],
+          },
+        };
+        if (next.type === "SequenceExpression") {
+          next.details.expressions.forEach((exp: Token) => {
+            if (exp.type === "AssignmentExpression") {
+              if (exp.details.operator !== "=")
+                Errors.enc("COMMA_EXPECTED", this.sourceFile, exp.start);
+              else
+                newNode.details.declarations.push({
+                  type: "VariableDeclarator",
+                  start: exp.start,
+                  end: exp.end,
+                  raw: exp.raw,
+                  details: {
+                    id: exp.details.left,
+                    init: exp.details.right,
+                  },
+                });
+            } else if (exp.type === "Word") {
+              if (newNode.details.kind === "const")
+                Errors.enc("EMPTY_CONST_DECLARATION", this.sourceFile, exp.end);
+              else
+                newNode.details.declarations.push({
+                  type: "VariableDeclarator",
+                  start: exp.start,
+                  end: exp.end,
+                  raw: exp.raw,
+                  details: {
+                    id: exp,
+                    init: null,
+                  },
+                });
+            }
+          });
+        } else if (next.type === "Word") {
+          if (isNum(next.raw[0]))
+            Errors.enc(
+              "VARIABLE_DECLARATION_EXPECTED",
+              this.sourceFile,
+              next.start
+            );
+          else
+            newNode.details.declarations.push({
+              type: "VariableDeclarator",
+              start: next.start,
+              end: next.end,
+              raw: next.raw,
+              details: {
+                id: next,
+                init: null,
+              },
+            });
+        } else if (next.type === "AssignmentExpression") {
+          if (next.details.operator !== "=")
+            Errors.enc("COMMA_EXPECTED", this.sourceFile, next.start);
+          else
+            newNode.details.declarations.push({
+              type: "VariableDeclarator",
+              start: next.start,
+              end: next.end,
+              raw: next.raw,
+              details: {
+                id: next.details.left,
+                init: next.details.right,
+              },
+            });
         }
+        this.tokens.splice(t, 2, newNode);
+        t -= 2;
       }
     }
   }

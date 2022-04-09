@@ -1,2 +1,3 @@
-[const name = 9]
-console.log();
+const name = async () => {
+  console.log(9);
+};
