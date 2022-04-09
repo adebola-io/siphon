@@ -256,7 +256,7 @@ export const operators = {
   /**Double character operators that only ignore the succeeding space characters. */
   _suceeding2_: ["++", "--"],
   /** Triple character operators that ignore space characters before and after */
-  _ignore3_: ["===", "!==", "<<=", "**=", ">>>", "||=", "&&=", "??="],
+  _ignore3_: ["===", "!==", "<<=", ">>=", "**=", ">>>", "||=", "&&=", "??="],
   /** Triple character operators that ignore the succeeding space characters */
   _suceeding3_: ["..."],
   /** Quadruple character operators that ignore space characters before and after */

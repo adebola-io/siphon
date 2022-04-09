@@ -1,14 +1,51 @@
-[
-  {
-    "type": "UpdateExpression",
-    "start": 4,
-    "end": 2,
-    "raw": "++e",
-    "details": {
-      "operator": { "start": 1, "end": 2, "raw": "++" },
-      "argument": { "start": 4, "end": 3, "raw": "e", "type": "Word" },
-      "prefix": true
-    }
-  },
-  { "start": 4, "end": 4, "raw": ";" }
-]
+{
+  "type": "Program",
+  "start": 0,
+  "end": 33,
+  "body": [
+    { "raw": "const", "start": 1, "end": 5, "type": "Word" },
+    {
+      "type": "AssignmentExpression",
+      "start": 7,
+      "end": 16,
+      "raw": "_name = 90",
+      "details": {
+        "operator": "=",
+        "left": { "start": 7, "end": 11, "raw": "_name", "type": "Word" },
+        "right": {
+          "start": 15,
+          "end": 16,
+          "raw": "90",
+          "type": "Number",
+          "details": { "value": 90 }
+        }
+      }
+    },
+    { "start": 17, "end": 17, "raw": ";" },
+    {
+      "type": "CallExpression",
+      "start": 19,
+      "end": 32,
+      "raw": "console.log()",
+      "details": {
+        "callee": {
+          "type": "MemberExpression",
+          "start": 19,
+          "end": 30,
+          "raw": "console.log",
+          "details": {
+            "object": {
+              "start": 19,
+              "end": 26,
+              "raw": "console",
+              "type": "Word"
+            },
+            "property": { "start": 28, "end": 30, "raw": "log", "type": "Word" }
+          }
+        },
+        "arguments": []
+      }
+    },
+    { "start": 33, "end": 33, "raw": ";" }
+  ]
+}
