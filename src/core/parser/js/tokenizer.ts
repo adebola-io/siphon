@@ -118,6 +118,8 @@ class Parser {
             break;
           }
         case this.srcText[i] === "\n":
+          clear(i);
+          startNew(i + 1);
           if (
             ["\n", ";", undefined]
               .concat(
@@ -130,8 +132,9 @@ class Parser {
                 operators._suceeding3_
               )
               .includes(this.tokens[this.tokens.length - 1]?.raw ?? "")
-          )
+          ) {
             break;
+          }
         case operators._ignore1_.includes(this.srcText[i]):
         case operators._preceeding1_.includes(this.srcText[i]):
           this.clearPreviousLine();
@@ -207,7 +210,7 @@ class Parser {
         a--;
       }
     }
-    // 18. New Operator with Argument List, Function Calls & Optional Chains.
+    // 18. New Operator, Function Calls & Optional Chains.
     for (let b = 0; this.tokens[b]; b++) {
       if (this.tokens[b].raw === "new" && this.tokens[b + 2].type === "Group") {
         next = this.tokens[b + 1];
@@ -236,7 +239,7 @@ class Parser {
           },
         };
         this.tokens.splice(b, 2, newNode);
-        b -= 3;
+        b -= 2;
       } else if (
         this.tokens[b].type === "Group" &&
         [
@@ -276,8 +279,76 @@ class Parser {
         b -= 2;
       }
     }
-    // 17. New Operator without Argument List.
-    for (let c = 0; this.tokens[c]; c++) {}
+    // 17. Postfix Increment and Decrement.
+    for (let c = 0; this.tokens[c]; c++) {
+      if (
+        this.tokens[c - 1] &&
+        ["++", "--"].includes(this.tokens[c].raw ?? "") &&
+        ![";", "\n", "="].includes(this.tokens[c - 1].raw ?? "")
+      ) {
+        previous = this.tokens[c - 1];
+        newNode = {
+          type: "UpdateExpression",
+          start: previous.start,
+          end: this.tokens[c].end,
+          raw: previous?.raw + "" + this.tokens[c].raw,
+          details: {
+            operator: this.tokens[c],
+            argument: previous,
+            postfix: true,
+          },
+        };
+        this.tokens.splice(c - 1, 2, newNode);
+        c--;
+      }
+    }
+    // 16. Logical NOT.
+    for (let d = 0; this.tokens[d]; d++) {
+      switch (this.tokens[d].raw) {
+        case "+":
+        case "-":
+          if (
+            ["Number", "ArrType", "Group", "Word"].includes(
+              this.tokens[d - 1].type ?? ""
+            )
+          )
+            break;
+        case "!":
+        case "~":
+          next = this.tokens[d + 1];
+          newNode = {
+            type: "Unary Expression",
+            start: this.tokens[d].start,
+            end: next.end,
+            raw: this.tokens[d].raw + "" + next.raw,
+            details: {
+              operator: this.tokens[d],
+              argument: next,
+              prefix: true,
+            },
+          };
+          this.tokens.splice(d, 2, newNode);
+          d -= 2;
+          break;
+        case "++":
+        case "--":
+          next = this.tokens[d + 1];
+          newNode = {
+            type: "UpdateExpression",
+            start: next.start,
+            end: this.tokens[d].end,
+            raw: this.tokens[d].raw + "" + next.raw,
+            details: {
+              operator: this.tokens[d],
+              argument: next,
+              prefix: true,
+            },
+          };
+          this.tokens.splice(d, 2, newNode);
+          d -= 2;
+          break;
+      }
+    }
   }
   readRegex(i: number) {
     let regex: Token = {
