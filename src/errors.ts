@@ -82,6 +82,8 @@ const Errors = {
         err("An expression was expected.", source, charac);
       case "VARIABLE_DECLARATION_EXPECTED":
         err("Variable declaration or statement expected.", source, charac);
+      case "IDENTIFIER_EXPECTED":
+        err("Idenitifier expected.", source, charac);
       case "EMPTY_CONST_DECLARATION":
         err("'const' declarations must be initialized.", source, charac);
       case "ID_FOLLOWS_LITERAL":

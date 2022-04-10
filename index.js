@@ -18,4 +18,13 @@ switch (true) {
   case task.args.watch || task.inputs.length === 0:
     siphon.watcher(options);
     break;
+  case task.inputs.includes("bundle"):
+    options.relations.forEach((relation) => {
+      var source = `${options.rootDir}/${relation.from}`;
+      var destination = "".concat(options.outDir, "/").concat(relation.to);
+      siphon.core.bundler(source).into(destination, options);
+      console.log();
+      console.log(" Bundling successful. Siphon found zero errors.".green);
+    });
+    break;
 }

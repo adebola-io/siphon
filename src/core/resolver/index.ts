@@ -1,4 +1,4 @@
-import { existsSync, PathLike, writeFileSync } from "fs";
+import { PathLike, writeFileSync } from "fs";
 import { basename, extname } from "path";
 import Errors from "../../errors";
 import { HTMLDocumentNode, siphonOptions } from "../../types";
@@ -108,9 +108,23 @@ class Resolver {
           });
       } else {
         let truePath = relativePath(this.source, src);
-        if (!existsSync(truePath)) Errors.enc("FILE_NON_EXISTENT", truePath);
+        if (!fileExists(truePath)) Errors.enc("FILE_NON_EXISTENT", truePath);
         let fileMarker = basename(src);
-        if (this.assets[fileMarker]) {
+        if (this.assets[fileMarker] && this.assets[fileMarker] === truePath) {
+          image.attributes.src = `./${basename(src)}`;
+        } else if (
+          this.assets[fileMarker] &&
+          this.assets[fileMarker] !== truePath
+        ) {
+          let a = 1;
+          while (
+            this.assets[getFileName(truePath) + "-" + a + extname(truePath)]
+          ) {
+            a++;
+          }
+          let newname = getFileName(truePath) + "-" + a + extname(truePath);
+          image.attributes.src = `./${newname}`;
+          copy(truePath, `${this.outDir}/${newname}`);
         }
       }
     });

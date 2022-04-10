@@ -1,3 +1,3 @@
-const name = async () => {
-  console.log(9);
-};
+function hello() {
+  console.log(99999999999);
+}

@@ -54,12 +54,14 @@ class Parser {
           currentToken.type = "Number";
           currentToken.details = {};
           currentToken.details.value = parseFloat(currentToken.raw);
+        } else if (isNum(currentToken.raw[0])) {
+          Errors.enc("ID_FOLLOWS_LITERAL", this.sourceFile, currentToken.start);
         } else if (
           currentToken.raw === "false" ||
           currentToken.raw === "true"
         ) {
           currentToken.type = "Boolean";
-        } else currentToken.type = "Word";
+        } else currentToken.type = "Identifier";
         currentToken.end = i + this.parentIndex;
         this.tokens.push(currentToken);
       }
@@ -194,6 +196,8 @@ class Parser {
     var newNode: Token;
     var previous: Token;
     var next: Token;
+
+    /** OPERATOR PRECEDENCE. */
     // 18. Member Access.
     for (let a = 0; this.tokens[a]; a++) {
       if (this.tokens[a].raw === ".") {
@@ -231,7 +235,6 @@ class Parser {
         a--;
       }
     }
-
     // 18/17. New Operator, Function Calls & Optional Chains.
     for (let b = 0; this.tokens[b]; b++) {
       if (this.tokens[b].raw === "new" && this.tokens[b + 2].type === "Group") {
@@ -265,7 +268,7 @@ class Parser {
       } else if (
         this.tokens[b].type === "Group" &&
         [
-          "Word",
+          "Identifier",
           "MemberExpression",
           "OptionalMemberExpression",
           "Group",
@@ -301,41 +304,6 @@ class Parser {
         b -= 2;
       }
     }
-    for (let y = 0; this.tokens[y]; y++) {
-      if (
-        this.tokens[y].type === "CallExpression" &&
-        this.tokens[y].details.callee.raw === "function"
-      ) {
-        console.log(9);
-        if (this.tokens[y + 1].type !== "Block") {
-          Errors.enc(
-            "OPEN_CURLY_EXPECTED",
-            this.sourceFile,
-            this.tokens[y + 1].end
-          );
-        }
-        previous = this.tokens[y - 1];
-        next = this.tokens[y + 1];
-        newNode = {
-          type: "FunctionExpression",
-          start: this.tokens[y].start,
-          raw: this.tokens[y].raw + next.raw,
-          end: next.end,
-          details: {
-            expression: true,
-            async: previous?.raw === "async",
-            params: this.tokens[y].details.arguments,
-            body: next,
-          },
-        };
-        this.tokens.splice(
-          previous?.raw === "async" ? y - 1 : y,
-          previous.raw === "async" ? 3 : 2,
-          newNode
-        );
-        y -= 2;
-      }
-    }
     // 16. Postfix Increment and Decrement.
     for (let c = 0; this.tokens[c]; c++) {
       if (
@@ -365,7 +333,7 @@ class Parser {
         case "+":
         case "-":
           if (
-            ["Number", "ArrType", "Group", "Word"].includes(
+            ["Number", "ArrType", "Group", "Identifier"].includes(
               this.tokens[d - 1].type ?? ""
             )
           )
@@ -714,7 +682,6 @@ class Parser {
               operator: this.tokens[q].raw,
               id: null,
               generator: false,
-              async: previous.details?.callee?.raw === "async",
               params:
                 previous.type === "Group" ? previous.details.inner : previous,
               body: next,
@@ -780,7 +747,7 @@ class Parser {
     }
     // 1. Comma Sequence.
     for (let r = 0; this.tokens[r]; r++) {
-      if (this.tokens[r].raw === ",") {
+      if (this.tokens[r].raw === "," && this.tokens[r + 1]) {
         previous = this.tokens[r - 1];
         next = this.tokens[r + 1];
         newNode = {
@@ -872,7 +839,7 @@ class Parser {
         this.srcText[i] === "("
           ? "Group"
           : this.srcText[i] === "{"
-          ? "Block"
+          ? "BlockStatement"
           : "ArrScope",
       start: i + this.parentIndex + 1,
       end: 0,
@@ -956,7 +923,7 @@ class Parser {
                     init: exp.details.right,
                   },
                 });
-            } else if (exp.type === "Word") {
+            } else if (exp.type === "Identifier") {
               if (newNode.details.kind === "const")
                 Errors.enc("EMPTY_CONST_DECLARATION", this.sourceFile, exp.end);
               else
@@ -972,7 +939,7 @@ class Parser {
                 });
             }
           });
-        } else if (next.type === "Word") {
+        } else if (next.type === "Identifier") {
           if (isNum(next.raw[0]))
             Errors.enc(
               "VARIABLE_DECLARATION_EXPECTED",

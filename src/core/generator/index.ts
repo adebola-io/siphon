@@ -2,6 +2,7 @@ import { isForeignTag, isVoid } from "../../utils";
 import { HTMLDocumentNode, siphonOptions } from "../../types";
 import formatter from "../formatter";
 import minifier from "../minifier";
+import tokenize from "../parser/js/tokenizer";
 const tab: string = "  ";
 
 function formatExternalText(
@@ -17,6 +18,8 @@ function formatExternalText(
 function minifyExternalText(externalText?: string, assetType?: string) {
   if (externalText !== undefined && assetType === "style")
     return minifier.minifyCSS(externalText);
+  if (externalText !== undefined && assetType === "script")
+    return minifier.minifyJS(tokenize(externalText));
 }
 
 class Generator {
