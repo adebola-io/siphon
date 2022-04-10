@@ -1,7 +1,7 @@
 module.exports = {
   rootDir: "test/src",
   outDir: "test/build",
-  formatFiles: true,
+  formatFiles: false,
   checkImageTypes: false,
   relations: [{ from: "start.html", to: "index.html" }],
   internalJS: true,

@@ -1,3 +1,4 @@
+import Errors from "../../../errors";
 import { operators, stringMarkers, isNum } from "../../../utils";
 export interface Token {
   token_type?: string;
@@ -69,10 +70,13 @@ function tokenize(text: string) {
           ) {
             token.value += "\\" + marker;
             a += 2;
+          } else if (text[a] === "\n" && marker !== "`") {
+            Errors.enc("UNTERMINATED_STRING_LITERAL", "");
           } else token.value += text[a++];
         }
         if (!text[a]) throw new Error();
         token.value += marker;
+        token.token_type = "String";
         pushToken(a);
         break;
       case text[a] === "\r":

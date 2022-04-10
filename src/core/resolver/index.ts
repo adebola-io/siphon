@@ -1,4 +1,4 @@
-import { PathLike, writeFileSync } from "fs";
+import { PathLike, readFile, readFileSync, writeFileSync } from "fs";
 import { basename, extname } from "path";
 import Errors from "../../errors";
 import { HTMLDocumentNode, siphonOptions } from "../../types";
@@ -118,21 +118,39 @@ class Resolver {
         ) {
           let a = 1;
           while (
-            this.assets[getFileName(truePath) + "-" + a + extname(truePath)]
+            this.assets[`${getFileName(truePath)}-${a}${extname(truePath)}`]
           ) {
             a++;
           }
-          let newname = getFileName(truePath) + "-" + a + extname(truePath);
+          let newname = `${getFileName(truePath)}-${a}${extname(truePath)}`;
           image.attributes.src = `./${newname}`;
           copy(truePath, `${this.outDir}/${newname}`);
+        } else if (this.assets[fileMarker] === undefined) {
+          copy(truePath, `${this.outDir}/${fileMarker}`);
+          image.attributes.src = `./${basename(src)}`;
+          this.assets[fileMarker] = truePath;
         }
       }
     });
     return nodes;
   }
+  resolveScripts(nodes: HTMLDocumentNode[]) {
+    const scripts: HTMLDocumentNode[] = tagNameSearch(nodes, "script").filter(
+      (script) => script.attributes?.src
+    );
+    if (this.options.internalJS) {
+      scripts.forEach((script) => {
+        let truePath = relativePath(this.source, script.attributes.src);
+        if (!fileExists(truePath)) Errors.enc("FILE_NON_EXISTENT", truePath);
+        script.content = readFileSync(truePath).toString();
+        delete script.attributes.src;
+      });
+    }
+  }
   resolve(nodes: HTMLDocumentNode[]) {
-    nodes = this.resolveStyles(nodes);
     this.resolveImages(nodes);
+    this.resolveStyles(nodes);
+    this.resolveScripts(nodes);
     return nodes;
   }
 }
