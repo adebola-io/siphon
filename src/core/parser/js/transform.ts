@@ -15,9 +15,8 @@ function transform(tokens: Token[], mode: "minification" | "compatibility") {
         tokens[i].value
           .slice(1, -1)
           .replace(/"/g, '\\"')
-          .replace("/\r\n", '"+"\\r\\n"+"')
           .replace(/\n/g, '"+"\\n"+"')
-          .replace(/\r/g, '"+"\\r"+"') +
+          .replace(/\r/g, "") +
         '"';
     }
   }
