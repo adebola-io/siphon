@@ -2,7 +2,7 @@
   <img width=200 height=200 src="./img/siphon_proto.png"></img>
   <p align=center>
   <a href="https://www.npmjs.com/package/siphon-cli">
-    <img src="https://img.shields.io/npm/v/siphon.cli.svg" alt="npm version" >
+    <img src="https://img.shields.io/npm/v/siphon-cli.svg" alt="npm version" >
   </a>
   <a href="https://packagephobia.now.sh/result?p=siphon-cli">
     <img src="https://packagephobia.now.sh/badge?p=siphon-cli" alt="install size" >
