@@ -2,6 +2,7 @@ src
 tsconfig.json
 siphon.config.js
 test
+dump
 scripts
 .vscode
 .gitgnore
