@@ -17,7 +17,9 @@ import Errors from "../errors";
 export function copy(src: PathLike, dest: PathLike) {
   writeFile(dest, readFileSync(src), "base64", () => {});
 }
-
+export function tryMkingDir(src: PathLike) {
+  if (!existsSync(src)) mkdirSync(src);
+}
 /**
  * Returns true if a specified path exists and leads to a file.
  */

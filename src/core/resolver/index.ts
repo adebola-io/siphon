@@ -1,4 +1,4 @@
-import { mkdirSync, PathLike, readFile, readFileSync, writeFileSync } from "fs";
+import { PathLike, readFile, readFileSync, writeFileSync } from "fs";
 import { basename, extname, resolve } from "path";
 import Errors from "../../errors";
 import { HTMLDocumentNode, siphonOptions } from "../../types";
@@ -6,9 +6,9 @@ import {
   fileExists,
   copy,
   relativePath,
+  tryMkingDir,
   getFileName,
   imageExts,
-  forceCreateDir,
 } from "../../utils";
 import formatter from "../formatter";
 import minifier from "../minifier";
@@ -91,7 +91,7 @@ class Resolver {
             imageExts.includes(extname(resourceLink.name)) &&
             this.options.storeImagesSeparately
           ) {
-            forceCreateDir(`${this.outDir}/img`);
+            tryMkingDir(`${this.outDir}/img`);
             outputpath = `${this.outDir}/img/${resourceLink.name}`;
           }
           copy(resourceLink.srcpath, outputpath);
@@ -156,7 +156,7 @@ class Resolver {
 
         let fileMarker = basename(src);
         if (this.options.storeImagesSeparately)
-          forceCreateDir(`${this.outDir}/img`);
+          tryMkingDir(`${this.outDir}/img`);
         if (this.assets[fileMarker] && this.assets[fileMarker] === truePath) {
           image.attributes.src = this.injectMode
             ? truePath

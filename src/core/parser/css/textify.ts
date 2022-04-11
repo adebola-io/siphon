@@ -1,6 +1,6 @@
 import { existsSync, PathLike, readFileSync } from "fs";
 import * as path from "path";
-import { extname } from "path";
+import { basename, extname } from "path";
 import Errors from "../../../errors";
 import { siphonOptions } from "../../../types";
 import {
