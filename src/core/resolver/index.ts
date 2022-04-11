@@ -20,11 +20,13 @@ class Resolver {
     sourceFile: PathLike,
     destination: PathLike,
     options: siphonOptions,
-    assets = {}
+    assets = {},
+    injectMode?: boolean
   ) {
     this.assets = assets;
     this.options = options;
     this.source = sourceFile;
+    this.injectMode = injectMode;
     this.srcName = basename(this.source.toString());
     this.destination = destination;
     this.outDir = relativePath(destination, "./");
@@ -38,6 +40,7 @@ class Resolver {
   source: PathLike;
   destination: PathLike;
   assets: any;
+  injectMode?: boolean;
   resolveInjects(nodes: HTMLDocumentNode[], assets?: {}) {
     const injects: HTMLDocumentNode[] = tagNameSearch(nodes, "inject");
     injects.forEach((inject) => {
@@ -52,7 +55,8 @@ class Resolver {
         truePath,
         this.destination,
         this.options,
-        this.assets
+        this.assets,
+        true
       ).resolve(injectNodes);
       inject.parent?.children.splice(inject.childID, 1, ...injectNodes);
     });
@@ -93,7 +97,7 @@ class Resolver {
         cssContent += resource.text;
       }
     });
-    if (!this.options.internalStyles) {
+    if (!this.options.internalStyles && !this.injectMode) {
       if (this.options.formatFiles) {
         cssContent = formatter.formatCSS(cssContent, "", "  ", true).trim();
       } else {
@@ -133,10 +137,15 @@ class Resolver {
           });
       } else {
         let truePath = relativePath(this.source, src);
-        if (!fileExists(truePath)) Errors.enc("FILE_NON_EXISTENT", truePath);
+        if (!fileExists(truePath)) {
+          Errors.enc("FILE_NON_EXISTENT", truePath);
+        }
+
         let fileMarker = basename(src);
         if (this.assets[fileMarker] && this.assets[fileMarker] === truePath) {
-          image.attributes.src = `./${basename(src)}`;
+          image.attributes.src = this.injectMode
+            ? truePath
+            : `./${basename(src)}`;
         } else if (
           this.assets[fileMarker] &&
           this.assets[fileMarker] !== truePath
@@ -148,11 +157,13 @@ class Resolver {
             a++;
           }
           let newname = `${getFileName(truePath)}-${a}${extname(truePath)}`;
-          image.attributes.src = `./${newname}`;
+          image.attributes.src = this.injectMode ? truePath : `./${newname}`;
           copy(truePath, `${this.outDir}/${newname}`);
         } else if (this.assets[fileMarker] === undefined) {
           copy(truePath, `${this.outDir}/${fileMarker}`);
-          image.attributes.src = `./${basename(src)}`;
+          image.attributes.src = this.injectMode
+            ? truePath
+            : `./${basename(src)}`;
           this.assets[fileMarker] = truePath;
         }
       }

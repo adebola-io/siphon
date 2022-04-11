@@ -89,6 +89,8 @@ export function relativePath(from: PathLike, to: string): string {
     .split("\\")
     .filter((route) => route !== "");
   switch (true) {
+    case to.includes(":"):
+      return to;
     case to.startsWith("http://"):
     case to.startsWith("https://"):
       return to;
@@ -99,7 +101,7 @@ export function relativePath(from: PathLike, to: string): string {
       } while (to.startsWith("../"));
       return rootPaths.slice(0, -1).join("\\") + "\\" + to;
     case to.startsWith("/"):
-      return to.slice(1);
+      return resolve(to.slice(1));
     case to.startsWith("./"):
       return rootPaths.slice(0, -1).join("\\") + "\\" + to.slice(2);
     case to.replace(" ", "") === "":

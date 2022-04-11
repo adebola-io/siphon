@@ -29,7 +29,8 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
     startTag: string,
     textSlice: string,
     i: number,
-    attrs?: string
+    attrs?: string,
+    k?: number
   ) {
     let j = 1;
     let content: string = "";
@@ -50,6 +51,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
       attributes: attrs ? getNodeAttributes(attrs) : undefined,
       attributeList: attrs ? attrs : undefined,
       tagName: startTag,
+      identifier: k ? ++k : 0,
       start: i,
       stop: j,
       content: content === "" ? undefined : content,
@@ -58,7 +60,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
     return i + j - 1;
   }
 
-  for (let i: number = 0; srcText[i]; i++) {
+  for (let i: number = 0, k = 0; srcText[i]; i++) {
     //   Ignore comments.
     if (srcText.slice(i, i + 4) === "<!--") {
       i += 4;
@@ -72,6 +74,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
         node = {
           type: "text",
           parent: tagStack.top(),
+          identifier: ++k,
           content: textStore.replace(/([\n\r]*)/g, "").replace(/\s[\s]*/g, " "),
         };
         nodes.push(node);
@@ -95,7 +98,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
         // Ignore white spaces
         while (isSpaceCharac(srcText[i])) i++;
         checkForEnd(srcText[i], source);
-        if (endofTag.replace(/\n|\r/g, "") !== tagStack.top())
+        if (endofTag.replace(/\n|\r/g, "") !== tagStack.top()[0])
           Errors.enc("UNEXPECTED_CLOSE", source, i);
         tagStack.pop();
       } else {
@@ -136,7 +139,8 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
                 startofTag,
                 srcText.slice(i),
                 i,
-                attributeList
+                attributeList,
+                k
               );
             } else {
               node = {
@@ -149,13 +153,14 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
                 start,
                 stop: i,
                 tagName: startofTag,
+                identifier: ++k,
                 attributes: getNodeAttributes(attributeList),
                 attributeList,
               };
               nodes.push(node);
             }
             if (!isVoid(startofTag))
-              tagStack.push(startofTag.replace(/\n|\r/g, ""));
+              tagStack.push([startofTag.replace(/\n|\r/g, ""), k]);
           } else if (srcText[i] === "/") {
             // Ignore space characters.
             do i++;
@@ -165,6 +170,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
               type: "element",
               tagName: startofTag,
               parent: tagStack.top(),
+              identifier: ++k,
               isVoid: isVoid(startofTag) ? true : undefined,
               attributes: getNodeAttributes(attributeList),
               attributeList,
@@ -186,6 +192,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
             node = {
               type: "element",
               tagName: startofTag,
+              identifier: ++k,
               parent: tagStack.top(),
               start,
               stop: i,
@@ -193,7 +200,7 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
             nodes.push(node);
           }
 
-          if (!isVoid(startofTag)) tagStack.push(startofTag);
+          if (!isVoid(startofTag)) tagStack.push([startofTag, k]);
         }
       }
     } else if (textIsCounting) {
