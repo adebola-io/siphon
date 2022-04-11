@@ -96,6 +96,8 @@ const Errors = {
         err("Destructured variables must have an initializer.", source, charac);
       case "INVALID_ASSIGNMENT_LEFT":
         err("Invalid left-hand side in assignment.", source, charac);
+      case "SHEBANG_NOT_ALLOWED":
+        err("Shebang comments are not suppoerted in the browser.");
     }
   },
 };

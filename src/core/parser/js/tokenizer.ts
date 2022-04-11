@@ -1,4 +1,5 @@
 import Errors from "../../../errors";
+import { siphonOptions } from "../../../types";
 import { operators, stringMarkers, isNum } from "../../../utils";
 export interface Token {
   token_type?: string;
@@ -12,7 +13,7 @@ export interface Token {
  * @param text The source text.
  * @returns An array of tokens, with each token containing the start and end of the token in the text, the token value and optionally the type of token.
  */
-function tokenize(text: string) {
+function tokenize(text: string, options?: siphonOptions) {
   const tokens: Token[] = [];
   var token: Token = {
     start: 0,
@@ -26,10 +27,16 @@ function tokenize(text: string) {
     operators._ignore4_,
     operators._suceeding1_,
     operators._suceeding2_,
-    operators._suceeding3_
+    operators._suceeding3_,
+    ["typeof", "delete", "await", "void"]
   );
   const pushToken = (t: number) => {
-    if (token.value.length > 0) {
+    if (token?.value.length > 0) {
+      switch (true) {
+        case isNum(token.value):
+          token.token_type = "NumericLiteral";
+          break;
+      }
       token.end = t + token.value.length - 1;
       tokens.push(token);
       token = { start: t + 2, end: 0, value: "" };
@@ -40,6 +47,15 @@ function tokenize(text: string) {
   };
   for (let a = 0; text[a]; a++) {
     switch (true) {
+      case a === 0 && text.slice(a, a + 2) === "#!":
+        options?.internalJS ? Errors.enc("SHEBANG_NOT_ALLOWED", "") : "";
+        // Shebang comments.
+        while (text[a] && text[a] !== "\n") {
+          token.value += text[a++];
+        }
+        token.value += "\n";
+        pushToken(a);
+        break;
       case text.slice(a, a + 2) === "/*":
         // Block Comments.
         pushToken(a);
@@ -76,7 +92,7 @@ function tokenize(text: string) {
         }
         if (!text[a]) throw new Error();
         token.value += marker;
-        token.token_type = "String";
+        token.token_type = "StringLiteral";
         pushToken(a);
         break;
       case text[a] === "\r":

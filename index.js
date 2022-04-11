@@ -17,7 +17,7 @@ if (existsSync("siphon.config.js")) {
 switch (true) {
   case task.args.watch &&
     task.inputs.includes("bundle") &&
-    tasks.inputs.length === 1:
+    task.inputs.length === 1:
     siphon.watcher(options);
     break;
   case task.inputs.includes("bundle"):

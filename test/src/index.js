@@ -1,3 +1,5 @@
-function hello() {
-  console.log(99999999999);
-}
+let myName = "sefunmi";
+const y = {
+  let: "jara",
+};
+console.log(y.let);

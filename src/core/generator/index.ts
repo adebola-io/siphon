@@ -15,12 +15,19 @@ function formatExternalText(
   if (assetType === "script") return externalText;
 }
 
-function minifyExternalText(externalText?: string, assetType?: string) {
+function minifyExternalText(
+  externalText?: string,
+  assetType?: string,
+  options?: siphonOptions
+) {
   if (externalText !== undefined && assetType === "style")
     return minifier.minifyCSS(externalText);
   if (externalText !== undefined && assetType === "script") {
     return minifier.minifyJS(
-      parser.js.transform(parser.js.tokenize(externalText), "minification")
+      parser.js.transform(
+        parser.js.tokenize(externalText, options),
+        "minification"
+      )
     );
   }
 }
@@ -74,7 +81,7 @@ class Generator {
                 options.formatFiles && node.content
                   ? formatExternalText(node.content, node.tagName, spacers)
                   : node.content
-                  ? minifyExternalText(node.content, node.tagName)
+                  ? minifyExternalText(node.content, node.tagName, options)
                   : ""
               }`;
               if (options.formatFiles && node.content) html += spacers;
