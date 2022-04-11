@@ -12,6 +12,8 @@ function createDOMTree(source: fs.PathLike): HTMLDocumentNode[] {
       while (nodes[h] && nodes[i].parent !== nodes[h].tagName) h--;
       if (nodes[h]) {
         if (!nodes[h].children) nodes[h].children = [];
+        nodes[i].parent = nodes[h];
+        nodes[i].childID = nodes[h].children?.length ?? 0;
         nodes[h].children?.push(nodes[i]);
       }
     } else filledNodes.push(nodes[i]);

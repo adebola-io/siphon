@@ -34,10 +34,16 @@ const Errors = {
         err(
           `recursion_hell: The stylesheet ${source.toString()} has an import to itself.`
         );
+      case "HTML_SELF_INJECT":
+        err(
+          `recursion_hell: The HTML file ${source.toString()} has an inject to itself.`
+        );
       case "CSS_CIRCULAR_IMPORT":
         err(
           `The stylesheet ${source.toString()} has already been imported into this project.`
         );
+      case "HTML_CIRCULAR_INJECT":
+        err(`Circular injection detected in ${source.toString()}.`);
       case "NOT_A_DIRECTORY":
         err(`The path ${source.toString()} does not lead to a directory.`);
       case "COMMENT_UNCLOSED":
@@ -48,6 +54,8 @@ const Errors = {
         err(`Siphon does not support HTML fragments.`, source, charac);
       case "INVALID_TAG":
         err(`Invalid tag Name '${options.name}'`, source, charac);
+      case "INJECT_REQUIRES_SRC":
+        err(`HTML inject tags require a src attribute.`);
       case "INVALID_VOID_TAG":
         err(`'${options.name}' cannot be used as a void tag.`, source, charac);
       case "ABRUPT":

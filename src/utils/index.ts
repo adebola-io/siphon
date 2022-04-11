@@ -102,6 +102,8 @@ export function relativePath(from: PathLike, to: string): string {
       return to.slice(1);
     case to.startsWith("./"):
       return rootPaths.slice(0, -1).join("\\") + "\\" + to.slice(2);
+    case to.replace(" ", "") === "":
+      Errors.enc("FILE_NON_EXISTENT", "");
     default:
       return rootPaths.slice(0, -1).join("\\") + "\\" + to;
   }

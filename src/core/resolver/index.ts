@@ -1,5 +1,5 @@
 import { PathLike, readFile, readFileSync, writeFileSync } from "fs";
-import { basename, extname } from "path";
+import { basename, extname, resolve } from "path";
 import Errors from "../../errors";
 import { HTMLDocumentNode, siphonOptions } from "../../types";
 import {
@@ -12,26 +12,51 @@ import {
 import formatter from "../formatter";
 import minifier from "../minifier";
 import parser from "../parser";
+import createDOMTree from "../parser/html/createDOMTree";
 import tagNameSearch from "../parser/html/tagNameSearch";
 
 class Resolver {
   constructor(
     sourceFile: PathLike,
     destination: PathLike,
-    options: siphonOptions
+    options: siphonOptions,
+    assets = {}
   ) {
+    this.assets = assets;
     this.options = options;
     this.source = sourceFile;
+    this.srcName = basename(this.source.toString());
     this.destination = destination;
     this.outDir = relativePath(destination, "./");
-    this.baseName = getFileName(destination);
+    this.destBaseName = getFileName(destination);
+    this.assets[this.srcName] = resolve(this.source.toString());
   }
   outDir: PathLike;
-  baseName: string;
+  destBaseName: string;
+  srcName: string;
   options: siphonOptions;
   source: PathLike;
   destination: PathLike;
-  assets: any = {};
+  assets: any;
+  resolveInjects(nodes: HTMLDocumentNode[], assets?: {}) {
+    const injects: HTMLDocumentNode[] = tagNameSearch(nodes, "inject");
+    injects.forEach((inject) => {
+      if (!inject.attributes?.src)
+        Errors.enc("INJECT_REQUIRES_SRC", this.source);
+      let truePath = relativePath(this.source, inject.attributes.src);
+      if (basename(truePath) === this.srcName)
+        Errors.enc("HTML_SELF_INJECT", this.source);
+      if (!fileExists(truePath)) Errors.enc("FILE_NON_EXISTENT", truePath);
+      let injectNodes = createDOMTree(truePath);
+      new Resolver(
+        truePath,
+        this.destination,
+        this.options,
+        this.assets
+      ).resolve(injectNodes);
+      inject.parent?.children.splice(inject.childID, 1, ...injectNodes);
+    });
+  }
   resolveStyles(nodes: HTMLDocumentNode[]) {
     let styleLinks: HTMLDocumentNode[] = tagNameSearch(nodes, "link").filter(
       (link) => {
@@ -74,7 +99,7 @@ class Resolver {
       } else {
         cssContent = minifier.minifyCSS(cssContent);
       }
-      let cssBundle = `${this.baseName}.bundle.css`;
+      let cssBundle = `${this.destBaseName}.bundle.css`;
       writeFileSync(`${this.outDir}/${cssBundle}`, cssContent);
       let head: HTMLDocumentNode = tagNameSearch(nodes, "head")[0];
       head.children?.push({
@@ -148,6 +173,7 @@ class Resolver {
     }
   }
   resolve(nodes: HTMLDocumentNode[]) {
+    if (this.options.htmlInjects) this.resolveInjects(nodes);
     this.resolveImages(nodes);
     this.resolveStyles(nodes);
     this.resolveScripts(nodes);

@@ -4,13 +4,16 @@ export type ErrorTypes =
   | "NO_ROOTDIR"
   | "CSS_NON_EXISTENT"
   | "CSS_SELF_IMPORT"
+  | "HTML_CIRCULAR_INJECT"
   | "CSS_CIRCULAR_IMPORT"
+  | "HTML_SELF_INJECT"
   | "NOT_A_DIRECTORY"
   | "UNSUPPORTED_IMAGE_FORMAT"
   | "COMMENT_UNCLOSED"
   | "TAG_UNCLOSED"
   | "HTML_FRAGMENT"
   | "INVALID_TAG"
+  | "INJECT_REQUIRES_SRC"
   | "UNTERMINATED_STRING_LITERAL"
   | "UNTERMINATED_REGEX_LITERAL"
   | "MISSING_DESC_INITIALIZER"
@@ -29,12 +32,13 @@ export type ErrorTypes =
   | "OPEN_CURLY_EXPECTED";
 export interface HTMLDocumentNode {
   identifier?: number;
+  childID?: number;
   type?: string;
   isVoid?: boolean;
   start?: number;
   stop?: number;
   tagName?: string;
-  parent?: string | null;
+  parent?: string | null | HTMLDocumentNode | any;
   attributeList?: string;
   attributes?: any;
   content?: string;
@@ -49,6 +53,7 @@ export interface siphonOptions {
   outDir: PathLike;
   deep: boolean;
   relations: Relation[];
+  htmlInjects: boolean;
   formatFiles: boolean;
   internalJS: boolean;
   internalStyles: boolean;
