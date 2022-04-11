@@ -38,10 +38,10 @@ export function newTimeStamp(options?: datingOptions) {
   }`;
 }
 /**
- * Forcefully create a path that may or may not exist.
+ * Forcefully create a directory that may or may not exist.
  * @param source The path to create.
  */
-export function forceCreatePath(source: PathLike) {
+export function forceCreateDir(source: PathLike) {
   let routes = resolve(source.toString()).split(/\\|\//);
   for (let index = 1; routes[index]; index++) {
     let resolvedPath = routes.slice(0, index).join("/");
@@ -155,7 +155,15 @@ export function isVoid(tagName: string | undefined): boolean {
     : false;
 }
 export const stringMarkers: Array<string> = ["'", "`", '"'];
-export const imageExts: Array<string> = [".png", ".jpeg", ".jpg", ".bmp"];
+export const imageExts: Array<string> = [
+  ".png",
+  ".jpeg",
+  ".jpg",
+  ".bmp",
+  ".svg",
+  ".gif",
+  ".webp",
+];
 
 export function isNum(char: string | undefined) {
   return char ? char.replace(/[0-9]/g, "").replace(/\./, "") === "" : false;

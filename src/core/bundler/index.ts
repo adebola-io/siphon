@@ -5,7 +5,7 @@ import Generator from "../generator";
 import Resolver from "../resolver";
 import createDOMTree from "../parser/html/createDOMTree";
 import { siphonOptions } from "../../types";
-import { forceCreatePath } from "../../utils";
+import { forceCreateDir } from "../../utils";
 
 function bundler(source: fs.PathLike) {
   return {
@@ -17,7 +17,7 @@ function bundler(source: fs.PathLike) {
         case ".xhtml":
         case ".mhtml":
           var htmlTree = createDOMTree(source);
-          forceCreatePath(destination);
+          forceCreateDir(destination);
           let resolver = new Resolver(source, destination, options);
           htmlTree = resolver.resolve(htmlTree);
           fs.writeFile(

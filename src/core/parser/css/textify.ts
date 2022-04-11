@@ -1,12 +1,15 @@
 import { existsSync, PathLike, readFileSync } from "fs";
 import * as path from "path";
+import { extname } from "path";
 import Errors from "../../../errors";
+import { siphonOptions } from "../../../types";
 import {
   relativePath,
   getFileName,
   checkForEnd,
   isSpaceCharac,
   stringMarkers,
+  imageExts,
 } from "../../../utils";
 
 /**
@@ -14,7 +17,7 @@ import {
  * @param source The CSS file to parse through.
  * @returns compiled css text.
  */
-function textify(source: PathLike, assets: any) {
+function textify(source: PathLike, assets: any, options: siphonOptions) {
   let foreignImports: string[] = [];
   let weirdImports: { srcpath: string; name: string }[] = [];
   let allImports: string[] = [source.toString()];
@@ -75,19 +78,25 @@ function textify(source: PathLike, assets: any) {
           if (stringMarkers.includes(store[0])) {
             store = store.slice(1, store.lastIndexOf(store[0]));
           }
+          // Path resolution.
           let truePath = relativePath(source, store);
+          let imageFolder =
+            imageExts.includes(extname(truePath)) &&
+            options.storeImagesSeparately
+              ? "img/"
+              : "";
           if (assets[path.basename(truePath)] === undefined) {
             weirdImports.push({
               srcpath: truePath,
               name: path.basename(truePath),
             });
             assets[path.basename(truePath)] = truePath;
-            text += `"./${path.basename(truePath)}")`;
+            text += `"./${imageFolder}${path.basename(truePath)}")`;
           } else if (
             assets[path.basename(truePath)] &&
             assets[path.basename(truePath)] === truePath
           ) {
-            text += `"./${path.basename(truePath)}")`;
+            text += `"./${imageFolder}${path.basename(truePath)}")`;
           } else {
             let a = 1;
             while (
@@ -101,7 +110,7 @@ function textify(source: PathLike, assets: any) {
               srcpath: truePath,
               name: newname,
             });
-            text += `"./${newname}")`;
+            text += `"./${imageFolder}${newname}")`;
             assets[newname] = truePath;
           }
         }

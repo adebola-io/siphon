@@ -1,4 +1,4 @@
-import { PathLike, readFile, readFileSync, writeFileSync } from "fs";
+import { mkdirSync, PathLike, readFile, readFileSync, writeFileSync } from "fs";
 import { basename, extname, resolve } from "path";
 import Errors from "../../errors";
 import { HTMLDocumentNode, siphonOptions } from "../../types";
@@ -8,6 +8,7 @@ import {
   relativePath,
   getFileName,
   imageExts,
+  forceCreateDir,
 } from "../../utils";
 import formatter from "../formatter";
 import minifier from "../minifier";
@@ -77,11 +78,23 @@ class Resolver {
     let cssContent: string = "";
     styleLinks.forEach((link) => {
       let truePath = relativePath(this.source, link.attributes?.href);
-      let resource = parser.css.textify(truePath, { ...this.assets });
+      let resource = parser.css.textify(
+        truePath,
+        { ...this.assets },
+        this.options
+      );
       this.assets = resource.assets;
       resource.links.forEach((resourceLink) => {
         if (fileExists(resourceLink.srcpath)) {
-          copy(resourceLink.srcpath, `${this.outDir}/${resourceLink.name}`);
+          let outputpath = `${this.outDir}/${resourceLink.name}`;
+          if (
+            imageExts.includes(extname(resourceLink.name)) &&
+            this.options.storeImagesSeparately
+          ) {
+            forceCreateDir(`${this.outDir}/img`);
+            outputpath = `${this.outDir}/img/${resourceLink.name}`;
+          }
+          copy(resourceLink.srcpath, outputpath);
         } else Errors.enc("FILE_NON_EXISTENT", resourceLink.srcpath);
       });
       if (this.options.internalStyles) {
@@ -106,7 +119,7 @@ class Resolver {
       let cssBundle = `${this.destBaseName}.bundle.css`;
       writeFileSync(`${this.outDir}/${cssBundle}`, cssContent);
       let head: HTMLDocumentNode = tagNameSearch(nodes, "head")[0];
-      head.children?.push({
+      head?.children?.push({
         type: "element",
         tagName: "link",
         isVoid: true,
@@ -142,10 +155,14 @@ class Resolver {
         }
 
         let fileMarker = basename(src);
+        if (this.options.storeImagesSeparately)
+          forceCreateDir(`${this.outDir}/img`);
         if (this.assets[fileMarker] && this.assets[fileMarker] === truePath) {
           image.attributes.src = this.injectMode
             ? truePath
-            : `./${basename(src)}`;
+            : `./${this.options.storeImagesSeparately ? "img/" : ""}${basename(
+                src
+              )}`;
         } else if (
           this.assets[fileMarker] &&
           this.assets[fileMarker] !== truePath
@@ -157,13 +174,27 @@ class Resolver {
             a++;
           }
           let newname = `${getFileName(truePath)}-${a}${extname(truePath)}`;
-          image.attributes.src = this.injectMode ? truePath : `./${newname}`;
-          copy(truePath, `${this.outDir}/${newname}`);
-        } else if (this.assets[fileMarker] === undefined) {
-          copy(truePath, `${this.outDir}/${fileMarker}`);
           image.attributes.src = this.injectMode
             ? truePath
-            : `./${basename(src)}`;
+            : `./${this.options.storeImagesSeparately ? "img/" : ""}${newname}`;
+          copy(
+            truePath,
+            `${this.outDir}/${
+              this.options.storeImagesSeparately ? "img/" : ""
+            }${newname}`
+          );
+        } else if (this.assets[fileMarker] === undefined) {
+          copy(
+            truePath,
+            `${this.outDir}/${
+              this.options.storeImagesSeparately ? "img/" : ""
+            }${fileMarker}`
+          );
+          image.attributes.src = this.injectMode
+            ? truePath
+            : `./${this.options.storeImagesSeparately ? "img/" : ""}${basename(
+                src
+              )}`;
           this.assets[fileMarker] = truePath;
         }
       }

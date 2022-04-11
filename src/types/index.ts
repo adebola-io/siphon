@@ -55,6 +55,7 @@ export interface siphonOptions {
   relations: Relation[];
   htmlInjects: boolean;
   formatFiles: boolean;
+  storeImagesSeparately: boolean;
   internalJS: boolean;
   internalStyles: boolean;
   checkImageTypes: boolean;
