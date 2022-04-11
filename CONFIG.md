@@ -16,18 +16,11 @@ Relations are links between base HTML files in the root directory and their bund
 For example, the config file:
 
 ```js
-<<<<<<< HEAD
  module.exports = {
     rootDir: "src",
     outDir: "build",
     relations: [{ from: "start.html", to: "index.html" }]
   }
-=======
-module.exports = {
-  rootDir: "src",
-  outDir": "build",
-  relations": [{ from: "start.html", to: "index.html" }]
->>>>>>> 559c3c8224b757683b278dc92a5b933aab302af6
 }
 ```
 
@@ -52,3 +45,7 @@ When set to true, Siphon will compress **\*ALL\*** your assets into the HTML fil
 #### `formatFiles`
 
 Determines whether the output files should be formatted. The default value is `false`.
+
+#### `storeImagesSeparately`
+
+Determines whether images should stay at the root of the build folder or be packed up nicely into an `img` folder. The default value is `false`.
