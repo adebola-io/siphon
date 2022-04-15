@@ -5,7 +5,7 @@ const defaults: siphonOptions = {
   outDir: "./build",
   storeImagesSeparately: false,
   deep: false,
-  relations: [{ from: "index.html", to: "index.bundle.html" }],
+  relations: [{ from: "index.html", to: "index.html" }],
   htmlInjects: false,
   formatFiles: true,
   internalJS: false,

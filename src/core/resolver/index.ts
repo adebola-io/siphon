@@ -1,4 +1,4 @@
-import { PathLike, readFile, readFileSync, writeFileSync } from "fs";
+import { PathLike, readFileSync, writeFileSync } from "fs";
 import { basename, extname, resolve } from "path";
 import Errors from "../../errors";
 import { HTMLDocumentNode, siphonOptions } from "../../types";
@@ -75,61 +75,64 @@ class Resolver {
         );
       }
     );
-    let cssContent: string = "";
-    styleLinks.forEach((link) => {
-      let truePath = relativePath(this.source, link.attributes?.href);
-      let resource = parser.css.textify(
-        truePath,
-        { ...this.assets },
-        this.options
-      );
-      this.assets = resource.assets;
-      resource.links.forEach((resourceLink) => {
-        if (fileExists(resourceLink.srcpath)) {
-          let outputpath = `${this.outDir}/${resourceLink.name}`;
-          if (
-            imageExts.includes(extname(resourceLink.name)) &&
-            this.options.storeImagesSeparately
-          ) {
-            tryMkingDir(`${this.outDir}/img`);
-            outputpath = `${this.outDir}/img/${resourceLink.name}`;
-          }
-          copy(resourceLink.srcpath, outputpath);
-        } else Errors.enc("FILE_NON_EXISTENT", resourceLink.srcpath);
+    if (styleLinks.length !== 0) {
+      let cssContent: string = "";
+      styleLinks.forEach((link) => {
+        let truePath = relativePath(this.source, link.attributes?.href);
+        let resource = parser.css.textify(
+          truePath,
+          { ...this.assets },
+          this.options
+        );
+        this.assets = resource.assets;
+        resource.links.forEach((resourceLink) => {
+          if (fileExists(resourceLink.srcpath)) {
+            let outputpath = `${this.outDir}/${resourceLink.name}`;
+            if (
+              imageExts.includes(extname(resourceLink.name)) &&
+              this.options.storeImagesSeparately
+            ) {
+              tryMkingDir(`${this.outDir}/img`);
+              outputpath = `${this.outDir}/img/${resourceLink.name}`;
+            }
+            copy(resourceLink.srcpath, outputpath);
+          } else Errors.enc("FILE_NON_EXISTENT", resourceLink.srcpath);
+        });
+        if (this.options.internalStyles) {
+          link.tagName = "style";
+          link.content = resource.text;
+          delete link.attributes.rel;
+          delete link.attributes.href;
+        } else {
+          delete link.attributes;
+          delete link.content;
+          delete link.type;
+          delete link.parent;
+          cssContent += resource.text;
+        }
       });
-      if (this.options.internalStyles) {
-        link.tagName = "style";
-        link.content = resource.text;
-        delete link.attributes.rel;
-        delete link.attributes.href;
-      } else {
-        delete link.attributes;
-        delete link.content;
-        delete link.type;
-        delete link.parent;
-        cssContent += resource.text;
+      if (!this.options.internalStyles && !this.injectMode) {
+        if (this.options.formatFiles) {
+          cssContent = formatter.formatCSS(cssContent, "", "  ", true).trim();
+        } else {
+          cssContent = minifier.minifyCSS(cssContent);
+        }
+        let cssBundle = `${this.destBaseName}.bundle.css`;
+        writeFileSync(`${this.outDir}/${cssBundle}`, cssContent);
+        let head: HTMLDocumentNode = tagNameSearch(nodes, "head")[0];
+        head?.children?.push({
+          type: "element",
+          tagName: "link",
+          isVoid: true,
+          attributeList: `rel="stylesheet" href="./${cssBundle}"`,
+          attributes: {
+            rel: `stylesheet`,
+            href: `./${cssBundle}`,
+          },
+        });
       }
-    });
-    if (!this.options.internalStyles && !this.injectMode) {
-      if (this.options.formatFiles) {
-        cssContent = formatter.formatCSS(cssContent, "", "  ", true).trim();
-      } else {
-        cssContent = minifier.minifyCSS(cssContent);
-      }
-      let cssBundle = `${this.destBaseName}.bundle.css`;
-      writeFileSync(`${this.outDir}/${cssBundle}`, cssContent);
-      let head: HTMLDocumentNode = tagNameSearch(nodes, "head")[0];
-      head?.children?.push({
-        type: "element",
-        tagName: "link",
-        isVoid: true,
-        attributeList: `rel="stylesheet" href="./${cssBundle}"`,
-        attributes: {
-          rel: `stylesheet`,
-          href: `./${cssBundle}`,
-        },
-      });
     }
+
     return nodes;
   }
   resolveImages(nodes: HTMLDocumentNode[]) {

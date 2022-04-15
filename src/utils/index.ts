@@ -305,3 +305,14 @@ export function trace(source: PathLike, character: number) {
 export function isAlphaNumeric(character: string) {
   return /[A-Za-z0-9]/.test(character);
 }
+/**
+ * Confirm validity of CSS identifiers.
+ * @param identifier
+ * @returns
+ */
+export function isIllegalCSSIdentifier(identifier: string) {
+  return (
+    /[0-9]/.test(identifier[0]) ||
+    /\?|#|\$|`|'|"|&|\(|\)|@|;|,|\[|\]|\%|\+|\*|\=/.test(identifier)
+  );
+}

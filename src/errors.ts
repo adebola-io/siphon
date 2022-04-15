@@ -42,6 +42,20 @@ const Errors = {
         err(
           `The stylesheet ${source.toString()} has already been imported into this project.`
         );
+      case "CSS_STRING_OR_URI_EXPECTED":
+        err("String or URL expected.", source, charac);
+      case "CSS_OPEN_BRAC_EXPECTED":
+        err("'(' was expected.", source, charac);
+      case "CSS_CLOSING_BRAC_EXPECTED":
+        err("')' was expected.", source, charac);
+      case "CSS_SEMI_COLON_EXPECTED":
+        err("Semicolon expected.", source, charac);
+      case "CSS_COLON_EXPECTED":
+        err("Colon expected.", source, charac);
+      case "CSS_OPEN_CURL_EXPECTED":
+        err("'{' expected.", source, charac);
+      case "CSS_INVALID_IDENTIFIER":
+        err("Invalid CSS Identifier.", source, charac);
       case "HTML_CIRCULAR_INJECT":
         err(`Circular injection detected in ${source.toString()}.`);
       case "NOT_A_DIRECTORY":
