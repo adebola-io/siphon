@@ -1,6 +1,6 @@
 {
   "name": "siphon-cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "start-date": "25/3/22",
   "description": "Format, minify and bundle up your HTML source code.",
   "main": "index.js",
