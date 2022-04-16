@@ -300,7 +300,6 @@ function parse(
             } else selector += selectorsRaw[x++];
           }
           selector += marker;
-          x++;
         } else if (selectorsRaw[x] === ",") {
           rule.selectors.push(selector.trim().trimEnd());
           selector = "";

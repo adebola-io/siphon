@@ -19,9 +19,9 @@ export function formatCSS(ast: Stylesheet, indent = "", subIndent = "  ") {
   ast.rules.forEach((rule) => {
     if (rule instanceof StyleRule) {
       //   Style Rules.
-      formatted += indent;
-      if (rule.selectors.length > 1) formatted += rule.selectors.join(",\n");
-      else formatted += rule.selectors.join(", ");
+      if (rule.selectors.length > 1)
+        formatted += indent + rule.selectors.join(`,\n${indent}`);
+      else formatted += indent + rule.selectors.join(", ");
       formatted += " {\n";
       Object.entries(rule.notation).forEach((entry) => {
         formatted += `${indent}${subIndent}${entry[0]}: ${entry[1]};\n`;
