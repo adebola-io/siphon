@@ -1,7 +1,7 @@
-import textify from "./textify";
+import parse from "./ast";
 
 const css = {
-  textify,
+  parse,
 };
 
 export default css;

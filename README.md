@@ -59,7 +59,7 @@ siphon-cli bundle --watch
 
 ## Configuration
 
-You can reconfigure the behavior of the bundler by including an `siphon.config.js` file in the root of your project.
+You can reconfigure the behavior of the bundler by including a `siphon.config.js` file in the root of your project.
 
 For example, to change the output directory, create the config file and add:
 
