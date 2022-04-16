@@ -1,1 +1,6 @@
-@import "./index.js";
+body {
+  background-image: url(../../img/siphon_proto.png);
+}
+html {
+  background-image: url(../build/siphon_proto.png);
+}

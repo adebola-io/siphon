@@ -1,4 +1,4 @@
-import { PathLike, readFileSync, writeFileSync } from "fs";
+import { PathLike, readFileSync } from "fs";
 import { basename, extname, resolve } from "path";
 import Errors from "../../errors";
 import { HTMLDocumentNode, siphonOptions } from "../../types";
@@ -10,11 +10,9 @@ import {
   getFileName,
   imageExts,
 } from "../../utils";
-import formatter from "../formatter";
-import minifier from "../minifier";
-import parser from "../parser";
 import createDOMTree from "../parser/html/createDOMTree";
 import tagNameSearch from "../parser/html/tagNameSearch";
+import resolveCSS from "./resolveCSS";
 
 class Resolver {
   constructor(
@@ -42,7 +40,7 @@ class Resolver {
   destination: PathLike;
   assets: any;
   injectMode?: boolean;
-  resolveInjects(nodes: HTMLDocumentNode[], assets?: {}) {
+  resolveInjects(nodes: HTMLDocumentNode[]) {
     const injects: HTMLDocumentNode[] = tagNameSearch(nodes, "inject");
     injects.forEach((inject) => {
       if (!inject.attributes?.src)
@@ -61,79 +59,6 @@ class Resolver {
       ).resolve(injectNodes);
       inject.parent?.children.splice(inject.childID, 1, ...injectNodes);
     });
-  }
-  resolveStyles(nodes: HTMLDocumentNode[]) {
-    let styleLinks: HTMLDocumentNode[] = tagNameSearch(nodes, "link").filter(
-      (link) => {
-        let attributes = link.attributes;
-        return (
-          attributes?.rel === "stylesheet" &&
-          !(
-            attributes?.href.startsWith("http://") ||
-            attributes?.href.startsWith("https://")
-          )
-        );
-      }
-    );
-    if (styleLinks.length !== 0) {
-      let cssContent: string = "";
-      styleLinks.forEach((link) => {
-        let truePath = relativePath(this.source, link.attributes?.href);
-        let resource = parser.css.textify(
-          truePath,
-          { ...this.assets },
-          this.options
-        );
-        this.assets = resource.assets;
-        resource.links.forEach((resourceLink) => {
-          if (fileExists(resourceLink.srcpath)) {
-            let outputpath = `${this.outDir}/${resourceLink.name}`;
-            if (
-              imageExts.includes(extname(resourceLink.name)) &&
-              this.options.storeImagesSeparately
-            ) {
-              tryMkingDir(`${this.outDir}/img`);
-              outputpath = `${this.outDir}/img/${resourceLink.name}`;
-            }
-            copy(resourceLink.srcpath, outputpath);
-          } else Errors.enc("FILE_NON_EXISTENT", resourceLink.srcpath);
-        });
-        if (this.options.internalStyles) {
-          link.tagName = "style";
-          link.content = resource.text;
-          delete link.attributes.rel;
-          delete link.attributes.href;
-        } else {
-          delete link.attributes;
-          delete link.content;
-          delete link.type;
-          delete link.parent;
-          cssContent += resource.text;
-        }
-      });
-      if (!this.options.internalStyles && !this.injectMode) {
-        if (this.options.formatFiles) {
-          cssContent = formatter.formatCSS(cssContent, "", "  ", true).trim();
-        } else {
-          cssContent = minifier.minifyCSS(cssContent);
-        }
-        let cssBundle = `${this.destBaseName}.bundle.css`;
-        writeFileSync(`${this.outDir}/${cssBundle}`, cssContent);
-        let head: HTMLDocumentNode = tagNameSearch(nodes, "head")[0];
-        head?.children?.push({
-          type: "element",
-          tagName: "link",
-          isVoid: true,
-          attributeList: `rel="stylesheet" href="./${cssBundle}"`,
-          attributes: {
-            rel: `stylesheet`,
-            href: `./${cssBundle}`,
-          },
-        });
-      }
-    }
-
-    return nodes;
   }
   resolveImages(nodes: HTMLDocumentNode[]) {
     const images: HTMLDocumentNode[] = tagNameSearch(nodes, "img").filter(
@@ -217,11 +142,16 @@ class Resolver {
       });
     }
   }
+  resolveCSS = resolveCSS;
   resolve(nodes: HTMLDocumentNode[]) {
-    if (this.options.htmlInjects) this.resolveInjects(nodes);
-    this.resolveImages(nodes);
-    this.resolveStyles(nodes);
-    this.resolveScripts(nodes);
+    nodes = this.resolveImages(nodes);
+    nodes = this.resolveCSS(
+      nodes,
+      this.source,
+      this.destination,
+      this.options,
+      this.assets
+    );
     return nodes;
   }
 }

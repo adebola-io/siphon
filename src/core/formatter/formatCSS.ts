@@ -1,81 +1,70 @@
-import minifier from "../minifier";
-import { checkForEnd } from "../../utils";
+import {
+  FontFaceRule,
+  ImportRule,
+  KeyframeRule,
+  MediaRule,
+  StyleRule,
+  Stylesheet,
+  SupportRule,
+} from "../../types";
 /**
- * Formats CSS text.
- * @param srcText Source CSS text.
- * @param spacers The parent indent.
- * @param tab The specified indenting width.
- * @returns Formatted CSS text.
+ * Returns formatted CSS text.
+ * @param ast The Abstract Syntax tree generated for the CSS text.
+ * @param indent The primary indentation.
+ * @param subIndent The amount of space to indent for sub-levels in code.
+ * @returns Fomatted CSS text.
  */
-function formatCSS(
-  srcText: string,
-  spacers: string = "",
-  tab: string = "",
-  isExternalSheet = false
-): string {
-  srcText = minifier.minifyCSS(srcText);
-  let formattedText: string = "";
-  let level = 0;
-  let store = "";
-  // starting on a newline.
-  for (let i = 0; srcText[i]; i++) {
-    if (srcText[i] === "(") {
-      i++;
-      while (srcText[i] && srcText[i] !== ")") {
-        store += srcText[i++];
-      }
-      checkForEnd(srcText[i], "./");
-      formattedText += "(" + store + ")";
-      store = "";
-    } else if (srcText[i] === ">") {
-      formattedText += " > ";
-    } else if (srcText[i + 1] === "{") {
-      // entry of new class.
-      level++;
-      formattedText += srcText[i++];
-      formattedText += " {" + "\n" + spacers;
-      if (!isExternalSheet) formattedText += tab;
-      for (let x = 0; x < level; x++) {
-        formattedText += tab;
-      }
-    } else if (srcText[i] === "}") {
-      // Add semicolons if not present.
-      if (
-        srcText[i - 1] !== ";" &&
-        srcText[i - 1] !== "{" &&
-        srcText[i - 1] !== "}"
-      ) {
-        formattedText += ";";
-      }
-      formattedText += "\n" + spacers;
-      let x = 0;
-      if (isExternalSheet) x = 1;
-      for (x; x < level; x++) {
-        formattedText += tab;
-      }
-      level--;
-      formattedText += "}";
-    } else if (srcText[i - 1] === "}" || srcText[i - 1] === undefined) {
-      formattedText += "\n" + spacers;
-      if (!isExternalSheet) formattedText += tab;
-      for (let x = 0; x < level; x++) {
-        formattedText += tab;
-      }
-      formattedText += srcText[i];
-    } else if (srcText[i] === ";" && srcText[i + 1] !== "}") {
-      if (srcText[i - 1] !== ";") {
-        formattedText += ";" + "\n" + spacers;
-        if (!isExternalSheet) formattedText += tab;
-        for (let x = 0; x < level; x++) {
-          formattedText += tab;
-        }
-      }
-    } else formattedText += srcText[i];
-  }
-  // ending with a newline.
-  formattedText += "\n";
-  return formattedText;
-  // return text
+export function formatCSS(ast: Stylesheet, indent = "", subIndent = "  ") {
+  let formatted = "";
+  ast.rules.forEach((rule) => {
+    if (rule instanceof StyleRule) {
+      //   Style Rules.
+      formatted += indent;
+      if (rule.selectors.length > 1) formatted += rule.selectors.join(",\n");
+      else formatted += rule.selectors.join(", ");
+      formatted += " {\n";
+      Object.entries(rule.notation).forEach((entry) => {
+        formatted += `${indent}${subIndent}${entry[0]}: ${entry[1]};\n`;
+      });
+      formatted += indent + "}\n";
+    } else if (rule instanceof MediaRule) {
+      // Media Rules.
+      formatted +=
+        indent +
+        "@media " +
+        (rule.params !== "" ? `${rule.params} ` : "") +
+        "{\n";
+      formatted += formatCSS(rule, indent + subIndent, subIndent);
+      formatted += indent + "}\n";
+    } else if (rule instanceof KeyframeRule) {
+      // Keyframe Rules.
+      formatted += indent + "@keyframes " + rule.identifier + " {\n";
+      rule.frames.forEach((frame) => {
+        formatted += `${indent + subIndent + frame.mark} {\n`;
+        Object.entries(frame.notation).forEach((entry) => {
+          formatted +=
+            `${indent + subIndent + subIndent}` + `${entry[0]}: ${entry[1]};\n`;
+        });
+        formatted += indent + subIndent + "}\n";
+      });
+      formatted += indent + "}\n";
+    } else if (rule instanceof SupportRule) {
+      // Support Rules.
+      formatted += `${indent}@supports (${rule.query}) {\n`;
+      formatted += formatCSS(rule, indent + subIndent, subIndent);
+      formatted += indent + "}\n";
+    } else if (rule instanceof FontFaceRule) {
+      // Font face Rules.
+      formatted += `${indent}@font-face {\n`;
+      formatted += `${indent}${subIndent}font-family: ${rule.family};\n`;
+      formatted += `${indent}${subIndent}src: ${rule.source};\n`;
+      formatted += `${indent}}\n`;
+    } else if (rule instanceof ImportRule) {
+      // Import Rules.
+      formatted += `${indent}@import url(${rule.href});\n`;
+    }
+  });
+  return formatted;
 }
 
 export default formatCSS;

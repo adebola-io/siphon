@@ -5,137 +5,26 @@ import {
   isIllegalCSSIdentifier,
   isSpaceCharac,
 } from "../../../utils";
+import {
+  Stylesheet,
+  MediaRule,
+  SupportRule,
+  ImportRule,
+  FontFaceRule,
+  CharsetRule,
+  StyleRule,
+  Style,
+  KeyframeRule,
+  Keyframe,
+} from "../../../types";
 
-export class StyleRule {
-  type: string = "StyleRule";
-  loc = {
-    start: 0,
-    end: 0,
-  };
-  selectors: string[] = [];
-  notation: any = {};
-  content: Style[] = [];
-}
-export class Style {
-  constructor(property: string, value: string) {
-    this.property = property;
-    this.value = value;
-  }
-  type: string = "Style";
-  loc = {
-    start: 0,
-    end: 0,
-  };
-  property: string;
-  value: string;
-}
-export class AtRule {
-  constructor(start: number, end: number) {
-    this.loc = {
-      start,
-      end,
-    };
-  }
-  type: string = "AtRule";
-  loc: {
-    start: number;
-    end: number;
-  };
-}
-export class ImportRule extends AtRule {
-  constructor(
-    start: number,
-    end: number,
-    resourceType: "local" | "cross-site"
-  ) {
-    super(start, end);
-    this.resourceType = resourceType;
-  }
-  type: string = "ImportRule";
-  source: string = "";
-  resourceType: "local" | "cross-site";
-}
-export class MediaRule extends AtRule {
-  constructor(start: number, end: number, params: string) {
-    super(start, end);
-    this.params = params;
-  }
-  type: string = "MediaRule";
-  rules: Array<
-    | ImportRule
-    | MediaRule
-    | SupportRule
-    | KeyframeRule
-    | CharsetRule
-    | FontFaceRule
-    | NamespaceRule
-    | AtRule
-    | StyleRule
-  > = [];
-  params: string;
-}
-export class SupportRule extends AtRule {
-  constructor(start: number, end: number, query: string) {
-    super(start, end);
-    this.query = query;
-  }
-  type = "StyleRule";
-  query: string;
-  rules: Array<
-    | ImportRule
-    | MediaRule
-    | SupportRule
-    | KeyframeRule
-    | CharsetRule
-    | FontFaceRule
-    | NamespaceRule
-    | AtRule
-    | CSSStyleRule
-  > = [];
-}
-interface Keyframe {
-  mark: string;
-  notation: any;
-  styles: Style[];
-}
-export class KeyframeRule extends AtRule {
-  type = "KeyframesRule";
-  identifier = "";
-  frames: Array<Keyframe> = [];
-}
-export class CharsetRule extends AtRule {}
-export class FontFaceRule extends AtRule {
-  type: string = "FontFaceRule";
-  family: string = "";
-  source: string = "";
-}
-export class NamespaceRule extends AtRule {}
-export class Stylesheet {
-  constructor(start: number, end: number) {
-    this.loc = {
-      start,
-      end,
-    };
-  }
-  type: string = "Stylesheet";
-  loc: {
-    start: number;
-    end: number;
-  };
-  rules: Array<
-    | ImportRule
-    | MediaRule
-    | SupportRule
-    | KeyframeRule
-    | CharsetRule
-    | FontFaceRule
-    | NamespaceRule
-    | AtRule
-    | CSSStyleRule
-  > = [];
-}
-function parse(src: PathLike): Stylesheet | SupportRule | MediaRule {
-  const text = readFileSync(src).toString();
+function parse(
+  src: PathLike | string,
+  mode: "text" | "file" = "file"
+): Stylesheet | SupportRule | MediaRule {
+  var text = "";
+  if (mode === "file") text = readFileSync(src).toString();
+  else text = src.toString();
   function parserCore(text: string, root = new Stylesheet(0, 0)) {
     // String Reader.
     function readString(i: number) {
@@ -159,7 +48,7 @@ function parse(src: PathLike): Stylesheet | SupportRule | MediaRule {
       // @import Rules.
       function readImportRule(start: number, i: number) {
         while (isSpaceCharac(text[i])) i++;
-        var source = "",
+        var href = "",
           resourcetype: "cross-site" | "local";
         switch (true) {
           case text.slice(i, i + 4) === "url(":
@@ -169,7 +58,7 @@ function parse(src: PathLike): Stylesheet | SupportRule | MediaRule {
               while (text[i] && text[i] !== ")") {
                 if (text[i] === "\n") {
                   Errors.enc("CSS_CLOSING_BRAC_EXPECTED", src, i);
-                } else source += text[i++];
+                } else href += text[i++];
               }
               checkForEnd(text[i], src);
               i++;
@@ -177,7 +66,7 @@ function parse(src: PathLike): Stylesheet | SupportRule | MediaRule {
             }
           case /'|"/.test(text[i]):
             var movethrough = readString(i);
-            source = movethrough.str;
+            href = movethrough.str;
             i = movethrough.end;
             break;
           default:
@@ -186,12 +75,12 @@ function parse(src: PathLike): Stylesheet | SupportRule | MediaRule {
         while (isSpaceCharac(text[i])) i++;
         if (text[i] !== ";" && i !== text.length)
           Errors.enc("CSS_SEMI_COLON_EXPECTED", src, i);
-        source = source.trim().trimEnd();
-        if (source.startsWith("http://") || source.startsWith("https://")) {
+        href = href.trim().trimEnd();
+        if (href.startsWith("http://") || href.startsWith("https://")) {
           resourcetype = "cross-site";
         } else resourcetype = "local";
         let rule = new ImportRule(start, i, resourcetype);
-        rule.source = source;
+        rule.href = href;
         root.rules.push(rule);
         read(i + 1);
       }

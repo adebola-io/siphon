@@ -6,7 +6,10 @@ import { HTMLDocumentNode } from "../../../types";
  * @param searchStr The tag name to search for.
  * @returns An array of matching nodes.
  */
-function tagNameSearch(nodes: HTMLDocumentNode[], searchStr: string) {
+function tagNameSearch(
+  nodes: HTMLDocumentNode[],
+  searchStr: string | keyof HTMLElementTagNameMap
+) {
   let results: any[] = [];
   nodes.forEach((node) => {
     if (node.tagName === searchStr) results.push(node);

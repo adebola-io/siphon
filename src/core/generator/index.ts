@@ -1,36 +1,6 @@
 import { isForeignTag, isVoid } from "../../utils";
 import { HTMLDocumentNode, siphonOptions } from "../../types";
-import parser from "../parser";
-import formatter from "../formatter";
-import minifier from "../minifier";
 const tab: string = "  ";
-
-function formatExternalText(
-  externalText: string,
-  assetType?: string,
-  spacers?: string
-) {
-  if (assetType === "style")
-    return formatter.formatCSS(externalText, spacers, tab);
-  if (assetType === "script") return externalText;
-}
-
-function minifyExternalText(
-  externalText?: string,
-  assetType?: string,
-  options?: siphonOptions
-) {
-  if (externalText !== undefined && assetType === "style")
-    return minifier.minifyCSS(externalText);
-  if (externalText !== undefined && assetType === "script") {
-    return minifier.minifyJS(
-      parser.js.transform(
-        parser.js.tokenize(externalText, options),
-        "minification"
-      )
-    );
-  }
-}
 
 class Generator {
   /**
@@ -77,14 +47,12 @@ class Generator {
             // Handle foreign tags.
             case isForeignTag(node.tagName):
               html += `<${node.tagName}${attributeList}>`;
-              html += `${
-                options.formatFiles && node.content
-                  ? formatExternalText(node.content, node.tagName, spacers)
-                  : node.content
-                  ? minifyExternalText(node.content, node.tagName, options)
-                  : ""
-              }`;
-              if (options.formatFiles && node.content) html += spacers;
+              if (node.content) {
+                if (options.formatFiles) {
+                  html += `\n${node.content}`;
+                  html += spacers;
+                } else html += node.content;
+              }
               html += `</${node.tagName}>`;
               if (options.formatFiles) html += "\n";
               break;
