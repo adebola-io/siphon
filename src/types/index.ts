@@ -67,6 +67,7 @@ export interface siphonOptions {
   internalStyles: boolean;
   checkImageTypes: boolean;
   preserveComments: boolean;
+  wickedMode: boolean;
 }
 export interface fileGetterOptions {
   ext?: string;
@@ -142,11 +143,18 @@ export class MediaRule extends AtRule {
   params: string;
 }
 export class SupportRule extends AtRule {
-  constructor(start: number, end: number, query: string) {
+  constructor(
+    start: number,
+    end: number,
+    query: string,
+    inverseQuery: boolean
+  ) {
     super(start, end);
     this.query = query;
+    this.inverseQuery = inverseQuery;
   }
   type = "StyleRule";
+  inverseQuery = true;
   query: string;
   rules: Array<
     | ImportRule

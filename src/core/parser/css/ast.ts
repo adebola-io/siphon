@@ -4,6 +4,7 @@ import {
   checkForEnd,
   isIllegalCSSIdentifier,
   isSpaceCharac,
+  trace,
 } from "../../../utils";
 import {
   Stylesheet,
@@ -151,6 +152,12 @@ function parse(
       // @supports rules.
       function readSupportRule(start: number, i: number) {
         while (isSpaceCharac(text[i])) i++;
+        var inverseQuery: boolean = false;
+        if (text.slice(i, i + 3) === "not") {
+          inverseQuery = true;
+          i += 3;
+          while (isSpaceCharac(text[i])) i++;
+        }
         if (!text[i] || text[i] !== "(")
           Errors.enc("CSS_OPEN_BRAC_EXPECTED", src, i);
         i++;
@@ -176,7 +183,7 @@ function parse(
         }
         const supportRule = parserCore(
           chunk.slice(0, -1).trim().trimEnd(),
-          new SupportRule(start, i, query)
+          new SupportRule(start, i, query, inverseQuery)
         );
         supportRule.loc.end = i;
         root.rules.push(supportRule);
@@ -272,6 +279,7 @@ function parse(
       // Read selectors.
       while (isSpaceCharac(text[i])) i++;
       var selectorsRaw: string = "";
+
       while (text[i] && text[i] !== "{") {
         if (/'|"/.test(text[i])) {
           let movethr = readString(i);
@@ -311,6 +319,8 @@ function parse(
         let start = i;
         let property: string = "",
           value: string = "";
+        while (isSpaceCharac(text[i])) i++;
+        if (text[i] === "}") return;
         while (text[i] && text[i] !== ":") property += text[i++];
         i++;
         while (text[i] && text[i] !== ";" && text[i] !== "}") {

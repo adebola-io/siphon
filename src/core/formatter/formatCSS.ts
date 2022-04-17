@@ -50,7 +50,9 @@ export function formatCSS(ast: Stylesheet, indent = "", subIndent = "  ") {
       formatted += indent + "}\n";
     } else if (rule instanceof SupportRule) {
       // Support Rules.
-      formatted += `${indent}@supports (${rule.query}) {\n`;
+      formatted +=
+        `${indent}@supports${rule.inverseQuery ? " not" : ""}` +
+        `(${rule.query}) {\n`;
       formatted += formatCSS(rule, indent + subIndent, subIndent);
       formatted += indent + "}\n";
     } else if (rule instanceof FontFaceRule) {

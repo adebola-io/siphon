@@ -12,6 +12,7 @@ const defaults: siphonOptions = {
   internalStyles: false,
   checkImageTypes: true,
   preserveComments: false,
+  wickedMode: false,
 };
 
 export default defaults;

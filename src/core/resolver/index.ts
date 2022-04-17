@@ -8,7 +8,7 @@ import {
   relativePath,
   tryMkingDir,
   getFileName,
-  imageExts,
+  stringifytoBase64,
 } from "../../utils";
 import createDOMTree from "../parser/html/createDOMTree";
 import tagNameSearch from "../parser/html/tagNameSearch";
@@ -71,17 +71,13 @@ class Resolver {
     );
     images.forEach((image) => {
       let src = image.attributes?.src;
-      if (!imageExts.includes(extname(src))) {
-        if (this.options.checkImageTypes)
-          Errors.enc("UNSUPPORTED_IMAGE_FORMAT", this.source, image.start, {
-            src,
-          });
+      let truePath = relativePath(this.source, src);
+      if (!fileExists(truePath)) {
+        Errors.enc("FILE_NON_EXISTENT", truePath);
+      }
+      if (this.options.wickedMode) {
+        image.attributes.src = stringifytoBase64(truePath);
       } else {
-        let truePath = relativePath(this.source, src);
-        if (!fileExists(truePath)) {
-          Errors.enc("FILE_NON_EXISTENT", truePath);
-        }
-
         let fileMarker = basename(src);
         if (this.options.storeImagesSeparately)
           tryMkingDir(`${this.outDir}/img`);

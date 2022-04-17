@@ -46,7 +46,7 @@ function minifyCSS(ast: Stylesheet) {
       });
       minified += "}";
     } else if (rule instanceof SupportRule) {
-      minified += `@supports(${rule.query}){`;
+      minified += `@supports${rule.inverseQuery ? " not" : ""}(${rule.query}){`;
       minified += `${minifyCSS(rule)}}`;
     }
   });

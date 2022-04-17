@@ -4,6 +4,7 @@ module.exports = {
   formatFiles: true,
   checkImageTypes: false,
   htmlInjects: true,
+  wickedMode: true,
   relations: [{ from: "start.html", to: "index.html" }],
   internalJS: true,
   internalStyles: true,
