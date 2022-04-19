@@ -1,15 +1,6 @@
 import { operators } from "../../utils";
 import { Token } from "../parser/js/tokenizer";
-
-const OPERATORS = operators._ignore1_.concat(
-  operators._ignore2_,
-  operators._ignore3_,
-  operators._ignore4_,
-  operators._preceeding1_,
-  operators._suceeding1_,
-  operators._suceeding2_,
-  operators._suceeding3_
-);
+import { OPERATORS } from "../../utils";
 
 /**
  * Minifies Javascript text.

@@ -24,6 +24,7 @@ import tagNameSearch from "../parser/html/tagNameSearch";
  * @param nodes The generated DOM for the HTML.
  * @param source The address of the HTML file.
  * @param destination The destination address.
+ * @param options Bundling options.
  * @param assets A mapping of all included assets, e.g. fonts, images, etc.
  * @returns Transformed DOM.
  */

@@ -18,6 +18,7 @@
   "author": "Adebola Akomolafe",
   "license": "MIT",
   "dependencies": {
+    "acorn": "^8.7.0",
     "colors": "^1.4.0"
   },
   "bin": {

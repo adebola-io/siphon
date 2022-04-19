@@ -25,7 +25,6 @@ function getNodeAttributes(list: string) {
     i++;
   }
   attributes[key.trim()] = value !== undefined ? value : true;
-
   return attributes;
 }
 

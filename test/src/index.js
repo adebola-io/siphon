@@ -1,5 +1,9 @@
-let myName = "sefunmi";
-const y = {
-  let: "jara",
-};
-console.log(y.let);
+switch (true) {
+  case "true":
+    console.log(9);
+    break;
+  case token === y:
+    break;
+  default:
+    break;
+}

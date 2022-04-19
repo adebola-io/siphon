@@ -80,6 +80,7 @@ export function getAllFiles(
   });
   return fileList.flat(1);
 }
+
 /**
  * Resolves a relative path between two files.
  * @param from The source where the path is specified from.
@@ -168,59 +169,87 @@ export const imageExts: Array<string> = [
 ];
 
 export function isNum(char: string | undefined) {
-  return char ? char.replace(/[0-9]/g, "").replace(/\./, "") === "" : false;
+  return char
+    ? char[0] !== "." &&
+        char.length !== 0 &&
+        char.replace(/[0-9]/g, "").replace(/\./, "") === ""
+    : false;
 }
-// export const keywords = [
-//   "arguments",
-//   "await",
-//   "break",
-//   "case",
-//   "catch",
-//   "class",
-//   "const",
-//   "continue",
-//   "debugger",
-//   "default",
-//   "delete",
-//   "do",
-//   "else",
-//   "eval",
-//   "extends",
-//   "import",
-//   "export",
-//   "false",
-//   "finally",
-//   "for",
-//   "function",
-//   "if",
-//   "implements",
-//   "import",
-//   "return",
-//   "in",
-//   "instanceof",
-//   "interface",
-//   "let",
-//   "new",
-//   "null",
-//   "package",
-//   "private",
-//   "protected",
-//   "public",
-//   "return",
-//   "static",
-//   "super",
-//   "switch",
-//   "synchronized",
-//   "this",
-//   "try",
-//   "typeof",
-//   "var",
-//   "void",
-//   "while",
-//   "with",
-//   "yield",
-// ];
-export const keywords = {};
+export function isAlphabetic(char: string | undefined) {
+  return char ? char.replace(/[a-z]|[A-Z]/g, "") === "" : false;
+}
+export function isNewLine(char: string | undefined) {
+  return char ? char === "\n" : false;
+}
+export function isBracket(char: string) {
+  return char.length === 1 && /\(|\)/.test(char);
+}
+export function lastRealChar(str: string) {
+  let i = str.length - 1;
+  while (str[i] && /\n|\r|\s/.test(str[i])) i--;
+  return { character: str[i], index: i };
+}
+export function splice(str: string) {
+  return {
+    at: function (index: number, input?: string) {
+      return (
+        str.slice(0, index + 1) + (input ?? "") + (str.slice(index + 1) ?? "")
+      );
+    },
+  };
+}
+/**Javascript Keywords */
+export const keywords = [
+  "arguments",
+  "await",
+  "break",
+  "case",
+  "catch",
+  "class",
+  "const",
+  "continue",
+  "debugger",
+  "default",
+  "delete",
+  "do",
+  "else",
+  "eval",
+  "extends",
+  "import",
+  "export",
+  "false",
+  "finally",
+  "for",
+  "function",
+  "if",
+  "implements",
+  "import",
+  "return",
+  "in",
+  "instanceof",
+  "interface",
+  "let",
+  "new",
+  "null",
+  "package",
+  "private",
+  "protected",
+  "public",
+  "return",
+  "static",
+  "super",
+  "switch",
+  "synchronized",
+  "this",
+  "try",
+  "typeof",
+  "var",
+  "void",
+  "while",
+  "with",
+  "yield",
+];
+
 export const declarators = ["const", "var", "let"];
 export const operators = {
   /** Single character operators that ignore space charaters before and after. */
@@ -302,8 +331,8 @@ export function trace(source: PathLike, character: number) {
   }
   return { line, col };
 }
-export function isAlphaNumeric(character: string) {
-  return /[A-Za-z0-9]/.test(character);
+export function isAlphaNumeric(character: string | undefined) {
+  return isAlphabetic(character) || isNum(character);
 }
 /**
  * Confirm validity of CSS identifiers.
@@ -477,3 +506,12 @@ export function stringifytoBase64(file: PathLike) {
     extname(file.toString()).slice(1).toLowerCase()
   )};base64,${readFileSync(file, { encoding: "base64" })}`;
 }
+export const OPERATORS = operators._ignore1_.concat(
+  operators._ignore2_,
+  operators._ignore3_,
+  operators._ignore4_,
+  operators._preceeding1_,
+  operators._suceeding1_,
+  operators._suceeding2_,
+  operators._suceeding3_
+);

@@ -28,6 +28,8 @@ const Errors = {
         err(`Siphon could not find ${source.toString()}.`);
       case "NO_ROOTDIR":
         err(`The rootDir '${source}' does not exist.`);
+      case "SOMETHING_WENT_WRONG":
+        err(`Something went wrong while parsing your Javascript text.`, source);
       case "CSS_NON_EXISTENT":
         err(`The stylesheet '${source.toString()}' cannot be found.`);
       case "CSS_SELF_IMPORT":
@@ -86,6 +88,8 @@ const Errors = {
           source,
           charac
         );
+      case "JS_UNEXP_KEYWORD_OR_IDENTIFIER":
+        err(`Unexpected keyword or Identifier.`, source, charac);
       case "UNTERMINATED_STRING_LITERAL":
         err(
           `Siphon encountered an unterminated string literal.`,
@@ -104,6 +108,8 @@ const Errors = {
         err("An expression was expected.", source, charac);
       case "VARIABLE_DECLARATION_EXPECTED":
         err("Variable declaration or statement expected.", source, charac);
+      case "JS_DEC_OR_STATEMENT_EXPECTED":
+        err("Declaration or statement expected", source, charac);
       case "IDENTIFIER_EXPECTED":
         err("Idenitifier expected.", source, charac);
       case "EMPTY_CONST_DECLARATION":

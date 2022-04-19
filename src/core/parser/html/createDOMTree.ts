@@ -7,6 +7,11 @@ function createDOMTree(source: fs.PathLike): HTMLDocumentNode[] {
   let filledNodes: HTMLDocumentNode[] = [];
   for (let i = 0; nodes[i]; i++) {
     let h = i - 1;
+    if (nodes[i].attributes?.class) {
+      nodes[i].classList = nodes[i].attributes.class
+        .split(/\s+[\s]*/)
+        .filter((classname: string) => classname !== "");
+    } else nodes[i].classList = [];
     if (nodes[i].parent) {
       while (
         nodes[h] &&

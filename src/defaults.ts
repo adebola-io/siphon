@@ -14,5 +14,4 @@ const defaults: siphonOptions = {
   preserveComments: false,
   wickedMode: false,
 };
-
 export default defaults;

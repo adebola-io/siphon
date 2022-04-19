@@ -4,6 +4,7 @@
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "allowJs": true,
     "importHelpers": false,
     "module": "commonjs",
     "target": "ES5",

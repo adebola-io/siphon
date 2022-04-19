@@ -1,6 +1,12 @@
 import Errors from "../../../errors";
 import { siphonOptions } from "../../../types";
-import { operators, stringMarkers, isNum } from "../../../utils";
+import {
+  operators,
+  stringMarkers,
+  isNum,
+  OPERATORS,
+  keywords,
+} from "../../../utils";
 export interface Token {
   token_type?: string;
   start: number;
@@ -9,7 +15,7 @@ export interface Token {
 }
 /**
  * Splits a block of javascript text into an array of keywords, identifiers, literals, operators and space characters.
- * `NOTE` The tokenizer is trained to ignore all space characters that have no consequence on code syntax, so formatting is not a requirement for tokenizing.
+ * `NOTE` The tokenizer ignores all space characters that have no consequence on code syntax, so formatting has no effect on tokenizing.
  * @param text The source text.
  * @returns An array of tokens, with each token containing the start and end of the token in the text, the token value and optionally the type of token.
  */
@@ -34,7 +40,22 @@ function tokenize(text: string, options?: siphonOptions) {
     if (token?.value.length > 0) {
       switch (true) {
         case isNum(token.value):
-          token.token_type = "NumericLiteral";
+          if (
+            tokens[tokens.length - 1]?.value === "." &&
+            tokens[tokens.length - 2]?.token_type === "IntegerLiteral"
+          ) {
+            tokens.pop();
+            var previousInt = tokens.pop();
+            token = {
+              start: previousInt?.start ?? 0,
+              value: `${previousInt?.value}.${token.value}`,
+              token_type: "DecimalLiteral",
+              end: 0,
+            };
+          } else token.token_type = "IntegerLiteral";
+          break;
+        case keywords.includes(token.value):
+          token.token_type = "Keyword";
           break;
       }
       token.end = t + token.value.length - 1;
@@ -104,6 +125,7 @@ function tokenize(text: string, options?: siphonOptions) {
           start: a + 1,
           end: a + 4,
           value: text.slice(a, a + 4),
+          token_type: "Operator",
         });
         a += 4;
         token.start = a + 5;
@@ -115,6 +137,7 @@ function tokenize(text: string, options?: siphonOptions) {
           start: a + 1,
           end: a + 3,
           value: text.slice(a, a + 3),
+          token_type: "Operator",
         });
         a += 3;
         break;
@@ -125,6 +148,7 @@ function tokenize(text: string, options?: siphonOptions) {
           start: a + 1,
           end: a + 2,
           value: text.slice(a, a + 2),
+          token_type: "Operator",
         });
         a += 2;
         break;
@@ -138,6 +162,7 @@ function tokenize(text: string, options?: siphonOptions) {
           start: a + 1,
           end: a + 2,
           value: text[a],
+          token_type: "Operator",
         });
         break;
       case text[a] === "/":
@@ -159,13 +184,22 @@ function tokenize(text: string, options?: siphonOptions) {
           token.value += "/";
           pushToken(a);
         } else {
-          tokens.push({ start: a + 1, end: a + 1, value: "/" });
+          tokens.push({
+            start: a + 1,
+            end: a + 1,
+            value: "/",
+            token_type: "Operator",
+          });
           token.start = a + 2;
         }
         break;
       case text[a] === "\n":
+        pushToken(a);
         clearPreviousLine();
-        if (!precedents.includes(tokens.slice(-1)[0]?.value)) {
+        if (
+          !precedents.includes(tokens.slice(-1)[0]?.value) &&
+          tokens[a - 1] !== undefined
+        ) {
           tokens.push({ start: a + 1, end: a + 1, value: "\n" });
           token.start = a + 2;
         }
