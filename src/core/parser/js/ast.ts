@@ -141,6 +141,7 @@ class JSParser {
     this.globalIndex += i;
     this.token = this.text[this.index];
     this.adjacents();
+    if (!this.text[this.index]) this.EOF = true;
   }
   /**
    * Peek at upcoming characters.
