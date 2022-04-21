@@ -15,9 +15,9 @@ export type ErrorTypes =
   | "UNSUPPORTED_IMAGE_FORMAT"
   | "COMMENT_UNCLOSED"
   | "CSS_STRING_OR_URI_EXPECTED"
-  | "CSS_CLOSING_BRAC_EXPECTED"
+  | "CLOSING_BRAC_EXPECTED"
   | "CSS_SEMI_COLON_EXPECTED"
-  | "CSS_OPEN_BRAC_EXPECTED"
+  | "OPEN_BRAC_EXPECTED"
   | "CSS_COLON_EXPECTED"
   | "CSS_OPEN_CURL_EXPECTED"
   | "CSS_INVALID_IDENTIFIER"
@@ -27,6 +27,9 @@ export type ErrorTypes =
   | "INJECT_REQUIRES_SRC"
   | "JS_UNEXP_KEYWORD_OR_IDENTIFIER"
   | "JS_DEC_OR_STATEMENT_EXPECTED"
+  | "JS_UNEXPECTED_TOKEN"
+  | "JS_ARGUMENT_EXPRESSION_EXPECTED"
+  | "UNCLOSED_BLOCK_COMMENT"
   | "UNTERMINATED_STRING_LITERAL"
   | "UNTERMINATED_REGEX_LITERAL"
   | "MISSING_DESC_INITIALIZER"
@@ -80,4 +83,7 @@ export interface fileGetterOptions {
   ext?: string;
   exclude?: Array<PathLike>;
 }
-export interface JSParserOptions {}
+export interface JSParserOptions {
+  sourcefile: PathLike;
+  index: number;
+}

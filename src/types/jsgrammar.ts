@@ -12,17 +12,23 @@ export class JSNode {
 export type JSNodes = Statement | Expression | Declaration | Literal;
 export class Program extends JSNode {
   type = "Program";
-  add(node: JSNodes) {
-    this.raw += node.raw;
-    this.body.push(node);
-    this.last = node;
+  /** Add a node to the global scope of the program. */
+  push(node?: JSNodes) {
+    if (node) {
+      this.raw += node?.raw;
+      this.body.push(node);
+      this.last = node;
+    }
   }
+  /** Remove a node from the global scope of the program.*/
   pop() {
     this.raw = this.raw.slice(0, -(this.last?.raw.length ?? 0));
     this.last = this.body[this.body.length - 2];
     return this.body.pop();
   }
+  brackets = 0;
   body: Array<JSNodes> = [];
+  /** The last node appended to the body of the program. */
   last?: JSNodes;
 }
 export type Declaration = FunctionDeclaration | VariableDeclaration;
@@ -50,16 +56,23 @@ export class WhileStatement extends JSNode {
   test?: Expression | Literal | Identifier;
   body?: Statement | Expression | Declaration;
 }
+export class Comma extends JSNode {
+  type = "Comma";
+  validNode = false;
+  raw = ", ";
+}
 export class DoWhileStatement extends JSNode {}
 export class SwitchStatement extends JSNode {}
 export class ForStatement extends JSNode {}
 export class BlockStatement extends JSNode {
   type = "BlockStatement";
   body: Array<JSNodes> = [];
-  add(node: JSNodes) {
-    this.raw += node.raw;
-    this.body.push(node);
-    this.last = node;
+  add(node?: JSNodes) {
+    this.raw += node?.raw;
+    if (node) {
+      this.body.push(node);
+      this.last = node;
+    }
   }
   pop() {
     this.raw = this.raw.slice(0, -(this.last?.raw.length ?? 0));
@@ -109,29 +122,49 @@ export class ConditionalExpression extends JSNode {
 export class CallExpression extends JSNode {
   type = "CallExpression";
   callee?: Expression | Identifier;
-  arguments?: Array<Expression | Literal>;
+  arguments: Array<JSNode | undefined> = [];
 }
 export class VariableDeclaration extends JSNode {}
 export class FunctionDeclaration extends JSNode {}
 export class FunctionExpression extends JSNode {}
 export class BinaryExpression extends JSNode {
   type = "BinaryExpression";
-  operator? = "";
+  operator = "";
   left?: Expression | Literal | Identifier;
   right?: Expression | Literal | Identifier;
 }
 export class LogicalExpression extends JSNode {}
 export class SequenceExpression extends JSNode {
   type = "SequenceExpression";
-  expressions: Expression[] = [];
+  expressions: Array<JSNodes | undefined> = [];
 }
 export class ArrowFunctionExpression extends JSNode {}
 export class Literal extends JSNode {
   type = "Literal";
   kind?: "number" | "string";
-  value?: number;
+  value?: number | string;
 }
 export class Identifier extends JSNode {
   type = "Identifier";
   name = "";
+}
+export function isValidExpression(node?: JSNodes) {
+  return node
+    ? node instanceof AssignmentExpression ||
+        node instanceof CallExpression ||
+        node instanceof FunctionExpression ||
+        node instanceof MemberExpression ||
+        node instanceof BinaryExpression ||
+        node instanceof SequenceExpression ||
+        node instanceof LogicalExpression ||
+        node instanceof ArrowFunctionExpression ||
+        node instanceof UpdateExpression ||
+        node instanceof ConditionalExpression ||
+        node instanceof NewExpression ||
+        node instanceof Literal ||
+        node instanceof Identifier
+    : false;
+}
+export function isIdentifier(node?: JSNodes) {
+  return node ? node instanceof Identifier : false;
 }

@@ -172,7 +172,7 @@ export function isNum(char: string | undefined) {
   return char
     ? char[0] !== "." &&
         char.length !== 0 &&
-        char.replace(/[0-9]/g, "").replace(/\./, "") === ""
+        char.replace(/\d/g, "").replace(/\./, "") === ""
     : false;
 }
 export function isAlphabetic(char: string | undefined) {
@@ -182,7 +182,7 @@ export function isNewLine(char: string | undefined) {
   return char ? char === "\n" : false;
 }
 export function isBracket(char: string) {
-  return char.length === 1 && /\(|\)/.test(char);
+  return char.length === 1 && /\(|\)|\[|\]/.test(char);
 }
 export function lastRealChar(str: string) {
   let i = str.length - 1;
@@ -249,7 +249,123 @@ export const keywords = [
   "with",
   "yield",
 ];
-
+export const JSkeywords = {
+  ES1: [
+    "break",
+    "case",
+    "catch",
+    "class",
+    "const",
+    "continue",
+    "debugger",
+    "default",
+    "delete",
+    "do",
+    "else",
+    "enum",
+    "export",
+    "extends",
+    "false",
+    "finally",
+    "for",
+    "function",
+    "if",
+    "import",
+    "in",
+    "new",
+    "null",
+    "return",
+    "super",
+    "switch",
+    "this",
+    "throw",
+    "true",
+    "try",
+    "typeof",
+    "var",
+    "void",
+    "while",
+    "with",
+  ],
+  ES3: [
+    "abstract",
+    "boolean",
+    "byte",
+    "char",
+    "class",
+    "double",
+    "enum",
+    "export",
+    "extends",
+    "final",
+    "float",
+    "goto",
+    "implements",
+    "import",
+    "int",
+    "interface",
+    "long",
+    "native",
+    "package",
+    "private",
+    "protected",
+    "public",
+    "short",
+    "static",
+    "super",
+    "synchronized",
+    "throws",
+    "transient",
+    "volatile",
+  ],
+  ES5: [
+    "break",
+    "case",
+    "catch",
+    "class",
+    "const",
+    "continue",
+    "debugger",
+    "default",
+    "delete",
+    "do",
+    "else",
+    "enum",
+    "export",
+    "extends",
+    "false",
+    "finally",
+    "for",
+    "function",
+    "if",
+    "implements",
+    "import",
+    "in",
+    "instanceof",
+    "interface",
+    "let",
+    "new",
+    "null",
+    "package",
+    "private",
+    "protected",
+    "public",
+    "return",
+    "static",
+    "super",
+    "switch",
+    "this",
+    "throw",
+    "true",
+    "try",
+    "typeof",
+    "var",
+    "void",
+    "while",
+    "with",
+    "yield",
+  ],
+};
 export const declarators = ["const", "var", "let"];
 export const operators = {
   /** Single character operators that ignore space charaters before and after. */
@@ -319,7 +435,7 @@ export function isValidStart(character: string) {
 export function trace(source: PathLike, character: number) {
   let i = 1,
     line = 1,
-    col = 2;
+    col = 1;
   let sourceText = readFileSync(source).toString();
   while (i < character) {
     if (sourceText[i] === "\n") {
@@ -329,10 +445,13 @@ export function trace(source: PathLike, character: number) {
     i++;
     col++;
   }
-  return { line, col };
+  return { line, col: col + 1 };
 }
 export function isAlphaNumeric(character: string | undefined) {
   return isAlphabetic(character) || isNum(character);
+}
+export function isValidIdentifierCharacter(char: string) {
+  return isAlphabetic(char) || isNum(char) || /\$|\_/.test(char);
 }
 /**
  * Confirm validity of CSS identifiers.

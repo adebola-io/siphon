@@ -31,10 +31,40 @@ Formatter.format = function (
   var _for: boolean;
   var _case: boolean;
   var _switch: boolean;
+  var _object: boolean;
+  var _if: boolean;
   tokens.forEach((token, index) => {
     previous = tokens[index - 1];
     next = tokens[index + 1];
     switch (true) {
+      case [
+        "=",
+        "===",
+        "=>",
+        "-",
+        "/",
+        "?",
+        "&&",
+        "|",
+        "||",
+        "instanceof",
+        "typeof",
+        "in",
+        "of",
+      ].includes(token.value):
+        if (formatted[formatted.length - 1] !== " ") formatted += " ";
+        formatted += token.value + " ";
+        break;
+      case token.value === ",":
+        formatted += ", ";
+        if (_object && next?.value !== "}") {
+          formatted += "\n" + indent;
+          for (let a = 0; a < level; a++) formatted += tab;
+        }
+        break;
+      case token.value === "throw":
+        formatted += "throw ";
+        break;
       case token.value === "switch":
         _switch = true;
         formatted += "switch ";
@@ -46,7 +76,10 @@ Formatter.format = function (
         } else formatted += "default ";
         break;
       case token.value === "case":
-        formatted += "case ";
+        if (_case) {
+          level--;
+          formatted = formatted.slice(0, -2) + "case ";
+        } else formatted += "case ";
         _case = true;
         break;
       case token.value === "break":
@@ -68,12 +101,9 @@ Formatter.format = function (
           formatted = formatted.slice(0, -1) + ": ";
         else formatted += ": ";
         break;
-      case ["=", "===", "=>", "-", "/", "?"].includes(token.value):
-        if (formatted[formatted.length - 1] !== " ") formatted += " ";
-        formatted += token.value + " ";
-        break;
       case token.value === "(":
         if (previous.value === "for") _for = true;
+        if (previous.value === "if") _if = true;
         formatted += "(";
         break;
       case token.value === ")":
@@ -81,18 +111,17 @@ Formatter.format = function (
           formatted += ") ";
         else formatted += ")";
         break;
-      case token.value === ";":
       case token.value === "\n":
         if (index === tokens.length - 1) break;
         if (tokens[index + 1]?.value !== "}" && !_for) {
-          formatted += ";\n";
+          formatted += "\n";
           formatted += indent;
           for (let a = 0; a < level; a++) formatted += tab;
-        } else formatted += "; ";
+        }
         break;
       case token.value === "{":
+        if (previous?.value !== ")") _object = true;
         if (next?.value === "}") {
-          console.log(9);
           formatted += "{";
           break;
         }
@@ -108,6 +137,11 @@ Formatter.format = function (
           formatted += "{ ";
         }
         break;
+      case token.value === ";":
+        if (index === tokens.length - 1) break;
+        if (!_for && _if) formatted += ";\n" + indent;
+        for (let a = 0; a < level; a++) formatted += tab;
+        break;
       case token.value === "}":
         if (previous?.value !== "{" && !_vari) {
           formatted += "\n" + indent;
@@ -116,6 +150,10 @@ Formatter.format = function (
           formatted += "}";
         } else if (_vari) formatted += " }";
         else formatted += "}";
+        if (next?.token_type !== "Operator") {
+          formatted += "\n" + indent;
+          for (let a = 0; a < level; a++) formatted += tab;
+        }
         break;
       default:
         formatted += token.value;

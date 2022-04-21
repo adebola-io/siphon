@@ -58,7 +58,7 @@ function parse(
             if (!/'|"/.test(text[i])) {
               while (text[i] && text[i] !== ")") {
                 if (text[i] === "\n") {
-                  Errors.enc("CSS_CLOSING_BRAC_EXPECTED", src, i);
+                  Errors.enc("CLOSING_BRAC_EXPECTED", src, i);
                 } else href += text[i++];
               }
               checkForEnd(text[i], src);
@@ -159,7 +159,7 @@ function parse(
           while (isSpaceCharac(text[i])) i++;
         }
         if (!text[i] || text[i] !== "(")
-          Errors.enc("CSS_OPEN_BRAC_EXPECTED", src, i);
+          Errors.enc("OPEN_BRAC_EXPECTED", src, i);
         i++;
         let query = "";
         while (text[i] && text[i] !== ")") {
@@ -169,7 +169,7 @@ function parse(
             i = str.end;
           } else query += text[i++];
         }
-        if (!text[i]) Errors.enc("CSS_CLOSING_BRAC_EXPECTED", src, i);
+        if (!text[i]) Errors.enc("CLOSING_BRAC_EXPECTED", src, i);
         i++;
         while (isSpaceCharac(text[i])) i++;
         if (text[i] !== "{") Errors.enc("CSS_OPEN_CURL_EXPECTED", src, i);

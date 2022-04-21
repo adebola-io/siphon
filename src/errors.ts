@@ -6,13 +6,13 @@ import { ErrorTypes } from "./types";
 
 function err(message: string, source?: fs.PathLike, charac?: number): void {
   var pos: any;
-  if (source && charac) pos = trace(source, charac);
+  if (source !== undefined && charac !== undefined) pos = trace(source, charac);
   message = bold(
     red(
       `${message} ${
         source
           ? `\n    at ${path.resolve(source.toString())}${
-              charac ? `:${pos.line}:${pos.col}` : ""
+              charac !== undefined ? `:${pos.line}:${pos.col}` : ""
             }`
           : ""
       }`
@@ -46,9 +46,9 @@ const Errors = {
         );
       case "CSS_STRING_OR_URI_EXPECTED":
         err("String or URL expected.", source, charac);
-      case "CSS_OPEN_BRAC_EXPECTED":
+      case "OPEN_BRAC_EXPECTED":
         err("'(' was expected.", source, charac);
-      case "CSS_CLOSING_BRAC_EXPECTED":
+      case "CLOSING_BRAC_EXPECTED":
         err("')' was expected.", source, charac);
       case "CSS_SEMI_COLON_EXPECTED":
         err("Semicolon expected.", source, charac);
@@ -68,6 +68,12 @@ const Errors = {
         err(`Expected a start tag.`, source, charac);
       case "HTML_FRAGMENT":
         err(`Siphon does not support HTML fragments.`, source, charac);
+      case "UNCLOSED_BLOCK_COMMENT":
+        err("*/ expected.", source, charac);
+      case "JS_UNEXPECTED_TOKEN":
+        err(`Unexpected token '${options.token}'.`, source, charac);
+      case "JS_ARGUMENT_EXPRESSION_EXPECTED":
+        err(`Argument expression expected.`, source, charac);
       case "INVALID_TAG":
         err(`Invalid tag Name '${options.name}'`, source, charac);
       case "INJECT_REQUIRES_SRC":

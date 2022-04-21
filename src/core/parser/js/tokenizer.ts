@@ -32,9 +32,8 @@ function tokenize(text: string, options?: siphonOptions) {
     operators._ignore3_,
     operators._ignore4_,
     operators._suceeding1_,
-    operators._suceeding2_,
     operators._suceeding3_,
-    ["typeof", "delete", "await", "void"]
+    ["typeof", "delete", "await", "void", "instanceof", "else"]
   );
   const pushToken = (t: number) => {
     if (token?.value.length > 0) {
@@ -144,6 +143,8 @@ function tokenize(text: string, options?: siphonOptions) {
       case operators._ignore2_.includes(text.slice(a, a + 2)):
         pushToken(a);
         clearPreviousLine();
+      case operators._suceeding2_.includes(text.slice(a, a + 2)):
+        pushToken(a);
         tokens.push({
           start: a + 1,
           end: a + 2,
@@ -198,7 +199,7 @@ function tokenize(text: string, options?: siphonOptions) {
         clearPreviousLine();
         if (
           !precedents.includes(tokens.slice(-1)[0]?.value) &&
-          tokens[a - 1] !== undefined
+          tokens[0] !== undefined
         ) {
           tokens.push({ start: a + 1, end: a + 1, value: "\n" });
           token.start = a + 2;

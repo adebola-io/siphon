@@ -1,9 +1,1 @@
-switch (true) {
-  case "true":
-    console.log(9);
-    break;
-  case token === y:
-    break;
-  default:
-    break;
-}
+Number.isNaN(/**/ "565", 8, toLocaleString), 89;
