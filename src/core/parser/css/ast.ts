@@ -75,7 +75,7 @@ function parse(
         }
         while (isSpaceCharac(text[i])) i++;
         if (text[i] !== ";" && i !== text.length)
-          Errors.enc("CSS_SEMI_COLON_EXPECTED", src, i);
+          Errors.enc("SEMI_COLON_EXPECTED", src, i);
         href = href.trim().trimEnd();
         if (href.startsWith("http://") || href.startsWith("https://")) {
           resourcetype = "cross-site";

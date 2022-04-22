@@ -1,1 +1,2 @@
-Number.isNaN(/**/ "565", 8, toLocaleString), 89;
+function hereye() {}
+*728;

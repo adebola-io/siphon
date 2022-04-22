@@ -142,6 +142,7 @@ class Resolver {
   }
   resolveCSS = resolveCSS;
   resolve(nodes: HTMLDocumentNode[]) {
+    if (this.options.htmlInjects) this.resolveInjects(nodes);
     nodes = this.resolveImages(nodes);
     nodes = this.resolveCSS(
       nodes,
@@ -150,13 +151,13 @@ class Resolver {
       this.options,
       this.assets
     );
-    nodes = this.resolveJS(
-      nodes,
-      this.source,
-      this.destination,
-      this.assets,
-      this.options
-    );
+    // nodes = this.resolveJS(
+    //   nodes,
+    //   this.source,
+    //   this.destination,
+    //   this.assets,
+    //   this.options
+    // );
     return nodes;
   }
 }

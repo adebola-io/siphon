@@ -9,13 +9,12 @@ function err(message: string, source?: fs.PathLike, charac?: number): void {
   if (source !== undefined && charac !== undefined) pos = trace(source, charac);
   message = bold(
     red(
-      `${message} ${
-        source
+      `${message}` +
+        (source
           ? `\n    at ${path.resolve(source.toString())}${
               charac !== undefined ? `:${pos.line}:${pos.col}` : ""
             }`
-          : ""
-      }`
+          : "")
     )
   );
   throw new Error(message);
@@ -50,7 +49,7 @@ const Errors = {
         err("'(' was expected.", source, charac);
       case "CLOSING_BRAC_EXPECTED":
         err("')' was expected.", source, charac);
-      case "CSS_SEMI_COLON_EXPECTED":
+      case "SEMI_COLON_EXPECTED":
         err("Semicolon expected.", source, charac);
       case "CSS_COLON_EXPECTED":
         err("Colon expected.", source, charac);
@@ -58,6 +57,8 @@ const Errors = {
         err("'{' expected.", source, charac);
       case "CSS_INVALID_IDENTIFIER":
         err("Invalid CSS Identifier.", source, charac);
+      case "JS_INVALID_IDENTIFIER":
+        err("Invalid identifier.", source, charac);
       case "HTML_CIRCULAR_INJECT":
         err(`Circular injection detected in ${source.toString()}.`);
       case "NOT_A_DIRECTORY":
@@ -74,6 +75,20 @@ const Errors = {
         err(`Unexpected token '${options.token}'.`, source, charac);
       case "JS_ARGUMENT_EXPRESSION_EXPECTED":
         err(`Argument expression expected.`, source, charac);
+      case "JS_INVALID_REGEX_FLAG":
+        err(`Invalid regular expression flag.`, source, charac);
+      case "JS_INVALID_LHS_POFTIX":
+        err(
+          `Invalid left-hand side expression in postfix operation.`,
+          source,
+          charac
+        );
+      case "JS_INVALID_LHS_PREFIX":
+        err(
+          `Invalid left-hand side expression in prefix operation.`,
+          source,
+          charac
+        );
       case "INVALID_TAG":
         err(`Invalid tag Name '${options.name}'`, source, charac);
       case "INJECT_REQUIRES_SRC":
@@ -133,6 +148,9 @@ const Errors = {
       case "SHEBANG_NOT_ALLOWED":
         err("Shebang comments are not suppoerted in the browser.");
     }
+  },
+  custom(message: string, source: fs.PathLike, charac?: number) {
+    err(message, source, charac);
   },
 };
 

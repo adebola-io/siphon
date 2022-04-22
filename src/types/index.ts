@@ -16,7 +16,7 @@ export type ErrorTypes =
   | "COMMENT_UNCLOSED"
   | "CSS_STRING_OR_URI_EXPECTED"
   | "CLOSING_BRAC_EXPECTED"
-  | "CSS_SEMI_COLON_EXPECTED"
+  | "SEMI_COLON_EXPECTED"
   | "OPEN_BRAC_EXPECTED"
   | "CSS_COLON_EXPECTED"
   | "CSS_OPEN_CURL_EXPECTED"
@@ -29,6 +29,10 @@ export type ErrorTypes =
   | "JS_DEC_OR_STATEMENT_EXPECTED"
   | "JS_UNEXPECTED_TOKEN"
   | "JS_ARGUMENT_EXPRESSION_EXPECTED"
+  | "JS_INVALID_REGEX_FLAG"
+  | "JS_INVALID_LHS_POFTIX"
+  | "JS_INVALID_LHS_PREFIX"
+  | "JS_INVALID_IDENTIFIER"
   | "UNCLOSED_BLOCK_COMMENT"
   | "UNTERMINATED_STRING_LITERAL"
   | "UNTERMINATED_REGEX_LITERAL"
@@ -84,6 +88,12 @@ export interface fileGetterOptions {
   exclude?: Array<PathLike>;
 }
 export interface JSParserOptions {
-  sourcefile: PathLike;
+  sourceFile: PathLike;
   index: number;
+  useCode?: boolean;
 }
+export const js_parser_defaults: JSParserOptions = {
+  sourceFile: "test/src/index.js",
+  index: 0,
+  useCode: false,
+};

@@ -1,1 +1,64 @@
-{"type":"Program","raw":"Number.isNaN(\"565\", 8, toLocaleString), 89","loc":{"start":0,"end":47},"brackets":0,"body":[{"type":"ExpressionStatement","raw":"Number.isNaN(\"565\", 8, toLocaleString), 89","loc":{"start":0,"end":47},"expression":{"type":"SequenceExpression","raw":"Number.isNaN(\"565\", 8, toLocaleString), 89","loc":{"start":0,"end":47},"expressions":[{"type":"CallExpression","raw":"Number.isNaN(\"565\", 8, toLocaleString)","loc":{"start":0,"end":43},"arguments":[{"type":"Literal","raw":"\"565\"","loc":{"start":1,"end":5},"value":"565"},{"type":"Literal","raw":"8","loc":{"start":8,"end":9},"value":8},{"type":"Identifier","raw":"toLocaleString","loc":{"start":11,"end":25},"name":"toLocaleString"}],"callee":{"type":"MemberExpression","raw":"Number.isNaN","loc":{"start":0,"end":12},"object":{"type":"Identifier","raw":"Number","loc":{"start":0,"end":6},"name":"Number"},"property":{"type":"Identifier","raw":"isNaN","loc":{"start":7,"end":12},"name":"isNaN"}}},{"type":"Literal","raw":"89","loc":{"start":45,"end":47},"value":89}]}}]}
+{
+  "type": "Program",
+  "loc": { "start": 0, "end": 34 },
+  "body": [
+    {
+      "type": "ExpressionStatement",
+      "loc": { "start": 0, "end": 31 },
+      "expression": {
+        "type": "CallExpression",
+        "loc": { "start": 0, "end": 31 },
+        "arguments": [
+          {
+            "type": "CallExpression",
+            "loc": { "start": 12, "end": 30 },
+            "arguments": [
+              {
+                "type": "Literal",
+                "loc": { "start": 9, "end": 7 },
+                "kind": "string",
+                "value": "Myname"
+              }
+            ],
+            "callee": {
+              "type": "MemberExpression",
+              "loc": { "start": 12, "end": 20 },
+              "optional": false,
+              "computed": false,
+              "object": {
+                "type": "Literal",
+                "loc": { "start": 12, "end": 3 },
+                "kind": "regex",
+                "regex": { "pattern": "M", "flags": "" },
+                "value": {}
+              },
+              "property": {
+                "type": "Identifier",
+                "code": "test",
+                "loc": { "start": 16, "end": 20 },
+                "name": "test"
+              }
+            }
+          }
+        ],
+        "callee": {
+          "type": "MemberExpression",
+          "loc": { "start": 0, "end": 11 },
+          "optional": false,
+          "computed": false,
+          "object": {
+            "type": "Identifier",
+            "loc": { "start": 0, "end": 7 },
+            "name": "console"
+          },
+          "property": {
+            "type": "Identifier",
+            "code": "log",
+            "loc": { "start": 8, "end": 11 },
+            "name": "log"
+          }
+        }
+      }
+    }
+  ]
+}
