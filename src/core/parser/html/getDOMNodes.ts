@@ -41,7 +41,10 @@ function getDOMNodes(source: fs.PathLike): Array<HTMLDocumentNode> {
         while (textSlice[j] && textSlice[j] !== marker)
           content += textSlice[j++];
         content += textSlice[j++];
-      } else if (textSlice[j] === "<") {
+      } else if (
+        textSlice.slice(j, j + startTag.length + 3) ===
+        "</" + startTag + ">"
+      ) {
         break;
       } else content += textSlice[j++];
     }

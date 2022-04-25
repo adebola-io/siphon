@@ -40,12 +40,13 @@ class JSParser {
   StringLiteral!: () => Literal;
   MaybeRegexLiteral!: () => Literal | undefined;
   BooleanLiteral!: (value: boolean) => Literal;
-  Identifier!: (right?: boolean) => Identifier | JSNodes | undefined;
+  Identifier!: () => Identifier;
   MemberExpression!: (is_optional?: boolean) => MemberExpression;
   MaybeComputedMemberExpression!: () => JSNodes | undefined;
   MaybeCallExpression!: () => JSNodes | undefined;
   NewExpression!: () => NewExpression;
-  parseClosure!: (enclosure: string) => JSNodes | undefined;
+  parseExpression!: (enclosure: string) => JSNodes | undefined;
+  parseRight!: (pattern: RegExp) => JSNodes | undefined;
   MaybeExpressionStatement!: () => ExpressionStatment | undefined;
   MaybeBinaryExpression!: (
     operator: string
@@ -419,20 +420,7 @@ jspp.BooleanLiteral = function (value: boolean) {
   literal.code = value + "";
   return literal;
 };
-jspp.Identifier = function (right = false) {
-  if (right) {
-    // Right to left parse.
-    var node = this.parseNextToken();
-    if (node instanceof Identifier) {
-      this.program.push(node);
-      while (/\(|\.|\[/.test(this.token))
-        this.program.push(this.parseNextToken());
-      return this.program.pop();
-    } else if (node instanceof Literal) {
-      if (!this.options.useCode) delete node.code;
-      return node;
-    } else this.raise("IDENTIFIER_EXPECTED");
-  }
+jspp.Identifier = function () {
   let id = new Identifier(this.globalIndex);
   // ERROR: Identifier name starts with a number.
   if (isNum(this.token)) this.raise("JS_INVALID_IDENTIFIER");
@@ -457,7 +445,7 @@ jspp.NewExpression = function () {
   newexp.callee = this.Identifier();
   this.skipWhiteSpace(true);
   if (this.token === "(") {
-    const argStatement = this.parseClosure("()");
+    const argStatement = this.parseExpression("()");
     if (argStatement && !(argStatement instanceof ExpressionStatment))
       this.raise("JS_ARGUMENT_EXPRESSION_EXPECTED");
     else {
@@ -500,7 +488,7 @@ jspp.MaybeComputedMemberExpression = function () {
   } else this.program.pop();
   let arraymemexp = new MemberExpression(object.loc.start);
   arraymemexp.object = object;
-  const propStatement = this.parseClosure("[]");
+  const propStatement = this.parseExpression("[]");
   // ERROR: Property is not a valid expression statement.
   if (propStatement && !(propStatement instanceof ExpressionStatment)) {
     this.raise("JS_ARGUMENT_EXPRESSION_EXPECTED");
@@ -522,7 +510,7 @@ jspp.MaybeCallExpression = function () {
   } else this.program.pop();
   let callexp = new CallExpression(callee.loc.start);
   callexp.callee = callee;
-  const argStatement = this.parseClosure("()");
+  const argStatement = this.parseExpression("()");
   // ERROR: Argument is not a valid expression statement.
   if (argStatement && !(argStatement instanceof ExpressionStatment)) {
     this.raise("JS_ARGUMENT_EXPRESSION_EXPECTED");
@@ -542,7 +530,7 @@ jspp.MaybeCallExpression = function () {
     this.raise("COMMA_EXPECTED");
   return callexp;
 };
-jspp.parseClosure = function (enclosure: string) {
+jspp.parseExpression = function (enclosure: string) {
   /** The raw text to parse. */
   var chunk = "";
   /** The stack of nested brackets. */
@@ -635,7 +623,7 @@ jspp.UpdateExpression = function (
   } else {
     this.skipWhiteSpace();
     updexp.prefix = true;
-    updexp.argument = this.Identifier(true);
+    updexp.argument = this.parseRight(/\(|\.|\[/);
     if (!isValidReference(updexp.argument)) this.raise("JS_INVALID_LHS_PREFIX");
     updexp.code = operator + updexp.argument?.code;
     updexp.loc.end = updexp.argument?.loc.end;
@@ -647,13 +635,13 @@ jspp.UnaryExpression = function (operator: string) {
   this.skipWhiteSpace(true);
   if (/\(|\[/.test(this.token)) {
     var argument;
-    if (this.token === "(") argument = this.parseClosure("()");
-    else if (this.token === "[") argument = this.parseClosure("[]");
+    if (this.token === "(") argument = this.parseExpression("()");
+    else if (this.token === "[") argument = this.parseExpression("[]");
     if (argument instanceof ExpressionStatment)
       unexp.argument = argument.expression;
     else this.raise("EXPRESSION_EXPECTED");
   } else {
-    unexp.argument = this.Identifier(true);
+    unexp.argument = this.parseRight(/\(|\.|\[/);
     if (!isValidExpression(unexp.argument)) this.raise("EXPRESSION_EXPECTED");
   }
   unexp.code = operator + unexp.argument?.code;
@@ -661,20 +649,39 @@ jspp.UnaryExpression = function (operator: string) {
   unexp.loc.end = unexp.argument?.loc.end;
   return unexp;
 };
+jspp.parseRight = function (pattern: RegExp) {
+  // Right to left parse.
+  var node = this.parseNextToken();
+  if (node instanceof Identifier) {
+    this.program.push(node);
+    while (pattern.test(this.token)) this.program.push(this.parseNextToken());
+    return this.program.pop();
+  } else if (node instanceof Literal) {
+    if (!this.options.useCode) delete node.code;
+    return node;
+  } else this.raise("IDENTIFIER_EXPECTED");
+};
 jspp.MaybeBinaryExpression = function (operator: string) {
   if (!isValidExpression(this.program.last)) {
     if (/\+|\-/.test(operator)) return this.UnaryExpression(operator);
     else this.raise("EXPRESSION_EXPECTED");
   }
   const binexp = new BinaryExpression(this.globalIndex);
+  binexp.operator = operator;
+  binexp.left = this.program.pop();
+  this.skipWhiteSpace(true);
+  if (!/\(|\[/.test(this.token)) binexp.right = this.Identifier(true);
+  if (this.token === "(") binexp.right = this.parseExpression("()");
+  else if (this.token === "[") binexp.right = this.parseExpression("[]");
+  binexp.loc.end = binexp.right?.loc.end;
   return binexp;
 };
 const text = readFileSync("test/src/index.js").toString();
 
-const test = JSParser.parse(text, js_parser_defaults);
-console.log(test);
-writeFileSync("test/result.json", JSON.stringify(test));
+// const test = JSParser.parse(text, js_parser_defaults);
+// console.log(test);
+// writeFileSync("test/result.json", JSON.stringify(test));
 
-// const benchmark = AcornParser.parse(text, { ecmaVersion: 2020 });
-// console.log(benchmark);
-// writeFileSync("test/result.json", JSON.stringify(benchmark));
+const benchmark = AcornParser.parse(text, { ecmaVersion: 2020 });
+console.log(benchmark);
+writeFileSync("test/result.json", JSON.stringify(benchmark));

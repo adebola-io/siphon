@@ -154,6 +154,7 @@ export function isVoid(tagName: string | undefined): boolean {
         "source",
         "track",
         "wbr",
+        "module",
       ].includes(tagName)
     : false;
 }
@@ -170,9 +171,8 @@ export const imageExts: Array<string> = [
 
 export function isNum(char: string | undefined) {
   return char
-    ? char[0] !== "." &&
-        char.length !== 0 &&
-        char.replace(/\d/g, "").replace(/\./, "") === ""
+    ? char.replace(/[0-9]/g, "").replace(/\./, "") === "" &&
+        !Number.isNaN(Number(char))
     : false;
 }
 export function isAlphabetic(char: string | undefined) {
@@ -634,3 +634,50 @@ export const OPERATORS = operators._ignore1_.concat(
   operators._suceeding2_,
   operators._suceeding3_
 );
+export const precedence: any = {
+  "(": 19,
+  ")": 19,
+  ".": 18,
+  "[": 18,
+  new: 18,
+  "?.": 18,
+  postfix: 16,
+  prefix: 15,
+  "**": 14,
+  "*": 13,
+  "/": 13,
+  "%": 13,
+  "+": 12,
+  "-": 12,
+  "<<": 11,
+  ">>": 11,
+  ">>>": 11,
+  "<": 10,
+  ">": 10,
+  "<=": 10,
+  ">=": 10,
+  in: 10,
+  instanceof: 10,
+  "===": 9,
+  "==": 9,
+  "!==": 9,
+  "!=": 9,
+  "&": 8,
+  "^": 7,
+  "|": 6,
+  "&&": 5,
+  "||": 4,
+  "??": 4,
+  "?": 3,
+  "=": 2,
+  ",": 1,
+  none: 0,
+};
+export function assoc(operator: string) {
+  return /\*\*|\?|\=/.test(operator) ? "RL" : "LR";
+}
+export const counterpart: any = {
+  "[": "]",
+  "(": ")",
+  "{": "}",
+};

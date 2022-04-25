@@ -95,7 +95,7 @@ function parse(
           let property = "";
           let value = "";
           while (text[i] && text[i] !== ":") property += text[i++];
-          if (!text[i]) Errors.enc("CSS_COLON_EXPECTED", src, i);
+          if (!text[i]) Errors.enc("COLON_EXPECTED", src, i);
           i++;
           while (text[i] && !/;|}/.test(text[i])) {
             if (/'|"/.test(text[i])) {

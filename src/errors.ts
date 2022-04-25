@@ -51,8 +51,8 @@ const Errors = {
         err("')' was expected.", source, charac);
       case "SEMI_COLON_EXPECTED":
         err("Semicolon expected.", source, charac);
-      case "CSS_COLON_EXPECTED":
-        err("Colon expected.", source, charac);
+      case "COLON_EXPECTED":
+        err("':' expected.", source, charac);
       case "CSS_OPEN_CURL_EXPECTED":
         err("'{' expected.", source, charac);
       case "CSS_INVALID_IDENTIFIER":
@@ -89,10 +89,20 @@ const Errors = {
           source,
           charac
         );
+      case "JS_INVALID_LHS_ASSIGN":
+        err(`Invalid left-hand side in assignment.`, source, charac);
+      case "JS_ILLEGAL_ELSE":
+        err("Unexpected else statement.", source, charac);
+      case "INVALID_NEW_META_PROPERTY":
+        err(
+          `'${options.token}' is not a valid meta-property for keyword 'new'. Did you mean 'target'?`,
+          source,
+          charac
+        );
       case "INVALID_TAG":
         err(`Invalid tag Name '${options.name}'`, source, charac);
-      case "INJECT_REQUIRES_SRC":
-        err(`HTML inject tags require a src attribute.`);
+      case "MODULE_REQUIRES_SRC":
+        err(`HTML module tags require a src attribute.`);
       case "INVALID_VOID_TAG":
         err(`'${options.name}' cannot be used as a void tag.`, source, charac);
       case "ABRUPT":

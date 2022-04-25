@@ -18,13 +18,13 @@ export type ErrorTypes =
   | "CLOSING_BRAC_EXPECTED"
   | "SEMI_COLON_EXPECTED"
   | "OPEN_BRAC_EXPECTED"
-  | "CSS_COLON_EXPECTED"
+  | "COLON_EXPECTED"
   | "CSS_OPEN_CURL_EXPECTED"
   | "CSS_INVALID_IDENTIFIER"
   | "TAG_UNCLOSED"
   | "HTML_FRAGMENT"
   | "INVALID_TAG"
-  | "INJECT_REQUIRES_SRC"
+  | "MODULE_REQUIRES_SRC"
   | "JS_UNEXP_KEYWORD_OR_IDENTIFIER"
   | "JS_DEC_OR_STATEMENT_EXPECTED"
   | "JS_UNEXPECTED_TOKEN"
@@ -32,7 +32,10 @@ export type ErrorTypes =
   | "JS_INVALID_REGEX_FLAG"
   | "JS_INVALID_LHS_POFTIX"
   | "JS_INVALID_LHS_PREFIX"
+  | "JS_INVALID_LHS_ASSIGN"
   | "JS_INVALID_IDENTIFIER"
+  | "JS_ILLEGAL_ELSE"
+  | "INVALID_NEW_META_PROPERTY"
   | "UNCLOSED_BLOCK_COMMENT"
   | "UNTERMINATED_STRING_LITERAL"
   | "UNTERMINATED_REGEX_LITERAL"
@@ -74,7 +77,7 @@ export interface siphonOptions {
   outDir: PathLike;
   deep: boolean;
   relations: Relation[];
-  htmlInjects: boolean;
+  htmlModules: boolean;
   formatFiles: boolean;
   storeImagesSeparately: boolean;
   internalJS: boolean;

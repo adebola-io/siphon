@@ -1,2 +1,1 @@
-function hereye() {}
-*728;
+index > array.length;index++;

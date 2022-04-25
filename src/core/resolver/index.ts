@@ -41,12 +41,11 @@ class Resolver {
   destination: PathLike;
   assets: any;
   injectMode?: boolean;
-  resolveInjects(nodes: HTMLDocumentNode[]) {
-    const injects: HTMLDocumentNode[] = tagNameSearch(nodes, "inject");
-    injects.forEach((inject) => {
-      if (!inject.attributes?.src)
-        Errors.enc("INJECT_REQUIRES_SRC", this.source);
-      let truePath = relativePath(this.source, inject.attributes.src);
+  resolveModules(nodes: HTMLDocumentNode[]) {
+    const mods: HTMLDocumentNode[] = tagNameSearch(nodes, "module");
+    mods.forEach((mod) => {
+      if (!mod.attributes?.src) Errors.enc("MODULE_REQUIRES_SRC", this.source);
+      let truePath = relativePath(this.source, mod.attributes.src);
       if (basename(truePath) === this.srcName)
         Errors.enc("HTML_SELF_INJECT", this.source);
       if (!fileExists(truePath)) Errors.enc("FILE_NON_EXISTENT", truePath);
@@ -58,7 +57,7 @@ class Resolver {
         this.assets,
         true
       ).resolve(injectNodes);
-      inject.parent?.children.splice(inject.childID, 1, ...injectNodes);
+      mod.parent?.children.splice(mod.childID, 1, ...injectNodes);
     });
   }
   resolveImages(nodes: HTMLDocumentNode[]) {
@@ -99,6 +98,7 @@ class Resolver {
             a++;
           }
           let newname = `${getFileName(truePath)}-${a}${extname(truePath)}`;
+          console.log(truePath);
           image.attributes.src = this.injectMode
             ? truePath
             : `./${this.options.storeImagesSeparately ? "img/" : ""}${newname}`;
@@ -142,7 +142,7 @@ class Resolver {
   }
   resolveCSS = resolveCSS;
   resolve(nodes: HTMLDocumentNode[]) {
-    if (this.options.htmlInjects) this.resolveInjects(nodes);
+    if (this.options.htmlModules) this.resolveModules(nodes);
     nodes = this.resolveImages(nodes);
     nodes = this.resolveCSS(
       nodes,

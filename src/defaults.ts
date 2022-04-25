@@ -6,7 +6,7 @@ const defaults: siphonOptions = {
   storeImagesSeparately: false,
   deep: false,
   relations: [{ from: "index.html", to: "index.html" }],
-  htmlInjects: false,
+  htmlModules: false,
   formatFiles: true,
   internalJS: false,
   internalStyles: false,

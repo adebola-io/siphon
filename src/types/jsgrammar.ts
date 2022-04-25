@@ -7,7 +7,6 @@ export class JSNode {
     start: number;
     end?: number;
   };
-  code?: string = "";
 }
 export type JSNodes = Statement | Expression | Declaration | Literal;
 export class Program extends JSNode {
@@ -15,27 +14,29 @@ export class Program extends JSNode {
   /** Add a node to the global scope of the program. */
   push(node?: JSNodes, options?: any) {
     if (node) {
-      if (options && options.code) this.code += "" + node?.code;
-      else delete node.code;
       this.body.push(node);
       this.last = node;
     }
   }
   /** Remove a node from the global scope of the program.*/
   pop() {
-    this.code = this.code?.slice(0, -(this.last?.code?.length ?? 0));
     this.last = this.body[this.body.length - 2];
     return this.body.pop();
   }
-  brackets? = 0;
-  squareBracs? = 0;
-  parenthesis? = 0;
   body: Array<JSNodes> = [];
   /** The last node appended to the body of the program. */
   last?: JSNodes;
 }
 export type Declaration = FunctionDeclaration | VariableDeclaration;
 
+export type StatementContext =
+  | "global"
+  | "if"
+  | "function"
+  | "expression"
+  | "for"
+  | "while"
+  | "switch";
 // Statements.
 export type Statement =
   | ExpressionStatment
@@ -43,16 +44,21 @@ export type Statement =
   | WhileStatement
   | DoWhileStatement
   | SwitchStatement
+  | EmptyStatement
   | ForStatement
   | BlockStatement;
 export class ExpressionStatment extends JSNode {
   type = "ExpressionStatement";
   expression?: Expression | Identifier | Literal;
 }
+export class EmptyStatement extends JSNode {
+  type = "EmptyStatement";
+}
 export class IfStatement extends JSNode {
   type = "IfStatement";
   test?: Expression | Literal | Identifier;
-  subsequent?: Statement | Expression | Declaration;
+  consequent?: Statement | Expression | Declaration;
+  alternate?: null | JSNodes = null;
 }
 export class WhileStatement extends JSNode {
   type = "WhileStatement";
@@ -62,11 +68,16 @@ export class WhileStatement extends JSNode {
 export class Comma extends JSNode {
   type = "Comma";
   validNode = false;
-  code = ", ";
 }
 export class DoWhileStatement extends JSNode {}
 export class SwitchStatement extends JSNode {}
-export class ForStatement extends JSNode {}
+export class ForStatement extends JSNode {
+  type = "ForStatement";
+  init!: Expression;
+  test!: Expression;
+  update!: Expression;
+  body?: Statement;
+}
 export class BlockStatement extends JSNode {
   type = "BlockStatement";
   body: Array<JSNodes> = [];
@@ -86,18 +97,25 @@ export type Expression =
   | CallExpression
   | ArrowFunctionExpression
   | NewExpression
-  | UnaryExpression;
+  | UnaryExpression
+  | Literal;
 export class NewExpression extends JSNode {
   type = "NewExpression";
   callee?: JSNodes;
-  arguments?: Array<JSNodes | undefined> = [];
+  arguments: Array<JSNodes | undefined> = [];
 }
 export class UnaryExpression extends JSNode {
   type = "UnaryExpression";
   operator!: string;
   argument: JSNode | undefined;
+  prefix: boolean = true;
 }
-export class AssignmentExpression extends JSNode {}
+export class AssignmentExpression extends JSNode {
+  type = "AssignmentExpression";
+  operator = "";
+  left?: Expression | Literal | Identifier;
+  right?: Expression | Literal | Identifier;
+}
 export class UpdateExpression extends JSNode {
   type = "UpdateExpression";
   operator!: string;
@@ -116,6 +134,10 @@ export class MemberExpression extends JSNode {
   property?: ExpressionStatment | Identifier | CallExpression;
   optional = false;
   computed = false;
+}
+export class ChainExpression extends JSNode {
+  type = "ChainExpression";
+  expression!: MemberExpression;
 }
 export class ConditionalExpression extends JSNode {
   type = "ConditionalExpression";
@@ -137,7 +159,12 @@ export class BinaryExpression extends JSNode {
   left?: Expression | Literal | Identifier;
   right?: Expression | Literal | Identifier;
 }
-export class LogicalExpression extends JSNode {}
+export class LogicalExpression extends JSNode {
+  type = "LogicalExpression";
+  operator = "";
+  left?: Expression | Literal | Identifier;
+  right?: Expression | Literal | Identifier;
+}
 export class SequenceExpression extends JSNode {
   type = "SequenceExpression";
   expressions: Array<JSNodes | undefined> = [];
@@ -147,6 +174,7 @@ export class Literal extends JSNode {
   type = "Literal";
   kind?: "number" | "string" | "regex" | "boolean";
   value?: number | string | RegExp | boolean;
+  raw = "";
   regex?: {
     pattern: string;
     flags: string;
@@ -170,6 +198,19 @@ export function isIdentifier(node?: JSNodes) {
 export function isValidReference(node?: JSNodes) {
   return node
     ? node instanceof Identifier ||
-        (node instanceof MemberExpression && !node.optional)
+        (node instanceof MemberExpression && !isOptional(node))
     : false;
+}
+
+export function isOptional(node?: MemberExpression) {
+  if (node === undefined) return false;
+  if (node.optional) return true;
+  else if (node.object instanceof MemberExpression) {
+    let obj: any = node;
+    while (obj instanceof MemberExpression) {
+      obj = obj.object;
+      if (obj.optional) return true;
+    }
+    return false;
+  } else return false;
 }
