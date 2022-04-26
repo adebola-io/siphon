@@ -168,7 +168,13 @@ export const imageExts: Array<string> = [
   ".gif",
   ".webp",
 ];
-
+/**
+ * COnfirm if a character is a numeric digit.
+ * @param char The character to evaluate.
+ */
+export function isDigit(char?: string) {
+  return char ? char.charCodeAt(0) >= 48 && char.charCodeAt(0) <= 57 : false;
+}
 export function isNum(char: string | undefined) {
   return char
     ? char.replace(/[0-9]/g, "").replace(/\./, "") === "" &&
@@ -188,6 +194,9 @@ export function lastRealChar(str: string) {
   let i = str.length - 1;
   while (str[i] && /\n|\r|\s/.test(str[i])) i--;
   return { character: str[i], index: i };
+}
+export function last(array: Array<any>) {
+  return array[array.length - 1];
 }
 export function splice(str: string) {
   return {
@@ -670,6 +679,7 @@ export const precedence: any = {
   "??": 4,
   "?": 3,
   "=": 2,
+  "=>": 2,
   ",": 1,
   none: 0,
 };

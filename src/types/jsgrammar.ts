@@ -29,14 +29,19 @@ export class Program extends JSNode {
 }
 export type Declaration = FunctionDeclaration | VariableDeclaration;
 
-export type StatementContext =
+export type Context =
   | "global"
+  | "object"
   | "if"
   | "function"
   | "expression"
   | "for"
+  | "block"
+  | "call"
+  | "case"
   | "while"
-  | "switch";
+  | "switch"
+  | "switch_block";
 // Statements.
 export type Statement =
   | ExpressionStatment
@@ -46,7 +51,11 @@ export type Statement =
   | SwitchStatement
   | EmptyStatement
   | ForStatement
-  | BlockStatement;
+  | ForInStatement
+  | BlockStatement
+  | ReturnStatement
+  | TryStatement
+  | ThrowStatement;
 export class ExpressionStatment extends JSNode {
   type = "ExpressionStatement";
   expression?: Expression | Identifier | Literal;
@@ -69,8 +78,21 @@ export class Comma extends JSNode {
   type = "Comma";
   validNode = false;
 }
-export class DoWhileStatement extends JSNode {}
-export class SwitchStatement extends JSNode {}
+export class DoWhileStatement extends JSNode {
+  type = "DoWhileStatement";
+  test?: JSNodes;
+  body?: ExpressionStatment | BlockStatement;
+}
+export class SwitchStatement extends JSNode {
+  type = "SwitchStatement";
+  discriminant?: Expression;
+  cases: Array<SwitchCase> = [];
+}
+export class SwitchCase extends JSNode {
+  type = "SwitchCase";
+  test?: Expression | null;
+  consequent: Array<Statement | undefined> = [];
+}
 export class ForStatement extends JSNode {
   type = "ForStatement";
   init!: Expression;
@@ -78,8 +100,48 @@ export class ForStatement extends JSNode {
   update!: Expression;
   body?: Statement;
 }
+export class ForInStatement extends JSNode {
+  type = "ForInStatment";
+  left!: Identifier;
+  right!: Identifier | MemberExpression | ChainExpression;
+  body?: Statement;
+}
+export class BreakStatement extends JSNode {
+  type = "BreakStatement";
+}
+export class ReturnStatement extends JSNode {
+  type = "ReturnStatement";
+  argument?: Expression | null;
+}
+export class ThrowStatement extends JSNode {
+  type = "ThrowStatement";
+  argument?: Expression | null;
+}
+export class TryStatement extends JSNode {
+  type = "ThrowStatement";
+  block!: BlockStatement;
+  handler!: CatchClause;
+  finalizer!: BlockStatement | null;
+}
+export class CatchClause extends JSNode {
+  type = "CatchClause";
+  param!: any;
+  body!: BlockStatement;
+}
 export class BlockStatement extends JSNode {
   type = "BlockStatement";
+  /** Add a node to the global scope of the program. */
+  push(node?: JSNodes, options?: any) {
+    if (node) {
+      this.body.push(node);
+      this.last = node;
+    }
+  }
+  /** Remove a node from the global scope of the program.*/
+  pop() {
+    this.last = this.body[this.body.length - 2];
+    return this.body.pop();
+  }
   body: Array<JSNodes> = [];
   last?: JSNode;
 }
@@ -96,13 +158,19 @@ export type Expression =
   | MemberExpression
   | CallExpression
   | ArrowFunctionExpression
+  | FunctionExpression
+  | ArrayExpression
   | NewExpression
   | UnaryExpression
+  | ThisExpression
   | Literal;
 export class NewExpression extends JSNode {
   type = "NewExpression";
   callee?: JSNodes;
   arguments: Array<JSNodes | undefined> = [];
+}
+export class ThisExpression extends JSNode {
+  type = "ThisExpression";
 }
 export class UnaryExpression extends JSNode {
   type = "UnaryExpression";
@@ -115,6 +183,23 @@ export class AssignmentExpression extends JSNode {
   operator = "";
   left?: Expression | Literal | Identifier;
   right?: Expression | Literal | Identifier;
+}
+export class ArrayExpression extends JSNode {
+  type = "ArrayExpression";
+  elements!: Expression[];
+}
+export class ObjectExpression extends JSNode {
+  type = "ObjectExpression";
+  properties!: Property[];
+}
+export class Property extends JSNode {
+  type = "Property";
+  kind = "init";
+  key!: Identifier | Literal;
+  value!: Expression | null;
+  method = false;
+  shorthand = false;
+  computed = false;
 }
 export class UpdateExpression extends JSNode {
   type = "UpdateExpression";
@@ -150,9 +235,34 @@ export class CallExpression extends JSNode {
   callee?: Expression | Identifier;
   arguments: Array<JSNode | undefined> = [];
 }
-export class VariableDeclaration extends JSNode {}
-export class FunctionDeclaration extends JSNode {}
-export class FunctionExpression extends JSNode {}
+export class VariableDeclaration extends JSNode {
+  type = "VariableDeclaration";
+  kind?: string;
+  declarations: JSNode[] = [];
+}
+export class VariableDeclarator extends JSNode {
+  type = "VariableDeclarator";
+  id?: any;
+  init?: Expression | null = null;
+}
+export class FunctionDeclaration extends JSNode {
+  type = "FunctionDeclaration";
+  id!: Identifier;
+  expression!: boolean;
+  generator!: boolean;
+  async!: boolean;
+  params: Array<JSNode | undefined> = [];
+  body!: BlockStatement;
+}
+export class FunctionExpression extends JSNode {
+  type = "FunctionExpression";
+  id!: Identifier | null;
+  expression!: boolean;
+  generator!: boolean;
+  async!: boolean;
+  params!: Array<Expression>;
+  body!: BlockStatement;
+}
 export class BinaryExpression extends JSNode {
   type = "BinaryExpression";
   operator = "";
@@ -169,20 +279,38 @@ export class SequenceExpression extends JSNode {
   type = "SequenceExpression";
   expressions: Array<JSNodes | undefined> = [];
 }
-export class ArrowFunctionExpression extends JSNode {}
+export class ArrowFunctionExpression extends JSNode {
+  type = "ArrowFunctionExpression";
+  id!: Identifier | null;
+  expression!: boolean;
+  params: Array<JSNode | undefined> = [];
+  generator!: boolean;
+  async!: boolean;
+  body!: Expression | BlockStatement;
+}
 export class Literal extends JSNode {
   type = "Literal";
-  kind?: "number" | "string" | "regex" | "boolean";
-  value?: number | string | RegExp | boolean;
+  kind?: "number" | "string" | "regex" | "boolean" | "bigint" | "null";
+  value?: number | string | RegExp | boolean | null;
   raw = "";
   regex?: {
     pattern: string;
     flags: string;
   };
+  bigint?: string;
 }
 export class Identifier extends JSNode {
   type = "Identifier";
   name = "";
+}
+export class AssignmentPattern extends JSNode {
+  type = "AssignmentPattern";
+  left!: Identifier;
+  right!: Expression;
+}
+export class SpreadElement extends JSNode {
+  type = "SpreadElement";
+  argument!: Identifier;
 }
 export function isValidExpression(node?: JSNodes) {
   return node
@@ -213,4 +341,33 @@ export function isOptional(node?: MemberExpression) {
     }
     return false;
   } else return false;
+}
+
+export function isValidParameter(node?: JSNode) {
+  return node
+    ? node instanceof AssignmentExpression || node instanceof Identifier
+    : false;
+}
+export function isValidForInParam(paramBody?: JSNode[]) {
+  return paramBody
+    ? paramBody.length === 1 &&
+        paramBody[0] instanceof ExpressionStatment &&
+        paramBody[0].expression instanceof BinaryExpression &&
+        paramBody[0].expression.operator === "in"
+    : false;
+}
+export function isValidForParam(paramBody?: JSNode[]) {
+  return paramBody
+    ? (paramBody.length === 3 || paramBody.length === 2) &&
+        paramBody.find(
+          (param) =>
+            !/ExpressionStatement|VariableDeclaration|EmptyStatement/.test(
+              param.type
+            )
+        ) === undefined &&
+        /ExpressionStatement|EmptyStatement/.test(paramBody[1].type) &&
+        /ExpressionStatement|EmptyStatement/.test(
+          paramBody[2]?.type ?? "EmptyStatement"
+        )
+    : false;
 }

@@ -49,12 +49,22 @@ const Errors = {
         err("'(' was expected.", source, charac);
       case "CLOSING_BRAC_EXPECTED":
         err("')' was expected.", source, charac);
+      case "CLOSING_CURL_EXPECTED":
+        err("'}' was expected.", source, charac);
+      case "CLOSING_SQUARE_BRAC_EXPECTED":
+        err("']' was expected.", source, charac);
       case "SEMI_COLON_EXPECTED":
         err("Semicolon expected.", source, charac);
       case "COLON_EXPECTED":
         err("':' expected.", source, charac);
       case "CSS_OPEN_CURL_EXPECTED":
         err("'{' expected.", source, charac);
+      case "CATCH_NEW_PARAM":
+        err("A catch block can only have one paramater.", source, charac);
+      case "CATCH_ASSIGN":
+        err("A catch parameter must not have an initializer.");
+      case "CONST_INIT":
+        err("const variable must be initialized.", source, charac);
       case "CSS_INVALID_IDENTIFIER":
         err("Invalid CSS Identifier.", source, charac);
       case "JS_INVALID_IDENTIFIER":
@@ -77,9 +87,19 @@ const Errors = {
         err(`Argument expression expected.`, source, charac);
       case "JS_INVALID_REGEX_FLAG":
         err(`Invalid regular expression flag.`, source, charac);
+      case "JS_WHILE_EXPECTED":
+        err(`'while' expected.`, source, charac);
       case "JS_INVALID_LHS_POFTIX":
         err(
           `Invalid left-hand side expression in postfix operation.`,
+          source,
+          charac
+        );
+      case "JS_PARAM_DEC_EXPECTED":
+        err("Parameter declaration expected.", source, charac);
+      case "JS_PARAM_CLASH":
+        err(
+          `The parameter '${options.token}' has already been declared.'`,
           source,
           charac
         );
@@ -91,6 +111,14 @@ const Errors = {
         );
       case "JS_INVALID_LHS_ASSIGN":
         err(`Invalid left-hand side in assignment.`, source, charac);
+      case "JS_ILLEGAL_CASE":
+        err(
+          "A case can only be used within a switch statement.",
+          source,
+          charac
+        );
+      case "JS_EXPORT_EXPECTED":
+        err("'export' expected.", source, charac);
       case "JS_ILLEGAL_ELSE":
         err("Unexpected else statement.", source, charac);
       case "INVALID_NEW_META_PROPERTY":
@@ -133,8 +161,12 @@ const Errors = {
           source,
           charac
         );
+      case "EXPECTED":
+        err(`'${options.token}' expected.`, source, charac);
       case "COMMA_EXPECTED":
         err(`A ',' was expected.`, source, charac);
+      case "JS_CASE_EXPECTED":
+        err("'case' or 'default' expected.", source, charac);
       case "EXPRESSION_EXPECTED":
         err("An expression was expected.", source, charac);
       case "VARIABLE_DECLARATION_EXPECTED":
@@ -142,9 +174,11 @@ const Errors = {
       case "JS_DEC_OR_STATEMENT_EXPECTED":
         err("Declaration or statement expected", source, charac);
       case "IDENTIFIER_EXPECTED":
-        err("Idenitifier expected.", source, charac);
+        err("Identifier expected.", source, charac);
       case "EMPTY_CONST_DECLARATION":
         err("'const' declarations must be initialized.", source, charac);
+      case "BIGINT_DECIMAL":
+        err("A bigint literal must be an integer.", source, charac);
       case "ID_FOLLOWS_LITERAL":
         err(
           "An identifier or keyword cannot immediately follow a numeric literal.",
