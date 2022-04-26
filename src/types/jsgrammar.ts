@@ -102,8 +102,8 @@ export class ForStatement extends JSNode {
 }
 export class ForInStatement extends JSNode {
   type = "ForInStatment";
-  left!: Identifier;
-  right!: Identifier | MemberExpression | ChainExpression;
+  left!: any;
+  right!: any;
   body?: Statement;
 }
 export class BreakStatement extends JSNode {
@@ -238,12 +238,13 @@ export class CallExpression extends JSNode {
 export class VariableDeclaration extends JSNode {
   type = "VariableDeclaration";
   kind?: string;
-  declarations: JSNode[] = [];
+  declarations: any[] = [];
 }
 export class VariableDeclarator extends JSNode {
   type = "VariableDeclarator";
   id?: any;
   init?: Expression | null = null;
+  in?: boolean;
 }
 export class FunctionDeclaration extends JSNode {
   type = "FunctionDeclaration";
@@ -308,6 +309,10 @@ export class AssignmentPattern extends JSNode {
   left!: Identifier;
   right!: Expression;
 }
+export class ObjectPattern extends JSNode {
+  type = "ObjectPattern";
+  properties?: Array<Property> = [];
+}
 export class SpreadElement extends JSNode {
   type = "SpreadElement";
   argument!: Identifier;
@@ -350,10 +355,13 @@ export function isValidParameter(node?: JSNode) {
 }
 export function isValidForInParam(paramBody?: JSNode[]) {
   return paramBody
-    ? paramBody.length === 1 &&
+    ? (paramBody.length === 1 &&
         paramBody[0] instanceof ExpressionStatment &&
         paramBody[0].expression instanceof BinaryExpression &&
-        paramBody[0].expression.operator === "in"
+        paramBody[0].expression.operator === "in") ||
+        (paramBody[0] instanceof VariableDeclaration &&
+          paramBody[0].declarations.length === 1 &&
+          paramBody[0].declarations[0].in)
     : false;
 }
 export function isValidForParam(paramBody?: JSNode[]) {

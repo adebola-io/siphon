@@ -1,22 +1,54 @@
 {
   "type": "Program",
   "start": 0,
-  "end": 11,
+  "end": 33,
   "body": [
     {
       "type": "VariableDeclaration",
       "start": 0,
-      "end": 9,
+      "end": 31,
       "declarations": [
         {
           "type": "VariableDeclarator",
-          "start": 4,
-          "end": 8,
-          "id": { "type": "Identifier", "start": 4, "end": 8, "name": "name" },
-          "init": null
+          "start": 6,
+          "end": 30,
+          "id": {
+            "type": "ObjectPattern",
+            "start": 6,
+            "end": 20,
+            "properties": [
+              {
+                "type": "Property",
+                "start": 8,
+                "end": 18,
+                "method": false,
+                "shorthand": false,
+                "computed": false,
+                "key": {
+                  "type": "Identifier",
+                  "start": 8,
+                  "end": 12,
+                  "name": "name"
+                },
+                "value": {
+                  "type": "Identifier",
+                  "start": 14,
+                  "end": 18,
+                  "name": "name"
+                },
+                "kind": "init"
+              }
+            ]
+          },
+          "init": {
+            "type": "Identifier",
+            "start": 23,
+            "end": 30,
+            "name": "sefunmi"
+          }
         }
       ],
-      "kind": "var"
+      "kind": "const"
     }
   ],
   "sourceType": "script"

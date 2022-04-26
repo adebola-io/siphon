@@ -193,7 +193,10 @@ ezra.conditionalExpression = function (test) {
 };
 ezra.assignmentExpression = function (left) {
   if (this.lowerPrecedence()) return left;
-  if (!isValidReference(left) && !(left instanceof ArrayExpression))
+  if (
+    !isValidReference(left) &&
+    !/ArrayExpression|ObjectExpression/.test(left.type)
+  )
     this.raise("JS_INVALID_LHS_ASSIGN");
   const assignexp = new AssignmentExpression(left.loc.start);
   assignexp.left = left;

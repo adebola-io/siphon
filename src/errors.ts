@@ -64,7 +64,9 @@ const Errors = {
       case "CATCH_ASSIGN":
         err("A catch parameter must not have an initializer.");
       case "CONST_INIT":
-        err("const variable must be initialized.", source, charac);
+        err("const variables must be initialized.", source, charac);
+      case "DESTRUCTURING_ERROR":
+        err("Destructured variables must have an initializer.", source, charac);
       case "CSS_INVALID_IDENTIFIER":
         err("Invalid CSS Identifier.", source, charac);
       case "JS_INVALID_IDENTIFIER":

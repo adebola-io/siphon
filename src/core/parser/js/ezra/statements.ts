@@ -18,6 +18,8 @@ import {
   isValidParameter,
   JSNode,
   JSNodes,
+  ObjectExpression,
+  ObjectPattern,
   ReturnStatement,
   SequenceExpression,
   SpreadElement,
@@ -133,13 +135,14 @@ ezra.forStatement = function () {
   if (!this.eat("(")) this.raise("OPEN_BRAC_EXPECTED");
   const paramBody = this.group("for");
   if (isValidForInParam(paramBody)) {
-    return this.forInStatement(start, paramBody[0].expression);
+    return this.forInStatement(start, paramBody[0]);
   } else if (!isValidForParam(paramBody)) this.raise("EXPRESSION_EXPECTED");
   else if (paramBody[0].expression?.operator === "in") {
     this.raise("CLOSING_BRAC_EXPECTED");
   }
   if (paramBody.body?.length === 0) this.raise("EXPRESSION_EXPECTED");
-  forstat.init = paramBody[0].expression ?? null;
+  if (paramBody[0] instanceof VariableDeclaration) forstat.init = paramBody[0];
+  else forstat.init = paramBody[0].expression ?? null;
   forstat.test = paramBody[1].expression ?? null;
   forstat.update = paramBody[2]?.expression ?? null;
   this.outerspace();
@@ -149,11 +152,18 @@ ezra.forStatement = function () {
 };
 ezra.forInStatement = function (start, param) {
   const forin = new ForInStatement(start);
-  forin.left = param.left;
-  forin.right = param.right;
+  if (param instanceof VariableDeclaration) {
+    forin.right = param.declarations[0].init;
+    forin.left = param.declarations[0];
+    forin.left.init = null;
+    forin.left.loc.end = forin.left.id.loc.end;
+  } else {
+    forin.left = param.left;
+    forin.right = param.right;
+  }
   this.outerspace();
   forin.body = this.statement();
-  if (forin.body === undefined) this.raise("EXPRESSION_EXPECTED");
+  console.log(true);
   return forin;
 };
 ezra.emptyStatement = function () {
@@ -342,15 +352,21 @@ ezra.declarators = function (expressionList, kind) {
       if (expression.operator !== "=") {
         this.raise("JS_UNEXPECTED_TOKEN", expression.operator);
       }
-      if (!(expression.left instanceof Identifier)) {
-        this.raise("IDENTIFIER_EXPECTED");
-      } else declarator.id = expression.left;
+      if (expression.left instanceof Identifier) {
+        declarator.id = expression.left;
+        declarator.loc.end = declarator.init?.loc.end;
+      } else if (expression.left instanceof ObjectExpression) {
+        declarator.id = new ObjectPattern(expression.left.loc.start);
+        declarator.id.properties = expression.left.properties;
+        declarator.id.loc.end = expression.left.loc.end;
+      } else this.raise("IDENTIFIER_EXPECTED");
       declarator.init = expression.right;
-      declarator.loc.end = declarator.init?.loc.end;
     } else if (expression instanceof Identifier) {
       if (kind === "const") this.raise("CONST_INIT");
       else declarator.id = expression;
       declarator.loc.end = expression.loc.end;
+    } else if (/ObjectExpression|ArrayExpression/.test(expression.type)) {
+      this.raise("DESTRUCTURING_ERROR");
     } else if (
       expression instanceof BinaryExpression &&
       expression.operator === "in" &&
@@ -358,6 +374,8 @@ ezra.declarators = function (expressionList, kind) {
     ) {
       declarator.id = expression.left;
       declarator.init = expression.right;
+      declarator.in = true;
+      declarator.loc.end = expression.loc.end;
     } else this.raise("IDENTIFIER_EXPECTED");
     return declarator;
   };
