@@ -1,1 +1,1 @@
-index > array.length;index++;
+const name = () => {};
