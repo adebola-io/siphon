@@ -17,9 +17,10 @@ function minifyCSS(ast: Stylesheet) {
         selectors = selectors.replace(/([\s]*)\>([\s]*)/g, ">");
       minified += `${selectors}{`;
       const entries = Object.entries(rule.notation);
-      entries.forEach((entry, index) => {
+      entries.forEach((entry: any[], index: number) => {
         minified +=
-          `${entry[0]}:${entry[1]}` + (index === entries.length - 1 ? "" : ";");
+          `${entry[0]}:${entry[1].replace(/(\n|\r)+[\s]*/g, "")}` +
+          (index === entries.length - 1 ? "" : ";");
       });
       minified += "}";
     } else if (rule instanceof MediaRule) {
@@ -35,7 +36,7 @@ function minifyCSS(ast: Stylesheet) {
     } else if (rule instanceof KeyframeRule) {
       minified += `@keyframes ${rule.identifier}{`;
       rule.frames.forEach((frame) => {
-        minified += `${frame.mark}{`;
+        minified += `${frame.mark.replace(/(\n|\r)+[\s]*/g, "")}{`;
         const entries = Object.entries(frame.notation);
         entries.forEach((entry, index) => {
           minified +=

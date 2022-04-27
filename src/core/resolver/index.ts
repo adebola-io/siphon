@@ -65,7 +65,8 @@ class Resolver {
       (images) => {
         return !(
           images.attributes?.src.startsWith("http://") ||
-          images.attributes?.src.startsWith("http://")
+          images.attributes?.src.startsWith("http://") ||
+          images.attributes?.src.includes(":")
         );
       }
     );
@@ -98,7 +99,6 @@ class Resolver {
             a++;
           }
           let newname = `${getFileName(truePath)}-${a}${extname(truePath)}`;
-          console.log(truePath);
           image.attributes.src = this.injectMode
             ? truePath
             : `./${this.options.storeImagesSeparately ? "img/" : ""}${newname}`;
