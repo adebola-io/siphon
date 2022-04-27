@@ -108,7 +108,7 @@ ezra.tryExpressionStatement = function () {
   if (expstat.expression === undefined) return;
   expstat.loc.start = expstat.expression.loc.start;
   expstat.loc.end = expstat.expression.loc.end;
-  if (this.char === ";") this.next();
+  this.eat(";");
   return expstat;
 };
 ezra.blockStatement = function () {
@@ -195,7 +195,7 @@ ezra.doWhileStatement = function () {
   dwstat.test = this.group();
   dwstat.loc.end = this.j;
   this.outerspace();
-  if (this.char === ";") this.next();
+  this.eat(";");
   return dwstat;
 };
 ezra.switchStatement = function () {
@@ -230,7 +230,7 @@ ezra.caseStatement = function (isDefault) {
 ezra.breakStatement = function () {
   const breakstat = new BreakStatement(this.j - 5);
   this.outerspace();
-  if (this.char === ";") this.next();
+  this.eat(";");
   breakstat.loc.end = this.j;
   return breakstat;
 };
@@ -239,7 +239,7 @@ ezra.throwStatement = function () {
   this.innerspace();
   if (/\n|;/.test(this.char)) this.raise("EXPRESSION_EXPECTED");
   else throwstat.argument = this.expression();
-  if (this.char === ";") this.next();
+  this.eat(";");
   throwstat.loc.end = throwstat.argument?.loc.end;
   return throwstat;
 };
@@ -281,7 +281,7 @@ ezra.returnStatement = function () {
     retstat.argument = null;
     this.next();
   } else retstat.argument = this.expression() ?? null;
-  if (this.char === ";") this.next();
+  this.eat(";");
   retstat.loc.end = this.j;
   return retstat;
 };
