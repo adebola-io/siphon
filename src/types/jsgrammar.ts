@@ -309,9 +309,13 @@ export class AssignmentPattern extends JSNode {
   left!: Identifier;
   right!: Expression;
 }
+export class ArrayPattern extends JSNode {
+  type = "ArrayPattern";
+  elements: Array<Expression> = [];
+}
 export class ObjectPattern extends JSNode {
   type = "ObjectPattern";
-  properties?: Array<Property> = [];
+  properties: Array<Property> = [];
 }
 export class SpreadElement extends JSNode {
   type = "SpreadElement";

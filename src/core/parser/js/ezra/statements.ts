@@ -1,4 +1,6 @@
 import {
+  ArrayExpression,
+  ArrayPattern,
   AssignmentExpression,
   AssignmentPattern,
   BinaryExpression,
@@ -339,7 +341,7 @@ ezra.variableDeclaration = function () {
   vardec.kind = kind;
   this.outerspace();
   vardec.declarations = this.declarators(this.expression(), kind);
-  vardec.loc.end = this.j - 1;
+  vardec.loc.end = this.j;
   this.outerspace();
   this.eat(";");
   return vardec;
@@ -359,12 +361,15 @@ ezra.declarators = function (expressionList, kind) {
         declarator.id = new ObjectPattern(expression.left.loc.start);
         declarator.id.properties = expression.left.properties;
         declarator.id.loc.end = expression.left.loc.end;
+      } else if (expression.left instanceof ArrayExpression) {
+        declarator.id = new ArrayPattern(expression.left.loc.start);
+        declarator.id.elements = expression.left.elements;
+        declarator.id.loc.end = expression.left.loc.end;
       } else this.raise("IDENTIFIER_EXPECTED");
       declarator.init = expression.right;
     } else if (expression instanceof Identifier) {
       if (kind === "const") this.raise("CONST_INIT");
       else declarator.id = expression;
-      declarator.loc.end = expression.loc.end;
     } else if (/ObjectExpression|ArrayExpression/.test(expression.type)) {
       this.raise("DESTRUCTURING_ERROR");
     } else if (
@@ -375,8 +380,8 @@ ezra.declarators = function (expressionList, kind) {
       declarator.id = expression.left;
       declarator.init = expression.right;
       declarator.in = true;
-      declarator.loc.end = expression.loc.end;
     } else this.raise("IDENTIFIER_EXPECTED");
+    declarator.loc.end = expression.loc.end;
     return declarator;
   };
   if (expressionList instanceof SequenceExpression) {

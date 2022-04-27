@@ -263,7 +263,8 @@ ezra.objectExpression = function () {
   return object;
 };
 ezra.property = function () {
-  var key: Identifier | Literal;
+  var key: Identifier | Literal,
+    isComputed: boolean = false;
   switch (true) {
     case isNum(this.char):
       key = this.numberLiteral();
@@ -271,11 +272,16 @@ ezra.property = function () {
     case /"|`|'/.test(this.char):
       key = this.stringLiteral();
       break;
+    case this.eat("["):
+      key = this.group();
+      isComputed = true;
+      break;
     default:
       key = this.identifier();
   }
   const prop = new Property(key.loc.start);
   prop.key = key;
+  prop.computed = isComputed;
   prop.loc.end = key.loc.end;
   this.outerspace();
   const nextChar = this.char;
