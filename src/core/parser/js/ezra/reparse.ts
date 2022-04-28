@@ -17,8 +17,7 @@ ezra.reparse = function (node, context) {
       case this.char === ";":
         return node;
       case this.eat(","):
-        if (this.parseContext === "object") return node;
-        else return this.sequenceExpression(node);
+        return this.sequenceExpression(node);
       case this.eat("."):
       case this.eat("?."):
         if (context === "number") this.raise("ID_FOLLOWS_LITERAL");

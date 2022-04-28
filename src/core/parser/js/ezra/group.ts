@@ -1,68 +1,53 @@
-import { Context, ExpressionStatment, Statement } from "../../../../types";
+import {
+  Context,
+  ExpressionStatment,
+  JSNode,
+  Program,
+  SequenceExpression,
+  Statement,
+} from "../../../../types";
 import { counterpart } from "../../../../utils";
 import { ezra, ezra_internals } from "./base";
 
 ezra.group = function (context = "expression") {
-  let chunk = "",
-    level = 1,
-    closure = this.belly.top();
-  while (!this.end && level > 0) {
-    if (this.eat("//") || this.eat("/*")) this.skip();
-    else if (/"|'|`/.test(this.char)) {
-      let str = this.read(this.i);
-      chunk += str.value;
-      this.goto(str.end + 1);
+  let closure = this.belly.top(),
+    scope2 = new Program(this.j);
+  this.outerspace();
+  if (this.char !== counterpart[closure])
+    while (!this.end && this.char !== counterpart[closure]) {
+      const statement = this.statement(context);
+      scope2.push(statement);
+      this.outerspace();
     }
-    if (this.char === closure) level++;
-    else if (this.char === counterpart[closure]) level--;
-    if (level === 0) {
-      this.next();
-      this.belly.pop();
-      break;
-    }
-    chunk += this.char;
-    this.next();
-  }
-  if (this.end && level > 0) {
-    switch (closure) {
-      case "(":
-        this.raise("CLOSING_BRAC_EXPECTED");
-      case "{":
-        this.raise("CLOSING_CURL_EXPECTED");
-      case "[":
-        this.raise("CLOSING_SQUARE_BRAC_EXPECTED");
-    }
-  }
-  var group_context: Context = context;
+  if (this.end) this.raise("EXPECTED", counterpart[closure]);
+  else this.eat(counterpart[closure]);
   switch (context) {
-    case "case":
-    case "expression":
-    case "if":
-    case "switch":
-    case "while":
-    case "function":
-      group_context = "expression";
-  }
-  var sub_program: any = new ezra_internals().parse(
-    chunk,
-    this.j - chunk.length,
-    group_context
-  );
-  switch (context) {
-    case "for":
-      return sub_program.body;
+    case "import":
     case "block":
     case "switch_block":
+    case "for":
     case "object":
-      return sub_program.body;
+      return scope2.body;
     case "call":
-      return sub_program.body[0]?.expression;
-    case "while":
-    case "if":
-    case "switch":
-    case "expression":
+      let args: Array<JSNode | undefined> = [];
+      if (scope2.body.length > 1) this.raise("EXPRESSION_EXPECTED");
+      if (scope2.body[0] instanceof ExpressionStatment) {
+        var expression = scope2.body[0].expression;
+        if (expression instanceof SequenceExpression) {
+          expression.expressions.forEach((childexp) => {
+            args.push(childexp);
+          });
+        } else args.push(expression);
+      } else if (scope2.body[0] !== undefined)
+        this.raise("EXPRESSION_EXPECTED");
+      return args;
     default:
-      if (sub_program.body.length > 1) this.raise("EXPRESSION_EXPECTED");
-      return sub_program.body[0]?.expression;
+      if (
+        scope2.body.length > 1 ||
+        !(scope2.body[0] instanceof ExpressionStatment)
+      ) {
+        this.raise("EXPRESSION_EXPECTED");
+      } else return scope2.body[0].expression;
   }
+  return scope2.body;
 };

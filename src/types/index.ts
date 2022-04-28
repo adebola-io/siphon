@@ -43,6 +43,8 @@ export type ErrorTypes =
   | "JS_PARAM_DEC_EXPECTED"
   | "JS_PARAM_CLASH"
   | "JS_CASE_EXPECTED"
+  | "JS_ILLEGAL_IMPORT"
+  | "JS_FROM_EXPECTED"
   | "EXPECTED"
   | "CATCH_NEW_PARAM"
   | "CATCH_ASSIGN"

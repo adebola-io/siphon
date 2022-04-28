@@ -175,6 +175,12 @@ const Errors = {
         err("Variable declaration or statement expected.", source, charac);
       case "JS_DEC_OR_STATEMENT_EXPECTED":
         err("Declaration or statement expected", source, charac);
+      case "JS_ILLEGAL_IMPORT":
+        err(
+          "An import statement can only be used at the top level of a module.",
+          source,
+          charac
+        );
       case "IDENTIFIER_EXPECTED":
         err("Identifier expected.", source, charac);
       case "EMPTY_CONST_DECLARATION":

@@ -15,6 +15,10 @@ import {
   FunctionDeclaration,
   Identifier,
   IfStatement,
+  ImportDeclaration,
+  ImportDefaultSpecifier,
+  ImportNamespaceSpecifier,
+  ImportSpecifier,
   isValidForInParam,
   isValidForParam,
   isValidParameter,
@@ -47,6 +51,8 @@ ezra.statement = function (context = "global") {
     case context === "object":
       if (this.eat("...")) return this.spreadElement();
       else return this.property();
+    case context === "import":
+      return this.importSpecifier();
     case context === "switch_block":
       if (!(this.match("case") || this.match("default")) && !this.end) {
         this.raise("JS_CASE_EXPECTED");
@@ -71,8 +77,8 @@ ezra.statement = function (context = "global") {
       return this.forStatement();
     case this.match("try"):
       return this.tryStatement();
-    case this.match("default"):
-      this.raise("JS_EXPORT_EXPECTED");
+    case this.match("else"):
+      this.raise("JS_ILLEGAL_ELSE");
     case this.match("case"):
       this.raise("JS_ILLEGAL_CASE");
     case this.match("while"):
@@ -95,8 +101,19 @@ ezra.statement = function (context = "global") {
       } else return this.functionDeclaration();
     case this.match("return"):
       return this.returnStatement();
-    case this.match("else"):
-      this.raise("JS_ILLEGAL_ELSE");
+    case this.match("import"):
+      this.outerspace();
+      if (this.char === "(") {
+        this.backtrack();
+        return this.tryExpressionStatement();
+      } else if (
+        context !== "global" ||
+        this.scope.body.find((node) => node.type !== "ImportDeclaration")
+      ) {
+        this.raise("JS_ILLEGAL_IMPORT");
+      } else return this.importDeclaration();
+    case this.match("default"):
+      this.raise("JS_EXPORT_EXPECTED");
     default:
       return this.tryExpressionStatement();
   }
@@ -215,7 +232,8 @@ ezra.caseStatement = function (isDefault) {
   if (isDefault) switchcase.test = null;
   else if (switchcase.test === undefined) this.raise("EXPRESSION_EXPECTED");
   if (!this.eat(":")) this.raise("COLON_EXPECTED");
-  while (!this.end) {
+  this.outerspace();
+  while (!this.end && this.char !== "}") {
     this.outerspace();
     if (this.match("case") || this.match("default")) {
       this.backtrack();
@@ -223,6 +241,7 @@ ezra.caseStatement = function (isDefault) {
     }
     var statement = this.statement("case");
     if (statement) switchcase.consequent.push(statement);
+    this.outerspace();
   }
   switchcase.loc.end = this.j;
   return switchcase;
@@ -391,4 +410,71 @@ ezra.declarators = function (expressionList, kind) {
   } else declarations.push(confirmDec(expressionList));
   return declarations;
 };
-export default ezra;
+ezra.importDeclaration = function () {
+  const importdec = new ImportDeclaration(this.j - 6);
+  if (this.eat("{")) {
+    const importspecs = this.group("import");
+    if (importspecs === undefined) this.raise("IDENTIFIER_EXPECTED");
+    else importdec.specifiers.push(...importspecs);
+  } else if (this.char === "*") {
+    const namespce = new ImportNamespaceSpecifier(this.j);
+    this.next();
+    this.outerspace();
+    if (!this.match("as")) this.raise("EXPECTED", "as");
+    this.outerspace();
+    namespce.local = this.identifier();
+    namespce.loc.end = namespce.local.loc.end;
+    importdec.specifiers.push(namespce);
+  } else if (/'|"/.test(this.char)) {
+    importdec.source = this.stringLiteral();
+    importdec.loc.end = this.j;
+    this.outerspace();
+    this.eat(";");
+    return importdec;
+  } else {
+    const defaultdec = new ImportDefaultSpecifier(this.j);
+    defaultdec.local = this.identifier();
+    defaultdec.loc.end = defaultdec.local.loc.end;
+    importdec.specifiers.push(defaultdec);
+    this.outerspace();
+    if (this.eat(",")) {
+      this.outerspace();
+      if (!this.eat("{")) this.raise("OPEN_CURLY_EXPECTED");
+      else {
+        const importspecs = this.group("import");
+        if (importspecs === undefined) this.raise("IDENTIFIER_EXPECTED");
+        else importdec.specifiers.push(...importspecs);
+      }
+    }
+  }
+  this.outerspace();
+  if (this.match("from")) {
+    this.outerspace();
+    if (!/'|"/.test(this.char)) this.raise("JS_UNEXPECTED_TOKEN");
+    importdec.source = this.stringLiteral();
+  } else this.raise("EXPECTED", "from");
+  importdec.loc.end = this.j;
+  this.outerspace();
+  this.eat(";");
+  return importdec;
+};
+ezra.importSpecifier = function () {
+  const importspec = new ImportSpecifier(this.j - 1);
+  this.outerspace();
+  importspec.imported = this.identifier();
+  this.outerspace();
+  switch (true) {
+    case this.char === ",":
+    default:
+      importspec.local = importspec.imported;
+      break;
+    case this.match("as"):
+      this.outerspace();
+      importspec.local = this.identifier();
+      this.outerspace();
+      break;
+  }
+  importspec.loc.end = this.j;
+  if (this.char !== "}") this.next();
+  return importspec;
+};

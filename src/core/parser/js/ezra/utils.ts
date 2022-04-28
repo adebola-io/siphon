@@ -6,6 +6,7 @@ import {
   isDigit,
   isValidIdentifierCharacter,
   precedence,
+  trace,
 } from "../../../../utils";
 
 export class parse_utils {
@@ -31,8 +32,9 @@ export class parse_utils {
    * @param message The error type to raise.
    */
   raise(message: ErrorTypes, token?: string) {
-    // throw new Error();
-    throw { message, index: this.j, char: token ?? this.char };
+    const p = trace("test/src/index.js", this.j);
+    throw new Error(p.line + ":" + p.col);
+    // throw { message, index: this.j, char: token ?? this.char };
   }
   /**
    * Checks if the current operator being parsed has a lower precedence than the operator parsed before it.

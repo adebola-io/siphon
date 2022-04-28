@@ -64,6 +64,9 @@ ezra.expression = function (type) {
     case this.match("delete"):
     case this.match("await"):
       return this.reparse(this.unaryExpression());
+    case this.eat("..."):
+      if (this.parseContext === "call") return this.spreadElement();
+      else this.raise("EXPRESSION_EXPECTED");
     case this.match("function"):
       return this.reparse(this.functionExpression());
     case isValidIdentifierCharacter(this.char):
@@ -74,7 +77,6 @@ ezra.expression = function (type) {
     case this.char === undefined:
       return;
     case this.char === ";":
-      this.next();
       return;
     default:
       this.raise("JS_UNEXPECTED_TOKEN");
@@ -110,12 +112,7 @@ ezra.thisExpression = function () {
 ezra.callExpression = function (callee) {
   const callexp = new CallExpression(callee.loc.start);
   callexp.callee = callee;
-  let args = this.group("call");
-  if (args instanceof SequenceExpression)
-    args.expressions.forEach((expression) => {
-      callexp.arguments.push(expression);
-    });
-  else if (args !== undefined) callexp.arguments.push(args);
+  callexp.arguments = this.group("call");
   callexp.loc.end = this.j;
   return this.reparse(callexp);
 };
@@ -130,8 +127,7 @@ ezra.newExpression = function () {
   const newexp = new NewExpression(this.j);
   newexp.callee = this.reparse(this.identifier(), "new");
   if (this.belly.top() === "(") {
-    const args = this.group();
-    args ? newexp.arguments.push(args) : 0;
+    newexp.arguments = this.group("call");
     this.belly.pop();
   }
   newexp.loc.end = this.j;
@@ -285,7 +281,7 @@ ezra.property = function () {
   prop.loc.end = key.loc.end;
   this.outerspace();
   const nextChar = this.char;
-  this.next();
+  if (this.char !== "}") this.next();
   switch (nextChar) {
     case ",":
     default:

@@ -27,7 +27,10 @@ export class Program extends JSNode {
   /** The last node appended to the body of the program. */
   last?: JSNodes;
 }
-export type Declaration = FunctionDeclaration | VariableDeclaration;
+export type Declaration =
+  | FunctionDeclaration
+  | VariableDeclaration
+  | ImportDeclaration;
 
 export type Context =
   | "global"
@@ -41,7 +44,8 @@ export type Context =
   | "case"
   | "while"
   | "switch"
-  | "switch_block";
+  | "switch_block"
+  | "import";
 // Statements.
 export type Statement =
   | ExpressionStatment
@@ -320,6 +324,30 @@ export class ObjectPattern extends JSNode {
 export class SpreadElement extends JSNode {
   type = "SpreadElement";
   argument!: Identifier;
+}
+export class ImportDeclaration extends JSNode {
+  type = "ImportDeclaration";
+  specifiers: Array<ImportSpecifier | ImportDefaultSpecifier> = [];
+  source!: Literal;
+}
+export class ImportSpecifier extends JSNode {
+  type = "ImportSpecifier";
+  imported!: Identifier;
+  local!: Identifier;
+}
+export class ImportDefaultSpecifier extends JSNode {
+  type = "ImportDefaultSpecifier";
+  local!: Identifier;
+}
+export class ImportNamespaceSpecifier extends JSNode {
+  type = "ImportNamespaceSpecifier";
+  local!: Identifier;
+}
+export class ExportNamedDeclaration extends JSNode {
+  type = "ExportNamedDeclaration";
+  declaration: null;
+  specifiers: Array<ImportSpecifier> = [];
+  source: null;
 }
 export function isValidExpression(node?: JSNodes) {
   return node

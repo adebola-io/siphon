@@ -12,6 +12,8 @@ import {
   FunctionDeclaration,
   Identifier,
   IfStatement,
+  ImportDeclaration,
+  ImportSpecifier,
   JSNode,
   Literal,
   MemberExpression,
@@ -78,6 +80,8 @@ export class ezra_internals extends parse_utils {
   functionDeclaration!: () => FunctionDeclaration;
   variableDeclaration!: () => VariableDeclaration;
   declarators!: (expression: any, kind: string) => any;
+  importDeclaration!: () => ImportDeclaration;
+  importSpecifier!: () => ImportSpecifier;
   spreadElement!: () => SpreadElement;
   switchCases!: () => SwitchCase[];
 }
