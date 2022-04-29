@@ -1,3 +1,5 @@
+import { isDigit, isValidIdentifierCharacter } from "../utils";
+
 export class JSNode {
   constructor(start: number) {
     this.loc = { start };
@@ -37,13 +39,17 @@ export type Context =
   | "object"
   | "if"
   | "function"
+  | "parameters"
   | "expression"
   | "for"
+  | "new"
   | "block"
+  | "property"
   | "call"
   | "case"
   | "while"
   | "switch"
+  | "array"
   | "switch_block"
   | "import";
 // Statements.
@@ -323,7 +329,7 @@ export class ObjectPattern extends JSNode {
 }
 export class SpreadElement extends JSNode {
   type = "SpreadElement";
-  argument!: Identifier;
+  argument!: Expression;
 }
 export class ImportDeclaration extends JSNode {
   type = "ImportDeclaration";
@@ -345,9 +351,9 @@ export class ImportNamespaceSpecifier extends JSNode {
 }
 export class ExportNamedDeclaration extends JSNode {
   type = "ExportNamedDeclaration";
-  declaration: null;
+  declaration!: null;
   specifiers: Array<ImportSpecifier> = [];
-  source: null;
+  source!: null;
 }
 export function isValidExpression(node?: JSNodes) {
   return node
@@ -410,4 +416,9 @@ export function isValidForParam(paramBody?: JSNode[]) {
           paramBody[2]?.type ?? "EmptyStatement"
         )
     : false;
+}
+export function isValidPropertyKeyStart(char: string) {
+  return (
+    isDigit(char) || isValidIdentifierCharacter(char) || /"|'|\[/.test(char)
+  );
 }

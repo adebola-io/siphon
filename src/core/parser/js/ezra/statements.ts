@@ -2,7 +2,6 @@ import {
   ArrayExpression,
   ArrayPattern,
   AssignmentExpression,
-  AssignmentPattern,
   BinaryExpression,
   BlockStatement,
   BreakStatement,
@@ -21,9 +20,7 @@ import {
   ImportSpecifier,
   isValidForInParam,
   isValidForParam,
-  isValidParameter,
   JSNode,
-  JSNodes,
   ObjectExpression,
   ObjectPattern,
   ReturnStatement,
@@ -39,7 +36,7 @@ import {
 } from "../../../../types";
 import { ezra, ezra_internals } from "./base";
 
-ezra.statement = function (context = "global") {
+ezra.statement = function () {
   this.outerspace();
   switch (true) {
     case this.end:
@@ -48,22 +45,28 @@ ezra.statement = function (context = "global") {
     case this.eat("//"):
       this.skip();
       break;
-    case context === "object":
-      if (this.eat("...")) return this.spreadElement();
-      else return this.property();
-    case context === "import":
+    case this.contexts.top() === "object":
+      return this.property();
+    case this.contexts.top() === "parameters":
+      return this.parameter();
+    case this.contexts.top() === "array":
+      return this.elements();
+    case this.contexts.top() === "import":
       return this.importSpecifier();
-    case context === "switch_block":
+    case this.contexts.top() === "call":
+      return this.arguments();
+      break;
+    case this.contexts.top() === "switch_block":
       if (!(this.match("case") || this.match("default")) && !this.end) {
         this.raise("JS_CASE_EXPECTED");
-      } else if (this.end) {
+      } else if (this.char === "}") {
         return;
       } else {
         let isDefault = this.belly.top() === "default" ?? false;
         return this.caseStatement(isDefault);
       }
     case this.eat("{"):
-      if (context !== "global") {
+      if (!["block", "global"].includes(this.contexts.top())) {
         this.backtrack();
         return this.tryExpressionStatement();
       } else return this.blockStatement();
@@ -88,14 +91,15 @@ ezra.statement = function (context = "global") {
     case this.match("const"):
     case this.match("var"):
     case this.match("let"):
-      if (context === "expression") this.raise("EXPRESSION_EXPECTED");
+      if (this.contexts.top() === "expression")
+        this.raise("EXPRESSION_EXPECTED");
       else return this.variableDeclaration();
     case this.match("throw"):
       return this.throwStatement();
     case this.match("switch"):
       return this.switchStatement();
     case this.match("function"):
-      if (context === "expression") {
+      if (["array", "expression", "call"].includes(this.contexts.top())) {
         this.backtrack();
         return this.tryExpressionStatement();
       } else return this.functionDeclaration();
@@ -107,9 +111,10 @@ ezra.statement = function (context = "global") {
         this.backtrack();
         return this.tryExpressionStatement();
       } else if (
-        context !== "global" ||
+        this.contexts.top() !== "global" ||
         this.scope.body.find((node) => node.type !== "ImportDeclaration")
       ) {
+        console.log(this.contexts);
         this.raise("JS_ILLEGAL_IMPORT");
       } else return this.importDeclaration();
     case this.match("default"):
@@ -125,13 +130,18 @@ ezra.tryExpressionStatement = function () {
   if (expstat.expression === undefined) return;
   expstat.loc.start = expstat.expression.loc.start;
   expstat.loc.end = expstat.expression.loc.end;
+  this.operators.pop();
   this.eat(";");
   return expstat;
 };
-ezra.blockStatement = function () {
+ezra.blockStatement = function (eatComma) {
   const blockstat = new BlockStatement(this.j - 1);
   blockstat.body = this.group("block");
   blockstat.loc.end = this.j;
+  if (eatComma) {
+    this.outerspace();
+    this.eat(";");
+  }
   return blockstat;
 };
 ezra.ifStatement = function () {
@@ -182,7 +192,6 @@ ezra.forInStatement = function (start, param) {
   }
   this.outerspace();
   forin.body = this.statement();
-  console.log(true);
   return forin;
 };
 ezra.emptyStatement = function () {
@@ -222,7 +231,7 @@ ezra.switchStatement = function () {
   switchstat.discriminant = this.group("switch");
   this.outerspace();
   if (!this.eat("{")) this.raise("OPEN_CURLY_EXPECTED");
-  switchstat.cases = this.group("switch_block") ?? [];
+  switchstat.cases = this.group("switch_block");
   switchstat.loc.end = this.j;
   return switchstat;
 };
@@ -233,17 +242,15 @@ ezra.caseStatement = function (isDefault) {
   else if (switchcase.test === undefined) this.raise("EXPRESSION_EXPECTED");
   if (!this.eat(":")) this.raise("COLON_EXPECTED");
   this.outerspace();
-  while (!this.end && this.char !== "}") {
-    this.outerspace();
-    if (this.match("case") || this.match("default")) {
-      this.backtrack();
-      break;
-    }
-    var statement = this.statement("case");
-    if (statement) switchcase.consequent.push(statement);
+  this.contexts.push("case");
+  while (!this.end && this.char !== "}" && !this.isNewCaseStatement()) {
+    let statement = this.statement();
+    switchcase.consequent.push(statement);
     this.outerspace();
   }
-  switchcase.loc.end = this.j;
+  this.contexts.pop();
+  switchcase.loc.end =
+    switchcase.consequent[switchcase.consequent.length - 1]?.loc.end;
   return switchcase;
 };
 ezra.breakStatement = function () {
@@ -272,7 +279,7 @@ ezra.tryStatement = function () {
   trystat.handler = new CatchClause(this.j - 5);
   this.outerspace();
   if (this.eat("(")) {
-    const param = this.parameterize(this.group());
+    const param = this.group("parameters");
     if (param.length > 1) this.raise("CATCH_NEW_PARAM");
     if (param[0] === undefined) this.raise("IDENTIFIER_EXPECTED");
     if (!(param[0] instanceof Identifier)) {
@@ -310,42 +317,12 @@ ezra.functionDeclaration = function () {
   func.id = this.identifier();
   this.outerspace();
   if (!this.eat("(")) this.raise("OPEN_BRAC_EXPECTED");
-  func.params = this.parameterize(this.group());
+  func.params = this.group("parameters");
   this.outerspace();
   if (!this.eat("{")) this.raise("OPEN_CURLY_EXPECTED");
   else func.body = this.blockStatement();
   func.loc.end = this.j;
   return func;
-};
-ezra.parameterize = function (params) {
-  const parameterArray: Array<JSNodes> = [],
-    parameterNames: string[] = [];
-  if (params === undefined) return parameterArray;
-  if (params instanceof SequenceExpression) {
-    params.expressions.forEach((param: any) => {
-      if (!isValidParameter(param)) this.raise("JS_PARAM_DEC_EXPECTED");
-      if (param instanceof Identifier) {
-        parameterNames.includes(param.name)
-          ? this.raise("JS_PARAM_CLASH", param.name)
-          : parameterNames.push(param.name);
-        parameterArray.push(param);
-      } else {
-        parameterNames.includes(param.left.name)
-          ? this.raise("JS_PARAM_CLASH", param.name)
-          : parameterNames.push(param.left.name);
-        if (param.operator !== "=") this.raise("JS_PARAM_DEC_EXPECTED");
-        const pattern = new AssignmentPattern(param.loc.start);
-        pattern.left = param.left;
-        pattern.right = param.right;
-        pattern.loc.end = param.loc.end;
-        parameterArray.push(pattern);
-      }
-    });
-  } else {
-    if (!isValidParameter(params)) this.raise("JS_PARAM_DEC_EXPECTED");
-    parameterArray.push(params);
-  }
-  return parameterArray;
 };
 ezra.spreadElement = function () {
   this.outerspace();
@@ -394,7 +371,7 @@ ezra.declarators = function (expressionList, kind) {
     } else if (
       expression instanceof BinaryExpression &&
       expression.operator === "in" &&
-      this.parseContext === "for"
+      this.contexts.top() === "for"
     ) {
       declarator.id = expression.left;
       declarator.init = expression.right;

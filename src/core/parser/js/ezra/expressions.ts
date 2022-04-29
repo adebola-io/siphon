@@ -65,7 +65,7 @@ ezra.expression = function (type) {
     case this.match("await"):
       return this.reparse(this.unaryExpression());
     case this.eat("..."):
-      if (this.parseContext === "call") return this.spreadElement();
+      if (this.allowSpread()) return this.spreadElement();
       else this.raise("EXPRESSION_EXPECTED");
     case this.match("function"):
       return this.reparse(this.functionExpression());
@@ -116,21 +116,29 @@ ezra.callExpression = function (callee) {
   callexp.loc.end = this.j;
   return this.reparse(callexp);
 };
+ezra.arguments = function () {
+  const args = [];
+  while (!this.end && this.char !== ")") {
+    args.push(this.expression());
+    if (this.char === ",") this.next();
+  }
+  return args;
+};
 ezra.newExpression = function () {
+  // if (this.eat(".")) {
+  //   this.innerspace(true);
+  //   let metaprop = this.identifier();
+  //   if (metaprop.name !== "target")
+  //     this.raise("INVALID_NEW_META_PROPERTY", metaprop.name);
+  // }
   this.outerspace();
-  if (this.eat(".")) {
-    this.innerspace(true);
-    let metaprop = this.identifier();
-    if (metaprop.name !== "target")
-      this.raise("INVALID_NEW_META_PROPERTY", metaprop.name);
-  }
   const newexp = new NewExpression(this.j);
-  newexp.callee = this.reparse(this.identifier(), "new");
-  if (this.belly.top() === "(") {
-    newexp.arguments = this.group("call");
-    this.belly.pop();
-  }
-  newexp.loc.end = this.j;
+  this.contexts.push("new");
+  this.operators.push("new");
+  newexp.callee = this.reparse(this.identifier());
+  newexp.loc.end = newexp.callee?.loc.end;
+  this.operators.pop();
+  this.contexts.pop();
   return this.reparse(newexp);
 };
 ezra.updateExpression = function (argument, prefix) {
@@ -141,10 +149,11 @@ ezra.updateExpression = function (argument, prefix) {
   upexp.argument = argument;
   upexp.loc.end = this.j;
   upexp.prefix = prefix ? true : false;
+  if (prefix) upexp.loc.start = upexp.loc.start - 2;
   return this.reparse(upexp, prefix ? "prefix" : "postfix");
 };
 ezra.unaryExpression = function () {
-  const unexp = new UnaryExpression(this.j);
+  const unexp = new UnaryExpression(this.j - this.belly.top().length);
   unexp.operator = this.belly.top();
   this.operators.push(unexp.operator);
   unexp.argument = this.expression();
@@ -171,6 +180,7 @@ ezra.logicalExpression = function (left) {
   logexp.left = left;
   logexp.operator = this.belly.top();
   this.operators.push(logexp.operator);
+  this.outerspace();
   logexp.right = this.expression();
   logexp.loc.end = this.j;
   this.operators.pop();
@@ -217,38 +227,9 @@ ezra.sequenceExpression = function (left) {
   seqexp.loc.end = this.j;
   return this.reparse(seqexp);
 };
-ezra.functionExpression = function (isAsync = false) {
-  const func = new FunctionExpression(this.j - 8);
-  this.outerspace();
-  if (isValidIdentifierCharacter(this.char)) {
-    func.id = this.identifier();
-    this.outerspace();
-  } else func.id = null;
-  func.async = isAsync;
-  if (!this.eat("(")) this.raise("OPEN_BRAC_EXPECTED");
-  else func.params = this.parameterize(this.group());
-  this.outerspace();
-  if (!this.eat("{")) this.raise("OPEN_BRAC_EXPECTED");
-  else func.body = this.blockStatement();
-  func.loc.end = this.j;
-  return this.reparse(func);
-};
-ezra.arrowFunctionExpression = function (params) {
-  if (this.lowerPrecedence()) return params;
-  const arrowfunc = new ArrowFunctionExpression(
-    params ? params.loc.start : this.j - 2
-  );
-  arrowfunc.params = this.parameterize(params);
-  this.outerspace();
-  arrowfunc.id = null;
-  if (this.eat("{")) arrowfunc.body = this.blockStatement();
-  else arrowfunc.body = this.expression();
-  arrowfunc.loc.end = this.j;
-  return this.reparse(arrowfunc);
-};
 ezra.arrayExpression = function () {
   const array = new ArrayExpression(this.j - 1);
-  array.elements = this.group() ?? [];
+  array.elements = this.group("array");
   array.loc.end = this.j;
   return array;
 };
@@ -257,47 +238,4 @@ ezra.objectExpression = function () {
   object.properties = this.group("object") ?? [];
   object.loc.end = this.j;
   return object;
-};
-ezra.property = function () {
-  var key: Identifier | Literal,
-    isComputed: boolean = false;
-  switch (true) {
-    case isNum(this.char):
-      key = this.numberLiteral();
-      break;
-    case /"|`|'/.test(this.char):
-      key = this.stringLiteral();
-      break;
-    case this.eat("["):
-      key = this.group();
-      isComputed = true;
-      break;
-    default:
-      key = this.identifier();
-  }
-  const prop = new Property(key.loc.start);
-  prop.key = key;
-  prop.computed = isComputed;
-  prop.loc.end = key.loc.end;
-  this.outerspace();
-  const nextChar = this.char;
-  if (this.char !== "}") this.next();
-  switch (nextChar) {
-    case ",":
-    default:
-      prop.shorthand = true;
-      prop.value = prop.key;
-      break;
-    case ":":
-      prop.value = this.expression();
-      prop.loc.end = prop.value.loc.end;
-      break;
-    case "(":
-      this.recede();
-      prop.method = true;
-      prop.value = this.functionExpression();
-      prop.loc.end = prop.value.loc.end;
-      break;
-  }
-  return prop;
 };

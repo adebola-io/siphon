@@ -1,4 +1,5 @@
 import { Stack } from "../../../../../structures";
+import Errors from "../../../../errors";
 import { Context, ErrorTypes, Program } from "../../../../types";
 import {
   assoc,
@@ -8,14 +9,22 @@ import {
   precedence,
   trace,
 } from "../../../../utils";
-
+var spreadcontexts = ["array", "expression", "object"];
+var commacontexts = ["array", "object", "property", "parameters", "call"];
 export class parse_utils {
   text!: string;
   /** The program node output. */
   scope!: Program;
   /** The current character being parsed. */
   char!: string;
-  parseContext!: Context;
+  context!: Context;
+  contexts = new Stack();
+  allowSpread() {
+    return spreadcontexts.includes(this.contexts.top());
+  }
+  requireComma() {
+    return commacontexts.includes(this.contexts.top());
+  }
   /** The index of the current character being evaluated. */
   i = 0;
   /** The original index of the character in the source text.
@@ -27,19 +36,19 @@ export class parse_utils {
   operators = new Stack();
   belly = new Stack();
   brackets = 0;
+  isNew = false;
   /**
    * Throws an error.
    * @param message The error type to raise.
    */
   raise(message: ErrorTypes, token?: string) {
-    const p = trace("test/src/index.js", this.j);
-    throw new Error(p.line + ":" + p.col);
-    // throw { message, index: this.j, char: token ?? this.char };
+    Errors.enc(message, "test/src/index.min.js", this.j, token ?? this.char);
   }
   /**
    * Checks if the current operator being parsed has a lower precedence than the operator parsed before it.
    */
   lowerPrecedence() {
+    // console.log(this.operators.top(), this.belly.top());
     if (
       precedence[this.operators.top()] > precedence[this.belly.top()] ||
       (precedence[this.operators.top()] === precedence[this.belly.top()] &&
@@ -48,6 +57,9 @@ export class parse_utils {
       this.backtrack();
       return true;
     } else return false;
+  }
+  isNewCaseStatement() {
+    return this.predict("case") || this.predict("default") || this.char === "}";
   }
   /**
    * Checks if the next sequence of characters in the stream match a particular pattern.
@@ -97,8 +109,15 @@ export class parse_utils {
       ? (this.next(ptn.length), this.belly.push(ptn), true)
       : false;
   }
+  /**
+   * Check that the upcoming characters in the text stream follow a particular isolated pattern without advancing the token.
+   * @param ptn The pattern to predict.
+   */
   predict(ptn: string) {
-    return this.text.slice(this.i, this.i + ptn.length) === ptn ? true : false;
+    return this.text.slice(this.i, this.i + ptn.length) === ptn &&
+      !isValidIdentifierCharacter(this.peek(ptn.length))
+      ? true
+      : false;
   }
   /** Counts all the succeeding characters in the text stream that are numbers. */
   count() {
@@ -107,12 +126,22 @@ export class parse_utils {
     return num;
   }
   /** Skips over suceeding comments in the text stream. */
-  skip() {
-    if (this.belly.top() === "/*") while (!this.eat("*/")) this.next();
+  skip(contextual?: boolean) {
+    if (this.belly.top() === "/*")
+      while (!this.eat("*/")) {
+        contextual && this.char === "\n" && !this.newline
+          ? (this.newline = true)
+          : 0,
+          this.next();
+      }
     else {
       while (this.char !== "\n") this.next();
-      this.next();
+      contextual && this.char === "\n" && !this.newline
+        ? (this.newline = true)
+        : 0,
+        this.next();
     }
+    this.belly.pop();
   }
   /**
    * Arbitrarily reads strings from the text stream without advancing the token character,
@@ -162,6 +191,9 @@ export class parse_utils {
       flags,
     };
   }
+  glazeOverComments(contextual?: boolean) {
+    if (this.eat("//") || this.eat("/*")) this.skip(true);
+  }
   /** Skip over new lines and/or character spaces in a local expression, declaration or scope. */
   innerspace(skip_new_line = false) {
     if (skip_new_line)
@@ -169,9 +201,13 @@ export class parse_utils {
         this.char === "\n" && !this.newline ? (this.newline = true) : 0,
           this.next();
     else while (/\s|\r/.test(this.char) && this.char !== "\n") this.next();
+    this.glazeOverComments(skip_new_line);
+    if (/\s|\r|\n/.test(this.char)) this.innerspace(skip_new_line);
   }
   /** Skip over new lines and space characters in the global scope of the program. */
   outerspace() {
     while (/\s|\r|\n/.test(this.char)) this.next();
+    this.glazeOverComments();
+    if (/\s|\r|\n/.test(this.char)) this.outerspace();
   }
 }

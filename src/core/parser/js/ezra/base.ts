@@ -1,5 +1,6 @@
 import {
   ArrayExpression,
+  AssignmentPattern,
   BlockStatement,
   BreakStatement,
   ChainExpression,
@@ -49,6 +50,7 @@ export class ezra_internals extends parse_utils {
   chainExpression!: (exp: MemberExpression) => ChainExpression;
   thisExpression!: () => ThisExpression;
   callExpression!: (callee: JSNode) => JSNode;
+  arguments!: () => any;
   newExpression!: () => JSNode;
   updateExpression!: (argument: JSNode, prefix?: boolean) => JSNode;
   unaryExpression!: () => JSNode;
@@ -58,13 +60,15 @@ export class ezra_internals extends parse_utils {
   assignmentExpression!: (left: JSNode) => JSNode;
   sequenceExpression!: (left: JSNode) => JSNode;
   functionExpression!: (isAsync?: boolean) => JSNode;
-  arrowFunctionExpression!: (params?: JSNode) => JSNode;
+  parameter!: () => Identifier | AssignmentPattern;
+  arrowFunctionExpression!: (params?: JSNode, startAt?: number) => JSNode;
   arrayExpression!: () => ArrayExpression;
+  elements!: () => any;
   objectExpression!: () => ObjectExpression;
-  property!: () => Property;
+  property!: () => Property | SpreadElement;
   parameterize!: (params: any) => Array<JSNode>;
   emptyStatement!: () => EmptyStatement;
-  blockStatement!: () => BlockStatement;
+  blockStatement!: (eatComma?: boolean) => BlockStatement;
   tryExpressionStatement!: () => ExpressionStatment | undefined;
   ifStatement!: () => IfStatement;
   forStatement!: () => ForStatement | ForInStatement;
@@ -86,13 +90,13 @@ export class ezra_internals extends parse_utils {
   switchCases!: () => SwitchCase[];
 }
 export var ezra = ezra_internals.prototype;
-ezra.parse = function (input, from = 0, context = "global") {
-  this.parseContext = context;
+ezra.parse = function (input, from = 0) {
   this.scope = new Program(0);
   this.text = input;
   this.next(0);
+  this.contexts.push("global");
   this.j = this.from = from;
-  while (!this.end) this.scope.push(this.statement(context));
+  while (!this.end) this.scope.push(this.statement());
   this.scope.loc.end = this.text.length;
   delete this.scope.last;
   return this.scope;

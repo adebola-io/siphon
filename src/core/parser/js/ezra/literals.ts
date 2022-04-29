@@ -29,7 +29,7 @@ ezra.stringLiteral = function () {
   strlit.raw = str.value;
   strlit.value = eval(str.value);
   this.goto(str.end + 1);
-  strlit.loc.end = this.j - 1;
+  strlit.loc.end = this.j;
   return strlit;
 };
 ezra.booleanLiteral = function () {

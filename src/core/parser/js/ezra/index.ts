@@ -9,6 +9,8 @@ import "./reparse.js";
 import "./statements.js";
 import "./literals.js";
 import "./utils.js";
+import "./functions.js";
+import "./objects.js";
 import "./identifiers.js";
 
 interface options {
@@ -26,9 +28,9 @@ class Ezra {
     // try {
     return new ezra_internals().parse(input);
     // } catch (e: any) {
-    // throw new Error(e.message);
-    // Errors.enc(e.message, options.sourceFile, e.index, { token: e.char });
-    // return new Error();
+    //   // throw new Error(e.message);
+    //   Errors.enc(e.message, options.sourceFile, e.index, { token: e.char });
+    //   return new Error();
     // }
   }
   /**

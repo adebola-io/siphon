@@ -2,13 +2,18 @@ import {
   isOptional,
   isValidExpression,
   MemberExpression,
+  NewExpression,
 } from "../../../../types";
 import { isDigit, isValidIdentifierCharacter } from "../../../../utils";
 import { ezra } from "./base";
 
 ezra.reparse = function (node, context) {
   if (isValidExpression(node)) {
-    this.innerspace(true);
+    var onnewLine = "";
+    while (/\s|\n|\r/.test(this.char)) {
+      onnewLine += this.char;
+      this.next();
+    }
     switch (true) {
       case this.eat("/*"):
       case this.eat("//"):
@@ -17,20 +22,24 @@ ezra.reparse = function (node, context) {
       case this.char === ";":
         return node;
       case this.eat(","):
-        return this.sequenceExpression(node);
+        if (this.requireComma()) {
+          this.backtrack();
+          return node;
+        } else return this.sequenceExpression(node);
       case this.eat("."):
       case this.eat("?."):
         if (context === "number") this.raise("ID_FOLLOWS_LITERAL");
       case this.eat("["):
         return this.memberExpression(node);
       case this.eat("("):
-        if (context === "new") return node;
-        return this.callExpression(node);
+        if (this.contexts.top() === "new") {
+          this.backtrack();
+          return node;
+        } else return this.callExpression(node);
       case this.eat("++"):
       case this.eat("--"):
-        if (this.newline) {
+        if (onnewLine.includes("\n")) {
           this.recede();
-          this.newline = false;
           return node;
         } else {
           return this.updateExpression(node, false);
@@ -77,6 +86,7 @@ ezra.reparse = function (node, context) {
       case this.eat("=="):
       case this.eat("!="):
       case this.eat("&"):
+      case this.eat("|"):
         return this.binaryExpression(node);
       case this.eat("?"):
         return this.conditionalExpression(node);
@@ -86,8 +96,7 @@ ezra.reparse = function (node, context) {
       case /'|`|"/.test(this.char):
       case isDigit(this.char):
       case this.eat("{"):
-        if (this.newline) {
-          this.newline = false;
+        if (onnewLine.includes("\n")) {
           this.recede();
           return node;
         } else this.raise("JS_UNEXP_KEYWORD_OR_IDENTIFIER");
@@ -96,10 +105,6 @@ ezra.reparse = function (node, context) {
       return this.chainExpression(node);
     }
   }
-  if (node === undefined) {
-    this.outerspace();
-    if (this.eat("=>")) return this.arrowFunctionExpression();
-    this.raise("EXPRESSION_EXPECTED");
-  }
+  if (node === undefined) this.raise("EXPRESSION_EXPECTED");
   return node;
 };

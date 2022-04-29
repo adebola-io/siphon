@@ -2,9 +2,9 @@ import { readFileSync, writeFileSync } from "fs";
 import { Parser as Acorn } from "acorn";
 import Ezra from ".";
 
-const text = readFileSync("test/src/index.js").toString();
+const text = readFileSync("test/src/index.min.js").toString();
 
-const program = Ezra.parse(text, { sourceFile: "test/src/index.js" });
+const program = Ezra.parse(text, { sourceFile: "test/src/index.min.js" });
 writeFileSync("test/src/rive.json", JSON.stringify(program));
 
 // const program = Acorn.parse(text, { ecmaVersion: 2020, sourceType: "module" });

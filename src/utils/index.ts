@@ -169,7 +169,7 @@ export const imageExts: Array<string> = [
   ".webp",
 ];
 /**
- * COnfirm if a character is a numeric digit.
+ * Confirm if a character is a numeric digit.
  * @param char The character to evaluate.
  */
 export function isDigit(char?: string) {
@@ -650,6 +650,7 @@ export const precedence: any = {
   "[": 18,
   new: 18,
   "?.": 18,
+  call: 17,
   postfix: 16,
   prefix: 15,
   "**": 14,

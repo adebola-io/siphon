@@ -123,6 +123,8 @@ const Errors = {
         err("'export' expected.", source, charac);
       case "JS_ILLEGAL_ELSE":
         err("Unexpected else statement.", source, charac);
+      case "JS_PROPERTY_DEC_EXPECTED":
+        err("Property declaration expected.", source, charac);
       case "INVALID_NEW_META_PROPERTY":
         err(
           `'${options.token}' is not a valid meta-property for keyword 'new'. Did you mean 'target'?`,
@@ -178,6 +180,12 @@ const Errors = {
       case "JS_ILLEGAL_IMPORT":
         err(
           "An import statement can only be used at the top level of a module.",
+          source,
+          charac
+        );
+      case "JS_COMMA_IN_COMPUTED_PROP":
+        err(
+          "Commas are not allowed in computed property names.",
           source,
           charac
         );
