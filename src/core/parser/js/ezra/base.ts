@@ -44,7 +44,7 @@ export class ezra_internals extends parse_utils {
   statement!: (context?: Context) => Statement | undefined;
   expression!: (type?: string) => JSNode;
   reparse!: (node: JSNode, context?: string) => any;
-  identifier!: () => Identifier;
+  identifier!: (allowKeyword?: boolean) => Identifier;
   numberLiteral!: () => Literal;
   stringLiteral!: () => Literal;
   booleanLiteral!: () => Literal;

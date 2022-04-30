@@ -91,7 +91,7 @@ ezra.memberExpression = function (object) {
     memexp.property = this.group();
     if (memexp.property === undefined) this.raise("EXPRESSION_EXPECTED");
     memexp.computed = true;
-  } else memexp.property = this.identifier();
+  } else memexp.property = this.identifier(true);
   memexp.loc.start = memexp.object.loc.start;
   memexp.loc.end = memexp.property?.loc.end;
   if (this.belly.top() === "?.") memexp.optional = true;

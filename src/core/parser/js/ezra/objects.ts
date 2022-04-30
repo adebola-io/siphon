@@ -43,7 +43,7 @@ ezra.property = function () {
     } else this.raise("EXPECTED", ":");
   } else {
     // Normal Identifier keys.
-    prop.key = this.identifier();
+    prop.key = this.identifier(true);
     this.outerspace();
     if (this.eat(":")) prop.value = this.expression();
     else if (this.eat("(")) {

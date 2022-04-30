@@ -1,1 +1,3 @@
-export default React;
+import * as os from "os";
+
+export default os;

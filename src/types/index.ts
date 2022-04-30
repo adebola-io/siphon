@@ -48,6 +48,7 @@ export type ErrorTypes =
   | "JS_COMMA_IN_COMPUTED_PROP"
   | "JS_PROPERTY_DEC_EXPECTED"
   | "EXPECTED"
+  | "RESERVED"
   | "CATCH_NEW_PARAM"
   | "CATCH_ASSIGN"
   | "CONST_INIT"

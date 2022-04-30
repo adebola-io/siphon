@@ -42,7 +42,9 @@ export class parse_utils {
    * @param message The error type to raise.
    */
   raise(message: ErrorTypes, token?: string, at?: number) {
-    Errors.enc(message, "test/src/index.js", at ?? this.j, token ?? this.char);
+    Errors.enc(message, "test/src/index.js", at ?? this.j, {
+      token: token ?? this.char,
+    });
   }
   /**
    * Checks if the current operator being parsed has a lower precedence than the operator parsed before it.

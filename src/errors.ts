@@ -165,6 +165,12 @@ const Errors = {
           source,
           charac
         );
+      case "RESERVED":
+        err(
+          `'${options.token}' is a reserved keyword and cannot be used as an identifer.`,
+          source,
+          charac
+        );
       case "EXPECTED":
         err(`'${options.token}' expected.`, source, charac);
       case "COMMA_EXPECTED":
