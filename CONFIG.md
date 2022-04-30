@@ -36,7 +36,7 @@ Determines whether the bundler should write all external Javascript into the HTM
 
 Determines whether the bundler should write all external stylesheets into the HTML file. The default is `false`.
 
-#### `deep`
+#### `wickedMode`
 
 <p style='font-size:10pt; font-style: italic'> This parameter is experimental, and could exponentially increase your project load time, so it should only be used with very small projects and files. </p>
 

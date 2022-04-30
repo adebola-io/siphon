@@ -3,37 +3,6 @@
  * Useful structures and objects, handwritten in ES5 because Typescript has become an enemy of progress.
  */
 
-// /**
-//  * The extending function.
-//  */
-// var __extends =
-//   (this && this.__extends) ||
-//   (function () {
-//     var extendStatics = function (d, b) {
-//       extendStatics =
-//         Object.setPrototypeOf ||
-//         ({ __proto__: [] } instanceof Array &&
-//           function (d, b) {
-//             d.__proto__ = b;
-//           }) ||
-//         function (d, b) {
-//           for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-//         };
-//       return extendStatics(d, b);
-//     };
-//     return function (d, b) {
-//       extendStatics(d, b);
-//       function __() {
-//         this.constructor = d;
-//       }
-//       d.prototype =
-//         b === null
-//           ? Object.create(b)
-//           : ((__.prototype = b.prototype), new __());
-//     };
-//   })();
-
-//
 var Stack = /** @class */ (function () {
   function Stack() {
     this.arr = [];
@@ -167,40 +136,3 @@ exports.Queue = Queue;
 exports.TreeNode = TreeNode;
 exports.Tree = Tree;
 exports.Task = Task;
-
-// var AST = /** @class */ (function () {
-//   function AST() {
-//     this.Node = /** @class */ (function () {
-//       function Node() {
-//         this.start = null;
-//         this.stop = null;
-//         this.type = null;
-//       }
-//       return Node;
-//     })();
-//     this.Program = /** @class */ (function (_super) {
-//       __extends(Program, _super);
-//       function Program() {
-//         var _this = (_super !== null && _super.apply(this, arguments)) || this;
-//         _this.type = "Program";
-//         _this.body = [];
-//       }
-//       return Program;
-//     })(this.Node);
-//     this.VariableDeclaration = /**@class */ (function (_super) {
-//       __extends(VariableDeclaration, _super);
-//       function VariableDeclaration() {
-//         var _this = (_super !== null && _super.apply(this, arguments)) || this;
-//         _this.type = "VariableDeclaration";
-//         _this.body = [];
-//         _this.declarators = [];
-//       }
-//       return VariableDeclaration;
-//     })();
-//   }
-//   return AST;
-// })();
-
-// var jsTree = new AST();
-// var program = new jsTree.Program();
-// console.log(program);

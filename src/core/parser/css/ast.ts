@@ -1,10 +1,9 @@
-import { PathLike, readFileSync, writeFileSync } from "fs";
+import { PathLike, readFileSync} from "fs";
 import Errors from "../../../errors";
 import {
   checkForEnd,
   isIllegalCSSIdentifier,
   isSpaceCharac,
-  trace,
 } from "../../../utils";
 import {
   Stylesheet,

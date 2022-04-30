@@ -47,7 +47,7 @@ This command will read the file, determine all its required assets, and bundle t
 
 Running Siphon in watch mode will set it to automatically bundle up your project whenever changes are made to the base file or its assets.
 
-**By default, Siphon assumes your base file is src/start.html, and all your assets are stored in the src folder.**
+**By default, Siphon assumes your base file is src/index.html, and all your assets are stored in the src folder.**
 
 To run Siphon in watch mode, cd to the root of your project and run the command:
 

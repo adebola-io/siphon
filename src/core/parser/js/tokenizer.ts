@@ -4,8 +4,7 @@ import {
   operators,
   stringMarkers,
   isNum,
-  OPERATORS,
-  keywords,
+  JSkeywords,
 } from "../../../utils";
 export interface Token {
   token_type?: string;
@@ -53,7 +52,7 @@ function tokenize(text: string, options?: siphonOptions) {
             };
           } else token.token_type = "IntegerLiteral";
           break;
-        case keywords.includes(token.value):
+        case JSkeywords.ES5.includes(token.value):
           token.token_type = "Keyword";
           break;
       }

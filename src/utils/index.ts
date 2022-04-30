@@ -30,6 +30,11 @@ export function fileExists(srcpath: PathLike) {
 export interface datingOptions {
   noDate?: boolean;
 }
+/**
+ * 
+ * @param options Dating Options
+ * @returns A new time stamp.
+ */
 export function newTimeStamp(options?: datingOptions) {
   function nte(unit: number) {
     return `${unit.toString().length === 1 ? `0${unit}` : unit}`;
@@ -195,6 +200,10 @@ export function lastRealChar(str: string) {
   while (str[i] && /\n|\r|\s/.test(str[i])) i--;
   return { character: str[i], index: i };
 }
+/**
+ * Returns the last item in an array.
+ * @param array 
+ */
 export function last(array: Array<any>) {
   return array[array.length - 1];
 }
@@ -407,10 +416,10 @@ export function trace(source: PathLike, character: number) {
   return { line, col: col + 1 };
 }
 export function isAlphaNumeric(character: string | undefined) {
-  return isAlphabetic(character) || isNum(character);
+  return isAlphabetic(character) || isDigit(character);
 }
 export function isValidIdentifierCharacter(char: string) {
-  return isAlphabetic(char) || isNum(char) || /\$|\_/.test(char);
+  return isAlphabetic(char) || isDigit(char) || /\$|\_/.test(char);
 }
 /**
  * Confirm validity of CSS identifiers.
