@@ -5,6 +5,7 @@ import {
   BreakStatement,
   ChainExpression,
   ClassDeclaration,
+  ClassExpression,
   Context,
   DoWhileStatement,
   EmptyStatement,
@@ -70,6 +71,7 @@ export class ezra_internals extends parse_utils {
   assignmentExpression!: (left: JSNode) => JSNode;
   sequenceExpression!: (left: JSNode) => JSNode;
   functionExpression!: (isAsync?: boolean) => JSNode;
+  classExpression!: () => ClassExpression;
   super!: () => Super;
   importExpression!: () => ImportExpression;
   parameter!: () => Identifier | AssignmentPattern;

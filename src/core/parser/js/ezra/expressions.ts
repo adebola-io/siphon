@@ -63,6 +63,8 @@ ezra.expression = function (type) {
     case this.eat("..."):
       if (this.allowSpread()) return this.spreadElement();
       else this.raise("EXPRESSION_EXPECTED");
+    case this.match("class"):
+      return this.reparse(this.classExpression());
     case this.match("super"):
       return this.reparse(this.super());
     case this.match("import"):

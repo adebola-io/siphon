@@ -6,6 +6,7 @@ import {
   Identifier,
   PropertyDefinition,
   PrivateIdentifier,
+  ClassExpression,
 } from "../../../../types";
 import { isDigit } from "../../../../utils";
 import { ezra } from "./base";
@@ -140,4 +141,30 @@ ezra.privateIdentifier = function () {
   priv.name = identifier.name;
   priv.loc.end = identifier.loc.end;
   return priv;
+};
+ezra.classExpression = function () {
+  const classexp = new ClassExpression(this.j - 5);
+  this.outerspace();
+  if (this.char !== "{") {
+    classexp.id = this.identifier();
+    this.outerspace();
+    if (this.match("extends")) {
+      this.contexts.push("super_class");
+      classexp.superClass = this.expression();
+      this.contexts.pop();
+    }
+    this.outerspace();
+  }
+  if (!this.eat("{")) this.raise("EXPECTED", "{");
+  classexp.body = new ClassBody(this.j);
+  classexp.body.body = this.group("class_body");
+  // Block duplicate constructors.
+  if (
+    classexp.body.body.filter((def: any) => def.kind === "constructor").length >
+    1
+  ) {
+    this.raise("JS_DUPLICATE_CONSTRUCTORS");
+  }
+  classexp.loc.end = classexp.body.loc.end = this.j;
+  return this.reparse(classexp);
 };

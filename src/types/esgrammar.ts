@@ -44,8 +44,9 @@ export class Identifier extends JSNode {
   type = "Identifier";
   name = "";
 }
-export class PrivateIdentifier extends Identifier {
+export class PrivateIdentifier extends JSNode {
   type = "PrivateIdentifier";
+  name = "";
 }
 // Declarations.
 export type Declaration =
@@ -270,6 +271,7 @@ export type Expression =
   | ImportExpression
   | UnaryExpression
   | ThisExpression
+  | ClassExpression
   | Literal;
 export class NewExpression extends JSNode {
   type = "NewExpression";
@@ -282,6 +284,12 @@ export class ThisExpression extends JSNode {
 export class ImportExpression extends JSNode {
   type = "ImportExpression";
   source!: any;
+}
+export class ClassExpression extends JSNode {
+  type = "ClassExpression";
+  id: Identifier | null = null;
+  superClass: Expression | null = null;
+  body!: ClassBody;
 }
 export class UnaryExpression extends JSNode {
   type = "UnaryExpression";

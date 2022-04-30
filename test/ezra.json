@@ -1,84 +1,82 @@
 {
   "type": "Program",
-  "loc": { "start": 0, "end": 103 },
+  "loc": { "start": 0, "end": 87 },
   "body": [
     {
-      "type": "FunctionDeclaration",
-      "loc": { "start": 0, "end": 101 },
-      "params": [],
+      "type": "ClassDeclaration",
+      "loc": { "start": 0, "end": 13 },
       "id": {
         "type": "Identifier",
-        "loc": { "start": 9, "end": 9 },
-        "name": "g"
+        "loc": { "start": 6, "end": 9 },
+        "name": "Anil"
+      },
+      "superClass": null,
+      "body": {
+        "type": "ClassBody",
+        "loc": { "start": 12, "end": 13 },
+        "body": []
+      }
+    },
+    {
+      "type": "ClassDeclaration",
+      "loc": { "start": 15, "end": 44 },
+      "id": {
+        "type": "Identifier",
+        "loc": { "start": 21, "end": 27 },
+        "name": "Majesty"
+      },
+      "superClass": {
+        "type": "Identifier",
+        "loc": { "start": 37, "end": 40 },
+        "name": "Anil"
       },
       "body": {
-        "type": "BlockStatement",
-        "loc": { "start": 13, "end": 101 },
-        "body": [
+        "type": "ClassBody",
+        "loc": { "start": 43, "end": 44 },
+        "body": []
+      }
+    },
+    {
+      "type": "ExpressionStatement",
+      "loc": { "start": 46, "end": 84 },
+      "expression": {
+        "type": "CallExpression",
+        "loc": { "start": 46, "end": 84 },
+        "callee": {
+          "type": "MemberExpression",
+          "loc": { "start": 46, "end": 56 },
+          "optional": false,
+          "computed": false,
+          "object": {
+            "type": "Identifier",
+            "loc": { "start": 46, "end": 52 },
+            "name": "console"
+          },
+          "property": {
+            "type": "Identifier",
+            "loc": { "start": 54, "end": 56 },
+            "name": "log"
+          }
+        },
+        "arguments": [
           {
-            "type": "ClassDeclaration",
-            "loc": { "start": 18, "end": 69 },
+            "type": "ClassExpression",
+            "loc": { "start": 58, "end": 83 },
             "id": {
               "type": "Identifier",
-              "loc": { "start": 24, "end": 27 },
-              "name": "Body"
+              "loc": { "start": 64, "end": 66 },
+              "name": "Ade"
             },
-            "superClass": null,
+            "superClass": {
+              "type": "ObjectExpression",
+              "loc": { "start": 77, "end": 79 },
+              "properties": []
+            },
             "body": {
               "type": "ClassBody",
-              "loc": { "start": 30, "end": 69 },
-              "body": [
-                {
-                  "type": "PropertyDefinition",
-                  "loc": { "start": 36, "end": 63 },
-                  "computed": false,
-                  "static": false,
-                  "key": {
-                    "type": "Identifier",
-                    "loc": { "start": 36, "end": 36 },
-                    "name": "r"
-                  },
-                  "value": {
-                    "type": "MemberExpression",
-                    "loc": { "start": 40, "end": 62 },
-                    "optional": false,
-                    "computed": false,
-                    "object": {
-                      "type": "ThisExpression",
-                      "loc": { "start": 40, "end": 44 }
-                    },
-                    "property": {
-                      "type": "PrivateIdentifier",
-                      "loc": { "start": 46, "end": 62 },
-                      "name": "privateidentifier"
-                    }
-                  }
-                }
-              ]
+              "loc": { "start": 82, "end": 83 },
+              "body": []
             }
-          },
-          {
-            "type": "IfStatement",
-            "loc": { "start": 75 },
-            "test": {
-              "type": "ExpressionStatement",
-              "loc": { "start": 77, "end": 83 },
-              "expression": {
-                "type": "Identifier",
-                "loc": { "start": 77, "end": 83 },
-                "name": "majesty"
-              }
-            },
-            "consequent": {
-              "type": "ReturnStatement",
-              "loc": { "start": 86, "end": 98 },
-              "argument": {
-                "type": "Identifier",
-                "loc": { "start": 93, "end": 96 },
-                "name": "Body"
-              }
-            },
-            "alternate": null
           }
         ]
       }
