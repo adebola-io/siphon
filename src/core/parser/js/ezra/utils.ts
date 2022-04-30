@@ -41,8 +41,8 @@ export class parse_utils {
    * Throws an error.
    * @param message The error type to raise.
    */
-  raise(message: ErrorTypes, token?: string) {
-    Errors.enc(message, "test/src/index.min.js", this.j, token ?? this.char);
+  raise(message: ErrorTypes, token?: string, at?: number) {
+    Errors.enc(message, "test/src/index.js", at ?? this.j, token ?? this.char);
   }
   /**
    * Checks if the current operator being parsed has a lower precedence than the operator parsed before it.

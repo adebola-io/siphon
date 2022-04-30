@@ -1,6 +1,6 @@
 import { PathLike } from "fs";
 export * from "./cssgrammar";
-export * from "./jsgrammar";
+export * from "./esgrammar";
 
 export type ErrorTypes =
   | "FILE_NON_EXISTENT"

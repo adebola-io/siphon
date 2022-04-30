@@ -1,6 +1,7 @@
 import {
   ArrowFunctionExpression,
   AssignmentPattern,
+  FunctionDeclaration,
   FunctionExpression,
   Identifier,
   isValidParameter,
@@ -10,6 +11,19 @@ import {
 import { isValidIdentifierCharacter } from "../../../../utils";
 import { ezra } from "./base";
 
+ezra.functionDeclaration = function () {
+  const func = new FunctionDeclaration(this.j - 8);
+  this.outerspace();
+  func.id = this.identifier();
+  this.outerspace();
+  if (!this.eat("(")) this.raise("OPEN_BRAC_EXPECTED");
+  func.params = this.group("parameters");
+  this.outerspace();
+  if (!this.eat("{")) this.raise("OPEN_CURLY_EXPECTED");
+  else func.body = this.blockStatement();
+  func.loc.end = this.j;
+  return func;
+};
 ezra.parameter = function () {
   const name = this.identifier();
   this.outerspace();

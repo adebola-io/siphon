@@ -51,7 +51,8 @@ export type Context =
   | "switch"
   | "array"
   | "switch_block"
-  | "import";
+  | "import"
+  | "export";
 // Statements.
 export type Statement =
   | ExpressionStatment
@@ -292,11 +293,11 @@ export class SequenceExpression extends JSNode {
 }
 export class ArrowFunctionExpression extends JSNode {
   type = "ArrowFunctionExpression";
-  id!: Identifier | null;
-  expression!: boolean;
+  id: Identifier | null = null;
+  expression: boolean = false;
   params: Array<JSNode | undefined> = [];
-  generator!: boolean;
-  async!: boolean;
+  generator: boolean = false;
+  async: boolean = false;
   body!: Expression | BlockStatement;
 }
 export class Literal extends JSNode {
@@ -351,9 +352,23 @@ export class ImportNamespaceSpecifier extends JSNode {
 }
 export class ExportNamedDeclaration extends JSNode {
   type = "ExportNamedDeclaration";
-  declaration!: null;
-  specifiers: Array<ImportSpecifier> = [];
-  source!: null;
+  declaration: Statement | undefined | null = null;
+  specifiers: Array<ExportSpecifier> = [];
+  source!: Literal | null;
+}
+export class ExportSpecifier extends JSNode {
+  type = "ExportSpecifier";
+  exported!: Identifier;
+  local!: Identifier;
+}
+export class ExportDefaultDeclaration extends JSNode {
+  type = "ExportDefaultDeclaration";
+  declaration!: Expression;
+}
+export class ExportAllDeclaration extends JSNode {
+  type = "ExportAllDeclaration";
+  exported!: Identifier | null;
+  source!: Literal;
 }
 export function isValidExpression(node?: JSNodes) {
   return node

@@ -7,6 +7,10 @@ import {
   Context,
   DoWhileStatement,
   EmptyStatement,
+  ExportAllDeclaration,
+  ExportDefaultDeclaration,
+  ExportNamedDeclaration,
+  ExportSpecifier,
   ExpressionStatment,
   ForInStatement,
   ForStatement,
@@ -86,6 +90,11 @@ export class ezra_internals extends parse_utils {
   declarators!: (expression: any, kind: string) => any;
   importDeclaration!: () => ImportDeclaration;
   importSpecifier!: () => ImportSpecifier;
+  exportDeclaration!: () =>
+    | ExportNamedDeclaration
+    | ExportDefaultDeclaration
+    | ExportAllDeclaration;
+  exportSpecifier!: () => ExportSpecifier;
   spreadElement!: () => SpreadElement;
   switchCases!: () => SwitchCase[];
 }

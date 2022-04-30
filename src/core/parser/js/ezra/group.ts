@@ -29,6 +29,7 @@ ezra.group = function (context = "expression") {
   this.contexts.pop();
   switch (context) {
     case "import":
+    case "export":
     case "block":
     case "switch_block":
     case "for":

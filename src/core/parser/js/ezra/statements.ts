@@ -11,13 +11,8 @@ import {
   ExpressionStatment,
   ForInStatement,
   ForStatement,
-  FunctionDeclaration,
   Identifier,
   IfStatement,
-  ImportDeclaration,
-  ImportDefaultSpecifier,
-  ImportNamespaceSpecifier,
-  ImportSpecifier,
   isValidForInParam,
   isValidForParam,
   JSNode,
@@ -25,7 +20,6 @@ import {
   ObjectPattern,
   ReturnStatement,
   SequenceExpression,
-  SpreadElement,
   SwitchCase,
   SwitchStatement,
   ThrowStatement,
@@ -34,7 +28,7 @@ import {
   VariableDeclarator,
   WhileStatement,
 } from "../../../../types";
-import { ezra, ezra_internals } from "./base";
+import { ezra } from "./base";
 
 ezra.statement = function () {
   this.outerspace();
@@ -53,6 +47,8 @@ ezra.statement = function () {
       return this.elements();
     case this.contexts.top() === "import":
       return this.importSpecifier();
+    case this.contexts.top() === "export":
+      return this.exportSpecifier();
     case this.contexts.top() === "call":
       return this.arguments();
       break;
@@ -114,9 +110,10 @@ ezra.statement = function () {
         this.contexts.top() !== "global" ||
         this.scope.body.find((node) => node.type !== "ImportDeclaration")
       ) {
-        console.log(this.contexts);
         this.raise("JS_ILLEGAL_IMPORT");
       } else return this.importDeclaration();
+    case this.match("export"):
+      return this.exportDeclaration();
     case this.match("default"):
       this.raise("JS_EXPORT_EXPECTED");
     default:
@@ -311,26 +308,6 @@ ezra.returnStatement = function () {
   retstat.loc.end = this.j;
   return retstat;
 };
-ezra.functionDeclaration = function () {
-  const func = new FunctionDeclaration(this.j - 8);
-  this.outerspace();
-  func.id = this.identifier();
-  this.outerspace();
-  if (!this.eat("(")) this.raise("OPEN_BRAC_EXPECTED");
-  func.params = this.group("parameters");
-  this.outerspace();
-  if (!this.eat("{")) this.raise("OPEN_CURLY_EXPECTED");
-  else func.body = this.blockStatement();
-  func.loc.end = this.j;
-  return func;
-};
-ezra.spreadElement = function () {
-  this.outerspace();
-  const spread = new SpreadElement(this.j - 3);
-  spread.argument = this.reparse(this.identifier());
-  spread.loc.end = spread.argument.loc.end;
-  return spread;
-};
 ezra.variableDeclaration = function () {
   let kind = this.belly.pop();
   const vardec = new VariableDeclaration(this.j - kind.length);
@@ -386,72 +363,4 @@ ezra.declarators = function (expressionList, kind) {
     });
   } else declarations.push(confirmDec(expressionList));
   return declarations;
-};
-ezra.importDeclaration = function () {
-  const importdec = new ImportDeclaration(this.j - 6);
-  if (this.eat("{")) {
-    const importspecs = this.group("import");
-    if (importspecs === undefined) this.raise("IDENTIFIER_EXPECTED");
-    else importdec.specifiers.push(...importspecs);
-  } else if (this.char === "*") {
-    const namespce = new ImportNamespaceSpecifier(this.j);
-    this.next();
-    this.outerspace();
-    if (!this.match("as")) this.raise("EXPECTED", "as");
-    this.outerspace();
-    namespce.local = this.identifier();
-    namespce.loc.end = namespce.local.loc.end;
-    importdec.specifiers.push(namespce);
-  } else if (/'|"/.test(this.char)) {
-    importdec.source = this.stringLiteral();
-    importdec.loc.end = this.j;
-    this.outerspace();
-    this.eat(";");
-    return importdec;
-  } else {
-    const defaultdec = new ImportDefaultSpecifier(this.j);
-    defaultdec.local = this.identifier();
-    defaultdec.loc.end = defaultdec.local.loc.end;
-    importdec.specifiers.push(defaultdec);
-    this.outerspace();
-    if (this.eat(",")) {
-      this.outerspace();
-      if (!this.eat("{")) this.raise("OPEN_CURLY_EXPECTED");
-      else {
-        const importspecs = this.group("import");
-        if (importspecs === undefined) this.raise("IDENTIFIER_EXPECTED");
-        else importdec.specifiers.push(...importspecs);
-      }
-    }
-  }
-  this.outerspace();
-  if (this.match("from")) {
-    this.outerspace();
-    if (!/'|"/.test(this.char)) this.raise("JS_UNEXPECTED_TOKEN");
-    importdec.source = this.stringLiteral();
-  } else this.raise("EXPECTED", "from");
-  importdec.loc.end = this.j;
-  this.outerspace();
-  this.eat(";");
-  return importdec;
-};
-ezra.importSpecifier = function () {
-  const importspec = new ImportSpecifier(this.j - 1);
-  this.outerspace();
-  importspec.imported = this.identifier();
-  this.outerspace();
-  switch (true) {
-    case this.char === ",":
-    default:
-      importspec.local = importspec.imported;
-      break;
-    case this.match("as"):
-      this.outerspace();
-      importspec.local = this.identifier();
-      this.outerspace();
-      break;
-  }
-  importspec.loc.end = this.j;
-  if (this.char !== "}") this.next();
-  return importspec;
 };

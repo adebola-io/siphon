@@ -1,6 +1,5 @@
 import {
   isValidPropertyKeyStart,
-  JSNode,
   Property,
   SpreadElement,
 } from "../../../../types";
@@ -69,4 +68,12 @@ ezra.elements = function () {
     this.outerspace();
   }
   return args;
+};
+
+ezra.spreadElement = function () {
+  this.outerspace();
+  const spread = new SpreadElement(this.j - 3);
+  spread.argument = this.reparse(this.identifier());
+  spread.loc.end = spread.argument.loc.end;
+  return spread;
 };
