@@ -10,6 +10,7 @@ import "./statements.js";
 import "./literals.js";
 import "./utils.js";
 import "./functions.js";
+import "./classes.js";
 import "./objects.js";
 import "./identifiers.js";
 

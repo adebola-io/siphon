@@ -29,6 +29,24 @@ export class Program extends JSNode {
   /** The last node appended to the body of the program. */
   last?: JSNodes;
 }
+export class Literal extends JSNode {
+  type = "Literal";
+  kind?: "number" | "string" | "regex" | "boolean" | "bigint" | "null";
+  value?: number | string | RegExp | boolean | null;
+  raw = "";
+  regex?: {
+    pattern: string;
+    flags: string;
+  };
+  bigint?: string;
+}
+export class Identifier extends JSNode {
+  type = "Identifier";
+  name = "";
+}
+export class PrivateIdentifier extends Identifier {
+  type = "PrivateIdentifier";
+}
 // Declarations.
 export type Declaration =
   | FunctionDeclaration
@@ -56,6 +74,34 @@ export class FunctionDeclaration extends JSNode {
   async!: boolean;
   params: Array<JSNode | undefined> = [];
   body!: BlockStatement;
+}
+export class ClassDeclaration extends JSNode {
+  type = "ClassDeclaration";
+  id: Identifier | null = null;
+  superClass: Expression | null = null;
+  body!: ClassBody;
+}
+export class ClassBody extends JSNode {
+  type = "ClassBody";
+  body: Array<MethodDefinition | PropertyDefinition> = [];
+}
+export class MethodDefinition extends JSNode {
+  type = "MethodDefinition";
+  key!: Expression;
+  value!: any;
+  kind!: "constructor" | "method" | "get" | "set";
+  computed!: boolean;
+  static!: boolean;
+}
+export class PropertyDefinition extends JSNode {
+  type = "PropertyDefinition";
+  key!: Expression | PrivateIdentifier;
+  value!: any;
+  computed!: boolean;
+  static!: boolean;
+}
+export class Super extends JSNode {
+  type = "Super";
 }
 export class ImportDeclaration extends JSNode {
   type = "ImportDeclaration";
@@ -112,6 +158,7 @@ export type Context =
   | "switch"
   | "array"
   | "switch_block"
+  | "class_body"
   | "import"
   | "export";
 // Statements.
@@ -332,21 +379,6 @@ export class ArrowFunctionExpression extends JSNode {
   generator: boolean = false;
   async: boolean = false;
   body!: Expression | BlockStatement;
-}
-export class Literal extends JSNode {
-  type = "Literal";
-  kind?: "number" | "string" | "regex" | "boolean" | "bigint" | "null";
-  value?: number | string | RegExp | boolean | null;
-  raw = "";
-  regex?: {
-    pattern: string;
-    flags: string;
-  };
-  bigint?: string;
-}
-export class Identifier extends JSNode {
-  type = "Identifier";
-  name = "";
 }
 export class AssignmentPattern extends JSNode {
   type = "AssignmentPattern";

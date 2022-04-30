@@ -1,1 +1,87 @@
-{"type":"Program","loc":{"start":0,"end":68},"body":[{"type":"FunctionDeclaration","loc":{"start":0,"end":50},"params":[],"id":{"type":"Identifier","loc":{"start":9,"end":19},"name":"getFileName"},"body":{"type":"BlockStatement","loc":{"start":23,"end":50},"body":[{"type":"ReturnStatement","loc":{"start":28,"end":47},"argument":{"type":"Literal","loc":{"start":35,"end":46},"raw":"\"./file.js\"","kind":"string","value":"./file.js"}}]}},{"type":"ExpressionStatement","loc":{"start":52,"end":65},"expression":{"type":"ImportExpression","loc":{"start":52,"end":65},"source":{"type":"BinaryExpression","loc":{"start":59,"end":64},"operator":"+","left":{"type":"Literal","loc":{"start":59,"end":60},"raw":"9","kind":"number","value":9},"right":{"type":"Literal","loc":{"start":63,"end":64},"raw":"2","kind":"number","value":2}}}}]}
+{
+  "type": "Program",
+  "loc": { "start": 0, "end": 103 },
+  "body": [
+    {
+      "type": "FunctionDeclaration",
+      "loc": { "start": 0, "end": 101 },
+      "params": [],
+      "id": {
+        "type": "Identifier",
+        "loc": { "start": 9, "end": 9 },
+        "name": "g"
+      },
+      "body": {
+        "type": "BlockStatement",
+        "loc": { "start": 13, "end": 101 },
+        "body": [
+          {
+            "type": "ClassDeclaration",
+            "loc": { "start": 18, "end": 69 },
+            "id": {
+              "type": "Identifier",
+              "loc": { "start": 24, "end": 27 },
+              "name": "Body"
+            },
+            "superClass": null,
+            "body": {
+              "type": "ClassBody",
+              "loc": { "start": 30, "end": 69 },
+              "body": [
+                {
+                  "type": "PropertyDefinition",
+                  "loc": { "start": 36, "end": 63 },
+                  "computed": false,
+                  "static": false,
+                  "key": {
+                    "type": "Identifier",
+                    "loc": { "start": 36, "end": 36 },
+                    "name": "r"
+                  },
+                  "value": {
+                    "type": "MemberExpression",
+                    "loc": { "start": 40, "end": 62 },
+                    "optional": false,
+                    "computed": false,
+                    "object": {
+                      "type": "ThisExpression",
+                      "loc": { "start": 40, "end": 44 }
+                    },
+                    "property": {
+                      "type": "PrivateIdentifier",
+                      "loc": { "start": 46, "end": 62 },
+                      "name": "privateidentifier"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "IfStatement",
+            "loc": { "start": 75 },
+            "test": {
+              "type": "ExpressionStatement",
+              "loc": { "start": 77, "end": 83 },
+              "expression": {
+                "type": "Identifier",
+                "loc": { "start": 77, "end": 83 },
+                "name": "majesty"
+              }
+            },
+            "consequent": {
+              "type": "ReturnStatement",
+              "loc": { "start": 86, "end": 98 },
+              "argument": {
+                "type": "Identifier",
+                "loc": { "start": 93, "end": 96 },
+                "name": "Body"
+              }
+            },
+            "alternate": null
+          }
+        ]
+      }
+    }
+  ]
+}

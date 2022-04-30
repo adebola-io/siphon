@@ -6,7 +6,6 @@ import {
   ChainExpression,
   ConditionalExpression,
   Expression,
-  Identifier,
   ImportExpression,
   isValidReference,
   LogicalExpression,
@@ -18,7 +17,7 @@ import {
   UnaryExpression,
   UpdateExpression,
 } from "../../../../types";
-import { isDigit, isNum, isValidIdentifierCharacter } from "../../../../utils";
+import { isDigit, isValidIdentifierCharacter } from "../../../../utils";
 import { ezra } from "./base";
 
 ezra.expression = function (type) {
@@ -64,6 +63,10 @@ ezra.expression = function (type) {
     case this.eat("..."):
       if (this.allowSpread()) return this.spreadElement();
       else this.raise("EXPRESSION_EXPECTED");
+    case this.match("super"):
+      return this.reparse(this.super());
+    case this.match("import"):
+      return this.reparse(this.importExpression());
     case this.match("function"):
       return this.reparse(this.functionExpression());
     case isValidIdentifierCharacter(this.char):
@@ -88,6 +91,12 @@ ezra.memberExpression = function (object) {
     memexp.property = this.group();
     if (memexp.property === undefined) this.raise("EXPRESSION_EXPECTED");
     memexp.computed = true;
+  } else if (this.char === "#") {
+    let contexts: any = { ...this.contexts };
+    if (contexts.arr.includes("class_body")) {
+      this.next();
+      memexp.property = this.privateIdentifier();
+    } else this.raise("JS_ILLEGAL_PRIV_IDENT");
   } else memexp.property = this.identifier(true);
   memexp.loc.start = memexp.object.loc.start;
   memexp.loc.end = memexp.property?.loc.end;
@@ -111,14 +120,17 @@ ezra.callExpression = function (callee) {
   callexp.callee = callee;
   callexp.arguments = this.group("call") ?? [];
   callexp.loc.end = this.j;
-  if (callee instanceof Identifier && callee.name === "import") {
-    const importexp = new ImportExpression(callee.loc.start);
-    if (callexp.arguments.length !== 1)
-      this.raise("JS_ILLEGAL_IMPORT_EXP", undefined, this.j - 1);
-    else importexp.source = callexp.arguments[0];
-    importexp.loc.end = this.j;
-    return this.reparse(importexp);
-  } else return this.reparse(callexp);
+  return this.reparse(callexp);
+};
+ezra.importExpression = function () {
+  const importexp = new ImportExpression(this.j - 6);
+  this.outerspace();
+  if (!this.eat("(")) this.raise("EXPECTED", "(");
+  var source = this.group("call") ?? [];
+  if (source.length !== 1) this.raise("JS_ILLEGAL_IMPORT_EXP");
+  importexp.source = source[0];
+  importexp.loc.end = this.j;
+  return this.reparse(importexp);
 };
 ezra.arguments = function () {
   const args = [];

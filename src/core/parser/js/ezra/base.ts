@@ -4,6 +4,7 @@ import {
   BlockStatement,
   BreakStatement,
   ChainExpression,
+  ClassDeclaration,
   Context,
   DoWhileStatement,
   EmptyStatement,
@@ -18,16 +19,21 @@ import {
   Identifier,
   IfStatement,
   ImportDeclaration,
+  ImportExpression,
   ImportSpecifier,
   JSNode,
   Literal,
   MemberExpression,
+  MethodDefinition,
   ObjectExpression,
+  PrivateIdentifier,
   Program,
   Property,
+  PropertyDefinition,
   ReturnStatement,
   SpreadElement,
   Statement,
+  Super,
   SwitchCase,
   SwitchStatement,
   ThisExpression,
@@ -64,6 +70,8 @@ export class ezra_internals extends parse_utils {
   assignmentExpression!: (left: JSNode) => JSNode;
   sequenceExpression!: (left: JSNode) => JSNode;
   functionExpression!: (isAsync?: boolean) => JSNode;
+  super!: () => Super;
+  importExpression!: () => ImportExpression;
   parameter!: () => Identifier | AssignmentPattern;
   arrowFunctionExpression!: (params?: JSNode, startAt?: number) => JSNode;
   arrayExpression!: () => ArrayExpression;
@@ -88,6 +96,9 @@ export class ezra_internals extends parse_utils {
   functionDeclaration!: () => FunctionDeclaration;
   variableDeclaration!: () => VariableDeclaration;
   declarators!: (expression: any, kind: string) => any;
+  classDeclaration!: () => ClassDeclaration;
+  privateIdentifier!: () => PrivateIdentifier;
+  definition!: () => PropertyDefinition | MethodDefinition;
   importDeclaration!: () => ImportDeclaration;
   importSpecifier!: () => ImportSpecifier;
   exportDeclaration!: () =>

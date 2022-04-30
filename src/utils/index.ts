@@ -31,7 +31,7 @@ export interface datingOptions {
   noDate?: boolean;
 }
 /**
- * 
+ *
  * @param options Dating Options
  * @returns A new time stamp.
  */
@@ -202,7 +202,7 @@ export function lastRealChar(str: string) {
 }
 /**
  * Returns the last item in an array.
- * @param array 
+ * @param array
  */
 export function last(array: Array<any>) {
   return array[array.length - 1];

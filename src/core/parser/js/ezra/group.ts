@@ -36,6 +36,7 @@ ezra.group = function (context = "expression") {
     case "object":
     case "parameters":
     case "array":
+    case "class_body":
       return scope2.body;
     case "call":
       return scope2.body[0];
@@ -65,12 +66,9 @@ ezra.group = function (context = "expression") {
           return this.arrowFunctionExpression(undefined, mark);
       }
     default:
-      if (
-        scope2.body.length > 1 ||
-        !(scope2.body[0] instanceof ExpressionStatment)
-      ) {
+      if (scope2.body.length > 1) {
         this.raise("EXPRESSION_EXPECTED");
-      } else return scope2.body[0].expression;
+      } else return scope2.body[0];
   }
   return scope2.body;
 };

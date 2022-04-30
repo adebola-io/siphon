@@ -32,27 +32,24 @@ import { ezra } from "./base";
 
 ezra.statement = function () {
   this.outerspace();
-  switch (true) {
-    case this.end:
-      return;
-    case this.eat("/*"):
-    case this.eat("//"):
-      this.skip();
-      break;
-    case this.contexts.top() === "object":
+  switch (this.contexts.top()) {
+    case "class_body":
+      return this.definition();
+    case "object":
       return this.property();
-    case this.contexts.top() === "parameters":
+    case "parameters":
       return this.parameter();
-    case this.contexts.top() === "array":
+    case "array":
       return this.elements();
-    case this.contexts.top() === "import":
+    case "import":
       return this.importSpecifier();
-    case this.contexts.top() === "export":
+    case "export":
       return this.exportSpecifier();
-    case this.contexts.top() === "call":
+    case "expression":
+      return this.expression();
+    case "call":
       return this.arguments();
-      break;
-    case this.contexts.top() === "switch_block":
+    case "switch_block":
       if (!(this.match("case") || this.match("default")) && !this.end) {
         this.raise("JS_CASE_EXPECTED");
       } else if (this.char === "}") {
@@ -61,6 +58,12 @@ ezra.statement = function () {
         let isDefault = this.belly.top() === "default" ?? false;
         return this.caseStatement(isDefault);
       }
+    default:
+      break;
+  }
+  switch (true) {
+    case this.end:
+      return;
     case this.eat("{"):
       if (!["block", "global"].includes(this.contexts.top())) {
         this.backtrack();
@@ -90,27 +93,23 @@ ezra.statement = function () {
       if (this.contexts.top() === "expression")
         this.raise("EXPRESSION_EXPECTED");
       else return this.variableDeclaration();
+    case this.match("class"):
+      return this.classDeclaration();
     case this.match("throw"):
       return this.throwStatement();
     case this.match("switch"):
       return this.switchStatement();
     case this.match("function"):
-      if (["array", "expression", "call"].includes(this.contexts.top())) {
-        this.backtrack();
-        return this.tryExpressionStatement();
-      } else return this.functionDeclaration();
+      return this.functionDeclaration();
     case this.match("return"):
       return this.returnStatement();
     case this.match("import"):
+      var pos = this.j - 6;
       this.outerspace();
       if (this.char === "(") {
-        this.backtrack();
+        this.belly.pop();
+        this.goto(pos);
         return this.tryExpressionStatement();
-      } else if (
-        this.contexts.top() !== "global" ||
-        this.scope.body.find((node) => node.type !== "ImportDeclaration")
-      ) {
-        this.raise("JS_ILLEGAL_IMPORT");
       } else return this.importDeclaration();
     case this.match("export"):
       return this.exportDeclaration();
@@ -299,6 +298,8 @@ ezra.tryStatement = function () {
   return trystat;
 };
 ezra.returnStatement = function () {
+  let contexts: any = { ...this.contexts };
+  if (!contexts.arr.includes("function")) this.raise("JS_ILLEGAL_RETURN");
   const retstat = new ReturnStatement(this.j - 6);
   this.innerspace();
   if (/\n/.test(this.char)) {

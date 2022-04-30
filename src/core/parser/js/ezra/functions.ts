@@ -13,6 +13,7 @@ import { ezra } from "./base";
 
 ezra.functionDeclaration = function () {
   const func = new FunctionDeclaration(this.j - 8);
+  this.contexts.push("function");
   this.outerspace();
   func.id = this.identifier();
   this.outerspace();
@@ -21,6 +22,7 @@ ezra.functionDeclaration = function () {
   this.outerspace();
   if (!this.eat("{")) this.raise("OPEN_CURLY_EXPECTED");
   else func.body = this.blockStatement();
+  this.contexts.pop();
   func.loc.end = this.j;
   return func;
 };

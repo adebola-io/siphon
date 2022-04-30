@@ -92,10 +92,14 @@ ezra.reparse = function (node, context) {
         return this.conditionalExpression(node);
       case this.eat("="):
         return this.assignmentExpression(node);
+      case this.eat("{"):
+        if (this.contexts.top() === "super_class") {
+          this.backtrack();
+          return node;
+        }
       case isValidIdentifierCharacter(this.char):
       case /'|`|"/.test(this.char):
       case isDigit(this.char):
-      case this.eat("{"):
         if (onnewLine.includes("\n")) {
           this.recede();
           return node;

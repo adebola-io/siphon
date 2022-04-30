@@ -13,6 +13,12 @@ import {
 import { ezra } from "./base";
 
 ezra.importDeclaration = function () {
+  if (
+    this.contexts.top() !== "global" ||
+    this.scope.body.find((node) => node.type !== "ImportDeclaration")
+  ) {
+    this.raise("JS_ILLEGAL_IMPORT");
+  }
   const importdec = new ImportDeclaration(this.j - 6);
   if (this.eat("{")) {
     const importspecs = this.group("import");

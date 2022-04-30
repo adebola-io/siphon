@@ -71,9 +71,29 @@ const Errors = {
         err("Invalid CSS Identifier.", source, charac);
       case "JS_INVALID_IDENTIFIER":
         err("Invalid identifier.", source, charac);
+      case "JS_STATIC_CONSTRUCTOR":
+        err(
+          "'static' modifier cannot appear on a constructor declaration.",
+          source,
+          charac
+        );
+      case "JS_ILLEGAL_PRIV_IDENT":
+        err(
+          "Private identifiers cannot be used outside class bodies.",
+          source,
+          charac
+        );
       case "JS_ILLEGAL_IMPORT_EXP":
         err(
           "Dynamic imports can only accept a module specifier and an optional assertion as arguments.",
+          source,
+          charac
+        );
+      case "JS_DUPLICATE_CONSTRUCTORS":
+        err("A class may only have one constructor.", source, charac);
+      case "JS_ILLEGAL_RETURN":
+        err(
+          `A 'return' statement can only be used within a function body.`,
           source,
           charac
         );
