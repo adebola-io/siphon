@@ -152,6 +152,7 @@ ezra.ifStatement = function () {
   if (ifstat.consequent === undefined) this.raise("EXPRESSION_EXPECTED");
   this.outerspace();
   if (this.match("else")) ifstat.alternate = this.statement();
+  else ifstat.alternate = null;
   return ifstat;
 };
 ezra.forStatement = function () {
@@ -355,6 +356,7 @@ ezra.declarators = function (expressionList, kind) {
       declarator.in = true;
     } else this.raise("IDENTIFIER_EXPECTED");
     declarator.loc.end = expression.loc.end;
+    if (declarator.init === undefined) declarator.init = null;
     return declarator;
   };
   if (expressionList instanceof SequenceExpression) {

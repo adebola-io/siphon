@@ -10,7 +10,7 @@ export class JSNode {
     end?: number;
   };
 }
-export type JSNodes = Statement | Expression | Declaration | Literal;
+export type JSNodes = Statement | Expression | Declaration;
 export class Program extends JSNode {
   type = "Program";
   /** Add a node to the global scope of the program. */
@@ -29,11 +29,72 @@ export class Program extends JSNode {
   /** The last node appended to the body of the program. */
   last?: JSNodes;
 }
+// Declarations.
 export type Declaration =
   | FunctionDeclaration
   | VariableDeclaration
-  | ImportDeclaration;
-
+  | ImportDeclaration
+  | ExportAllDeclaration
+  | ExportDefaultDeclaration
+  | ExportNamedDeclaration;
+export class VariableDeclaration extends JSNode {
+  type = "VariableDeclaration";
+  kind?: string = "";
+  declarations: any[] = [];
+}
+export class VariableDeclarator extends JSNode {
+  type = "VariableDeclarator";
+  id?: any;
+  init?: Expression | null;
+  in?: boolean;
+}
+export class FunctionDeclaration extends JSNode {
+  type = "FunctionDeclaration";
+  id!: Identifier;
+  expression!: boolean;
+  generator!: boolean;
+  async!: boolean;
+  params: Array<JSNode | undefined> = [];
+  body!: BlockStatement;
+}
+export class ImportDeclaration extends JSNode {
+  type = "ImportDeclaration";
+  specifiers: Array<ImportSpecifier | ImportDefaultSpecifier> = [];
+  source!: Literal;
+}
+export class ImportSpecifier extends JSNode {
+  type = "ImportSpecifier";
+  imported!: Identifier;
+  local!: Identifier;
+}
+export class ImportDefaultSpecifier extends JSNode {
+  type = "ImportDefaultSpecifier";
+  local!: Identifier;
+}
+export class ImportNamespaceSpecifier extends JSNode {
+  type = "ImportNamespaceSpecifier";
+  local!: Identifier;
+}
+export class ExportNamedDeclaration extends JSNode {
+  type = "ExportNamedDeclaration";
+  declaration: Statement | undefined | null = null;
+  specifiers: Array<ExportSpecifier> = [];
+  source!: Literal | null;
+}
+export class ExportSpecifier extends JSNode {
+  type = "ExportSpecifier";
+  exported!: Identifier;
+  local!: Identifier;
+}
+export class ExportDefaultDeclaration extends JSNode {
+  type = "ExportDefaultDeclaration";
+  declaration!: Expression;
+}
+export class ExportAllDeclaration extends JSNode {
+  type = "ExportAllDeclaration";
+  exported!: Identifier | null;
+  source!: Literal;
+}
 export type Context =
   | "global"
   | "object"
@@ -78,7 +139,7 @@ export class IfStatement extends JSNode {
   type = "IfStatement";
   test?: Expression | Literal | Identifier;
   consequent?: Statement | Expression | Declaration;
-  alternate?: null | JSNodes = null;
+  alternate?: null | JSNodes;
 }
 export class WhileStatement extends JSNode {
   type = "WhileStatement";
@@ -97,11 +158,11 @@ export class DoWhileStatement extends JSNode {
 export class SwitchStatement extends JSNode {
   type = "SwitchStatement";
   discriminant?: Expression;
-  cases: Array<SwitchCase> = [];
+  cases!: Array<SwitchCase>;
 }
 export class SwitchCase extends JSNode {
   type = "SwitchCase";
-  test?: Expression | null;
+  test?: Expression | null = null;
   consequent: Array<Statement | undefined> = [];
 }
 export class ForStatement extends JSNode {
@@ -141,20 +202,7 @@ export class CatchClause extends JSNode {
 }
 export class BlockStatement extends JSNode {
   type = "BlockStatement";
-  /** Add a node to the global scope of the program. */
-  push(node?: JSNodes, options?: any) {
-    if (node) {
-      this.body.push(node);
-      this.last = node;
-    }
-  }
-  /** Remove a node from the global scope of the program.*/
-  pop() {
-    this.last = this.body[this.body.length - 2];
-    return this.body.pop();
-  }
   body: Array<JSNodes> = [];
-  last?: JSNode;
 }
 
 // Expressions.
@@ -172,16 +220,21 @@ export type Expression =
   | FunctionExpression
   | ArrayExpression
   | NewExpression
+  | ImportExpression
   | UnaryExpression
   | ThisExpression
   | Literal;
 export class NewExpression extends JSNode {
   type = "NewExpression";
-  callee?: JSNodes;
-  arguments: Array<JSNodes | undefined> = [];
+  callee!: JSNodes;
+  arguments!: Array<JSNodes | undefined>;
 }
 export class ThisExpression extends JSNode {
   type = "ThisExpression";
+}
+export class ImportExpression extends JSNode {
+  type = "ImportExpression";
+  source!: any;
 }
 export class UnaryExpression extends JSNode {
   type = "UnaryExpression";
@@ -244,27 +297,7 @@ export class ConditionalExpression extends JSNode {
 export class CallExpression extends JSNode {
   type = "CallExpression";
   callee?: Expression | Identifier;
-  arguments: Array<JSNode | undefined> = [];
-}
-export class VariableDeclaration extends JSNode {
-  type = "VariableDeclaration";
-  kind?: string;
-  declarations: any[] = [];
-}
-export class VariableDeclarator extends JSNode {
-  type = "VariableDeclarator";
-  id?: any;
-  init?: Expression | null = null;
-  in?: boolean;
-}
-export class FunctionDeclaration extends JSNode {
-  type = "FunctionDeclaration";
-  id!: Identifier;
-  expression!: boolean;
-  generator!: boolean;
-  async!: boolean;
-  params: Array<JSNode | undefined> = [];
-  body!: BlockStatement;
+  arguments!: Array<JSNode | undefined>;
 }
 export class FunctionExpression extends JSNode {
   type = "FunctionExpression";
@@ -331,44 +364,6 @@ export class ObjectPattern extends JSNode {
 export class SpreadElement extends JSNode {
   type = "SpreadElement";
   argument!: Expression;
-}
-export class ImportDeclaration extends JSNode {
-  type = "ImportDeclaration";
-  specifiers: Array<ImportSpecifier | ImportDefaultSpecifier> = [];
-  source!: Literal;
-}
-export class ImportSpecifier extends JSNode {
-  type = "ImportSpecifier";
-  imported!: Identifier;
-  local!: Identifier;
-}
-export class ImportDefaultSpecifier extends JSNode {
-  type = "ImportDefaultSpecifier";
-  local!: Identifier;
-}
-export class ImportNamespaceSpecifier extends JSNode {
-  type = "ImportNamespaceSpecifier";
-  local!: Identifier;
-}
-export class ExportNamedDeclaration extends JSNode {
-  type = "ExportNamedDeclaration";
-  declaration: Statement | undefined | null = null;
-  specifiers: Array<ExportSpecifier> = [];
-  source!: Literal | null;
-}
-export class ExportSpecifier extends JSNode {
-  type = "ExportSpecifier";
-  exported!: Identifier;
-  local!: Identifier;
-}
-export class ExportDefaultDeclaration extends JSNode {
-  type = "ExportDefaultDeclaration";
-  declaration!: Expression;
-}
-export class ExportAllDeclaration extends JSNode {
-  type = "ExportAllDeclaration";
-  exported!: Identifier | null;
-  source!: Literal;
 }
 export function isValidExpression(node?: JSNodes) {
   return node

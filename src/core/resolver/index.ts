@@ -13,7 +13,6 @@ import {
 import createDOMTree from "../parser/html/createDOMTree";
 import tagNameSearch from "../parser/html/tagNameSearch";
 import resolveCSS from "./resolveCSS";
-import resolveJS from "./resolveJS";
 
 class Resolver {
   constructor(
@@ -126,7 +125,6 @@ class Resolver {
     });
     return nodes;
   }
-  resolveJS = resolveJS;
   resolveScripts(nodes: HTMLDocumentNode[]) {
     const scripts: HTMLDocumentNode[] = tagNameSearch(nodes, "script").filter(
       (script) => script.attributes?.src

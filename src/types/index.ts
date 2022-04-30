@@ -47,6 +47,7 @@ export type ErrorTypes =
   | "JS_FROM_EXPECTED"
   | "JS_COMMA_IN_COMPUTED_PROP"
   | "JS_PROPERTY_DEC_EXPECTED"
+  | "JS_ILLEGAL_IMPORT_EXP"
   | "EXPECTED"
   | "RESERVED"
   | "CATCH_NEW_PARAM"
@@ -94,7 +95,6 @@ export interface Relation {
 export interface siphonOptions {
   rootDir: PathLike;
   outDir: PathLike;
-  deep: boolean;
   relations: Relation[];
   htmlModules: boolean;
   formatFiles: boolean;

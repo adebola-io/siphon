@@ -18,7 +18,7 @@ const keywords: any = {
   else: true,
   eval: true,
   extends: true,
-  import: true,
+  // import: true,
   export: true,
   false: true,
   finally: true,

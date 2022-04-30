@@ -35,9 +35,10 @@ ezra.group = function (context = "expression") {
     case "for":
     case "object":
     case "parameters":
-    case "call":
     case "array":
       return scope2.body;
+    case "call":
+      return scope2.body[0];
     case "property":
       if (scope2.body.length > 1) this.raise("JS_COMMA_IN_COMPUTED_PROP");
       if (scope2.body.find((node) => node.type !== "ExpressionStatement")) {

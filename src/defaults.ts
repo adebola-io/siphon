@@ -4,7 +4,6 @@ const defaults: siphonOptions = {
   rootDir: "./src",
   outDir: "./build",
   storeImagesSeparately: false,
-  deep: false,
   relations: [{ from: "index.html", to: "index.html" }],
   htmlModules: false,
   formatFiles: true,

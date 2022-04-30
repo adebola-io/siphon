@@ -42,7 +42,7 @@ export class parse_utils {
    * @param message The error type to raise.
    */
   raise(message: ErrorTypes, token?: string, at?: number) {
-    Errors.enc(message, "test/src/index.js", at ?? this.j, {
+    Errors.enc(message, "test/test.js", at ?? this.j, {
       token: token ?? this.char,
     });
   }

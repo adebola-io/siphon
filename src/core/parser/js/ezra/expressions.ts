@@ -1,21 +1,18 @@
 import {
   ArrayExpression,
-  ArrowFunctionExpression,
   AssignmentExpression,
   BinaryExpression,
   CallExpression,
   ChainExpression,
   ConditionalExpression,
   Expression,
-  FunctionExpression,
   Identifier,
+  ImportExpression,
   isValidReference,
-  Literal,
   LogicalExpression,
   MemberExpression,
   NewExpression,
   ObjectExpression,
-  Property,
   SequenceExpression,
   ThisExpression,
   UnaryExpression,
@@ -112,9 +109,16 @@ ezra.thisExpression = function () {
 ezra.callExpression = function (callee) {
   const callexp = new CallExpression(callee.loc.start);
   callexp.callee = callee;
-  callexp.arguments = this.group("call");
+  callexp.arguments = this.group("call") ?? [];
   callexp.loc.end = this.j;
-  return this.reparse(callexp);
+  if (callee instanceof Identifier && callee.name === "import") {
+    const importexp = new ImportExpression(callee.loc.start);
+    if (callexp.arguments.length !== 1)
+      this.raise("JS_ILLEGAL_IMPORT_EXP", undefined, this.j - 1);
+    else importexp.source = callexp.arguments[0];
+    importexp.loc.end = this.j;
+    return this.reparse(importexp);
+  } else return this.reparse(callexp);
 };
 ezra.arguments = function () {
   const args = [];
@@ -136,9 +140,11 @@ ezra.newExpression = function () {
   this.contexts.push("new");
   this.operators.push("new");
   newexp.callee = this.reparse(this.identifier());
-  newexp.loc.end = newexp.callee?.loc.end;
+  if (this.eat("(")) newexp.arguments = this.group("call");
+  else newexp.arguments = [];
   this.operators.pop();
   this.contexts.pop();
+  newexp.loc.end = newexp.callee?.loc.end;
   return this.reparse(newexp);
 };
 ezra.updateExpression = function (argument, prefix) {

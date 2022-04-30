@@ -71,6 +71,12 @@ const Errors = {
         err("Invalid CSS Identifier.", source, charac);
       case "JS_INVALID_IDENTIFIER":
         err("Invalid identifier.", source, charac);
+      case "JS_ILLEGAL_IMPORT_EXP":
+        err(
+          "Dynamic imports can only accept a module specifier and an optional assertion as arguments.",
+          source,
+          charac
+        );
       case "HTML_CIRCULAR_INJECT":
         err(`Circular injection detected in ${source.toString()}.`);
       case "NOT_A_DIRECTORY":
