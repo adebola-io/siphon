@@ -37,6 +37,20 @@ export class Literal extends JSNode {
   };
   bigint?: string;
 }
+export class TemplateLiteral extends JSNode {
+  type = "TemplateLiteral";
+  expressions!: Array<Expression>;
+  quasis!: Array<TemplateElement>;
+  body!: Array<JSNode>;
+}
+export class TemplateElement extends JSNode {
+  type = "TemplateElement";
+  value!: {
+    raw: string;
+    cooked: string;
+  };
+  tail!: boolean;
+}
 export class Identifier extends JSNode {
   type = "Identifier";
   name = "";

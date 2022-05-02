@@ -37,6 +37,7 @@ import {
   Super,
   SwitchCase,
   SwitchStatement,
+  TemplateLiteral,
   ThisExpression,
   ThrowStatement,
   TryStatement,
@@ -57,6 +58,7 @@ export class ezra_parse_internals extends parse_utils {
   booleanLiteral!: () => Literal;
   regexLiteral!: () => Literal;
   nullLiteral!: () => Literal;
+  templateLiteral!: () => TemplateLiteral;
   memberExpression!: (object: JSNode) => JSNode;
   chainExpression!: (exp: MemberExpression) => ChainExpression;
   thisExpression!: () => ThisExpression;

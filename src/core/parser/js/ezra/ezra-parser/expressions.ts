@@ -28,8 +28,10 @@ ezra.expression = function (type) {
     case this.eat("//"):
       this.skip();
       break;
-    case /`|"|'/.test(this.char):
+    case /"|'/.test(this.char):
       return this.reparse(this.stringLiteral());
+    case /`/.test(this.char):
+      return this.reparse(this.templateLiteral());
     case this.eat("/"):
       return this.reparse(this.regexLiteral());
     case this.eat("("):

@@ -1,1 +1,54 @@
-{"type":"Program","start":0,"end":87,"body":[{"type":"ClassDeclaration","start":0,"end":13,"id":{"type":"Identifier","start":6,"end":10,"name":"Anil"},"superClass":null,"body":{"type":"ClassBody","start":11,"end":13,"body":[]}},{"type":"ClassDeclaration","start":15,"end":44,"id":{"type":"Identifier","start":21,"end":28,"name":"Majesty"},"superClass":{"type":"Identifier","start":37,"end":41,"name":"Anil"},"body":{"type":"ClassBody","start":42,"end":44,"body":[]}},{"type":"ExpressionStatement","start":46,"end":85,"expression":{"type":"CallExpression","start":46,"end":84,"callee":{"type":"MemberExpression","start":46,"end":57,"object":{"type":"Identifier","start":46,"end":53,"name":"console"},"property":{"type":"Identifier","start":54,"end":57,"name":"log"},"computed":false,"optional":false},"arguments":[{"type":"ClassExpression","start":58,"end":83,"id":{"type":"Identifier","start":64,"end":67,"name":"Ade"},"superClass":{"type":"ObjectExpression","start":77,"end":79,"properties":[]},"body":{"type":"ClassBody","start":81,"end":83,"body":[]}}],"optional":false}}],"sourceType":"script"}
+{
+  "type": "Program",
+  "start": 0,
+  "end": 43,
+  "body": [
+    {
+      "type": "ExpressionStatement",
+      "start": 0,
+      "end": 41,
+      "expression": {
+        "type": "TemplateLiteral",
+        "start": 0,
+        "end": 40,
+        "expressions": [
+          {
+            "type": "BinaryExpression",
+            "start": 13,
+            "end": 30,
+            "left": {
+              "type": "Identifier",
+              "start": 13,
+              "end": 21,
+              "name": "template"
+            },
+            "operator": "+",
+            "right": {
+              "type": "Identifier",
+              "start": 24,
+              "end": 30,
+              "name": "string"
+            }
+          }
+        ],
+        "quasis": [
+          {
+            "type": "TemplateElement",
+            "start": 1,
+            "end": 11,
+            "value": { "raw": "This is a ", "cooked": "This is a " },
+            "tail": false
+          },
+          {
+            "type": "TemplateElement",
+            "start": 31,
+            "end": 39,
+            "value": { "raw": " literal", "cooked": " literal" },
+            "tail": true
+          }
+        ]
+      }
+    }
+  ],
+  "sourceType": "script"
+}

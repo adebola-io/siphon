@@ -1,82 +1,37 @@
 {
   "type": "Program",
-  "loc": { "start": 0, "end": 87 },
+  "loc": { "start": 0, "end": 43 },
   "body": [
     {
-      "type": "ClassDeclaration",
-      "loc": { "start": 0, "end": 13 },
-      "id": {
-        "type": "Identifier",
-        "loc": { "start": 6, "end": 9 },
-        "name": "Anil"
-      },
-      "superClass": null,
-      "body": {
-        "type": "ClassBody",
-        "loc": { "start": 12, "end": 13 },
-        "body": []
-      }
-    },
-    {
-      "type": "ClassDeclaration",
-      "loc": { "start": 15, "end": 44 },
-      "id": {
-        "type": "Identifier",
-        "loc": { "start": 21, "end": 27 },
-        "name": "Majesty"
-      },
-      "superClass": {
-        "type": "Identifier",
-        "loc": { "start": 37, "end": 40 },
-        "name": "Anil"
-      },
-      "body": {
-        "type": "ClassBody",
-        "loc": { "start": 43, "end": 44 },
-        "body": []
-      }
-    },
-    {
       "type": "ExpressionStatement",
-      "loc": { "start": 46, "end": 84 },
+      "loc": { "start": 1, "end": 39 },
       "expression": {
-        "type": "CallExpression",
-        "loc": { "start": 46, "end": 84 },
-        "callee": {
-          "type": "MemberExpression",
-          "loc": { "start": 46, "end": 56 },
-          "optional": false,
-          "computed": false,
-          "object": {
-            "type": "Identifier",
-            "loc": { "start": 46, "end": 52 },
-            "name": "console"
-          },
-          "property": {
-            "type": "Identifier",
-            "loc": { "start": 54, "end": 56 },
-            "name": "log"
-          }
-        },
-        "arguments": [
+        "type": "TemplateLiteral",
+        "loc": { "start": 1, "end": 39 },
+        "expressions": [
           {
-            "type": "ClassExpression",
-            "loc": { "start": 58, "end": 83 },
-            "id": {
-              "type": "Identifier",
-              "loc": { "start": 64, "end": 66 },
-              "name": "Ade"
-            },
-            "superClass": {
-              "type": "ObjectExpression",
-              "loc": { "start": 77, "end": 79 },
-              "properties": []
-            },
-            "body": {
-              "type": "ClassBody",
-              "loc": { "start": 82, "end": 83 },
-              "body": []
-            }
+            "type": "Identifier",
+            "loc": { "start": 13, "end": 20 },
+            "name": "template"
+          },
+          {
+            "type": "Identifier",
+            "loc": { "start": 24, "end": 27 },
+            "name": "halo"
+          }
+        ],
+        "quasis": [
+          {
+            "type": "TemplateElement",
+            "loc": { "start": 1, "end": 11 },
+            "value": { "raw": "This is a ", "cooked": "This is a " },
+            "tail": false
+          },
+          {
+            "type": "TemplateElement",
+            "loc": { "start": 22, "end": 39 },
+            "value": { "raw": "\r\n literal", "cooked": "\r\n literal" },
+            "tail": true
           }
         ]
       }

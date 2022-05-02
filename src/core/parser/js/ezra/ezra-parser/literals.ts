@@ -1,4 +1,8 @@
-import { Literal } from "../../../../../types";
+import {
+  Literal,
+  TemplateElement,
+  TemplateLiteral,
+} from "../../../../../types";
 import { isAlphabetic } from "../../../../../utils";
 import { ezra } from "./base";
 
@@ -31,6 +35,50 @@ ezra.stringLiteral = function () {
   this.goto(str.end + 1);
   strlit.loc.end = this.j;
   return strlit;
+};
+ezra.templateLiteral = function () {
+  this.next();
+  const template = new TemplateLiteral(this.j);
+  template.expressions = [];
+  template.quasis = [];
+  var raw = "";
+  var start = this.j,
+    end = start;
+  while (!this.end && !/`/.test(this.char)) {
+    // Read escape sequences.
+    if (this.char === "\\")
+      (raw += `\\${(this.next(), this.char)}`), this.next();
+    // Read an expression that is nested within the literal.
+    if (this.eat("${")) {
+      end = this.j - 2;
+      this.belly.pop();
+      this.belly.push("{");
+      var expression = this.group();
+      template.expressions.push(expression);
+      if (raw !== "") {
+        var element = new TemplateElement(start);
+        element.value = { raw, cooked: raw };
+        element.tail = false;
+        element.loc.end = end;
+        template.quasis.push(element);
+        (raw = ""), (start = this.j);
+      }
+    } else {
+      raw += this.char;
+      this.next();
+    }
+  }
+  // Push the tail quasis, i.e. the last string part of the template.
+  if (raw !== "") {
+    var element = new TemplateElement(start);
+    element.value = { raw, cooked: raw };
+    element.tail = true;
+    element.loc.end = this.j;
+    template.quasis.push(element);
+  }
+  template.loc.end = this.j;
+  this.next();
+  return template;
 };
 ezra.booleanLiteral = function () {
   const boollit = new Literal(this.j - this.belly.top().length);
