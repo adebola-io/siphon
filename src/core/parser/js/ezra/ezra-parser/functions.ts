@@ -7,8 +7,8 @@ import {
   isValidParameter,
   JSNodes,
   SequenceExpression,
-} from "../../../../types";
-import { isValidIdentifierCharacter } from "../../../../utils";
+} from "../../../../../types";
+import { isValidIdentifierCharacter } from "../../../../../utils";
 import { ezra } from "./base";
 
 ezra.functionDeclaration = function () {

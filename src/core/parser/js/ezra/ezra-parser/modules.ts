@@ -9,7 +9,7 @@ import {
   ImportNamespaceSpecifier,
   ImportSpecifier,
   VariableDeclaration,
-} from "../../../../types";
+} from "../../../../../types";
 import { ezra } from "./base";
 
 ezra.importDeclaration = function () {

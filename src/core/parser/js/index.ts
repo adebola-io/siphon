@@ -1,6 +1,6 @@
 import transform from "./transform";
 import tokenize from "./tokenizer";
-import Ezra from "./ezra";
+import Parser from "./ezra/ezra-parser";
 
 const js = { transform, tokenize };
 

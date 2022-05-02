@@ -3,8 +3,8 @@ import {
   isValidExpression,
   MemberExpression,
   NewExpression,
-} from "../../../../types";
-import { isDigit, isValidIdentifierCharacter } from "../../../../utils";
+} from "../../../../../types";
+import { isDigit, isValidIdentifierCharacter } from "../../../../../utils";
 import { ezra } from "./base";
 
 ezra.reparse = function (node, context) {

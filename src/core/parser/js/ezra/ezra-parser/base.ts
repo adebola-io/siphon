@@ -42,10 +42,10 @@ import {
   TryStatement,
   VariableDeclaration,
   WhileStatement,
-} from "../../../../types";
+} from "../../../../../types";
 import { parse_utils } from "./utils";
 
-export class ezra_internals extends parse_utils {
+export class ezra_parse_internals extends parse_utils {
   parse!: (input: string, from?: number, context?: Context) => Program;
   group!: (context?: Context) => any;
   statement!: (context?: Context) => Statement | undefined;
@@ -111,7 +111,7 @@ export class ezra_internals extends parse_utils {
   spreadElement!: () => SpreadElement;
   switchCases!: () => SwitchCase[];
 }
-export var ezra = ezra_internals.prototype;
+export var ezra = ezra_parse_internals.prototype;
 ezra.parse = function (input, from = 0) {
   this.scope = new Program(0);
   this.text = input;
@@ -120,6 +120,5 @@ ezra.parse = function (input, from = 0) {
   this.j = this.from = from;
   while (!this.end) this.scope.push(this.statement());
   this.scope.loc.end = this.text.length;
-  delete this.scope.last;
   return this.scope;
 };

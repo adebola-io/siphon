@@ -16,8 +16,8 @@ import {
   ThisExpression,
   UnaryExpression,
   UpdateExpression,
-} from "../../../../types";
-import { isDigit, isValidIdentifierCharacter } from "../../../../utils";
+} from "../../../../../types";
+import { isDigit, isValidIdentifierCharacter } from "../../../../../utils";
 import { ezra } from "./base";
 
 ezra.expression = function (type) {
@@ -154,7 +154,7 @@ ezra.newExpression = function () {
   this.contexts.push("new");
   this.operators.push("new");
   newexp.callee = this.reparse(this.identifier());
-  if (this.eat("(")) newexp.arguments = this.group("call");
+  if (this.eat("(")) newexp.arguments = this.group("call") ?? [];
   else newexp.arguments = [];
   this.operators.pop();
   this.contexts.pop();

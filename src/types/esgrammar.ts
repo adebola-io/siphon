@@ -15,19 +15,16 @@ export class Program extends JSNode {
   type = "Program";
   /** Add a node to the global scope of the program. */
   push(node?: JSNodes, options?: any) {
-    if (node) {
-      this.body.push(node);
-      this.last = node;
-    }
+    if (node) this.body.push(node);
   }
   /** Remove a node from the global scope of the program.*/
   pop() {
-    this.last = this.body[this.body.length - 2];
+    // this.last = this.body[this.body.length - 2];
     return this.body.pop();
   }
   body: Array<JSNodes> = [];
   /** The last node appended to the body of the program. */
-  last?: JSNodes;
+  // last?: JSNodes;
 }
 export class Literal extends JSNode {
   type = "Literal";

@@ -1,5 +1,5 @@
-import { Identifier, PrivateIdentifier } from "../../../../types";
-import { isDigit, isValidIdentifierCharacter } from "../../../../utils";
+import { Identifier, PrivateIdentifier } from "../../../../../types";
+import { isDigit, isValidIdentifierCharacter } from "../../../../../utils";
 import { ezra } from "./base";
 
 const keywords: any = {

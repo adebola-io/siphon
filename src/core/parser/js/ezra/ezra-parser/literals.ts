@@ -1,5 +1,5 @@
-import { Literal } from "../../../../types";
-import { isAlphabetic } from "../../../../utils";
+import { Literal } from "../../../../../types";
+import { isAlphabetic } from "../../../../../utils";
 import { ezra } from "./base";
 
 // Literals.

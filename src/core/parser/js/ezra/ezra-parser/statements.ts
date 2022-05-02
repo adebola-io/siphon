@@ -27,7 +27,7 @@ import {
   VariableDeclaration,
   VariableDeclarator,
   WhileStatement,
-} from "../../../../types";
+} from "../../../../../types";
 import { ezra } from "./base";
 
 ezra.statement = function () {
@@ -50,10 +50,9 @@ ezra.statement = function () {
     case "call":
       return this.arguments();
     case "switch_block":
+      if (this.char === "}") return;
       if (!(this.match("case") || this.match("default")) && !this.end) {
         this.raise("JS_CASE_EXPECTED");
-      } else if (this.char === "}") {
-        return;
       } else {
         let isDefault = this.belly.top() === "default" ?? false;
         return this.caseStatement(isDefault);
@@ -90,9 +89,7 @@ ezra.statement = function () {
     case this.match("const"):
     case this.match("var"):
     case this.match("let"):
-      if (this.contexts.top() === "expression")
-        this.raise("EXPRESSION_EXPECTED");
-      else return this.variableDeclaration();
+      return this.variableDeclaration();
     case this.match("class"):
       return this.classDeclaration();
     case this.match("throw"):
@@ -144,7 +141,7 @@ ezra.ifStatement = function () {
   this.outerspace();
   if (!this.eat("(")) this.raise("OPEN_BRAC_EXPECTED");
   const ifstat = new IfStatement(this.j - 2);
-  ifstat.test = this.group("if");
+  ifstat.test = this.group("expression");
   if (ifstat.test === undefined) this.raise("EXPRESSION_EXPECTED");
   this.outerspace();
   ifstat.consequent = this.statement();

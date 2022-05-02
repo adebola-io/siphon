@@ -2,8 +2,8 @@ import {
   isValidPropertyKeyStart,
   Property,
   SpreadElement,
-} from "../../../../types";
-import { isDigit, isValidIdentifierCharacter } from "../../../../utils";
+} from "../../../../../types";
+import { isDigit, isValidIdentifierCharacter } from "../../../../../utils";
 import { ezra } from "./base";
 
 ezra.spreadElement = function () {

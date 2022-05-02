@@ -7,8 +7,8 @@ import {
   PropertyDefinition,
   PrivateIdentifier,
   ClassExpression,
-} from "../../../../types";
-import { isDigit } from "../../../../utils";
+} from "../../../../../types";
+import { isDigit } from "../../../../../utils";
 import { ezra } from "./base";
 
 ezra.super = function () {

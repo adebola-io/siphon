@@ -1,6 +1,6 @@
-import { Stack } from "../../../../../structures";
-import Errors from "../../../../errors";
-import { Context, ErrorTypes, Program } from "../../../../types";
+import { Stack } from "../../../../../../structures";
+import Errors from "../../../../../errors";
+import { Context, ErrorTypes, Program } from "../../../../../types";
 import {
   assoc,
   isAlphabetic,
@@ -8,7 +8,7 @@ import {
   isValidIdentifierCharacter,
   precedence,
   trace,
-} from "../../../../utils";
+} from "../../../../../utils";
 var spreadcontexts = ["array", "expression", "object"];
 var commacontexts = ["array", "object", "property", "parameters", "call"];
 export class parse_utils {

@@ -1,11 +1,11 @@
-import { Stack } from "../../../../../structures";
+import { Stack } from "../../../../../../structures";
 import {
   ExpressionStatment,
   JSNode,
   Program,
   SequenceExpression,
-} from "../../../../types";
-import { counterpart } from "../../../../utils";
+} from "../../../../../types";
+import { counterpart } from "../../../../../utils";
 import { ezra } from "./base";
 
 ezra.group = function (context = "expression") {

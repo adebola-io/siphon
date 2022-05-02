@@ -1,40 +1,28 @@
-// Ezra was written by Adebola Akomolafe and is available for use in Siphon under an MIT license.
-
-import { PathLike } from "fs";
-import { ezra_internals } from "./base.js";
-import "./expressions.js";
-import "./modules.js";
-import "./group.js";
-import "./reparse.js";
-import "./statements.js";
-import "./literals.js";
-import "./utils.js";
-import "./functions.js";
-import "./classes.js";
-import "./objects.js";
-import "./identifiers.js";
-
-interface options {
-  sourceFile: PathLike;
-}
-var defaults: options = {
-  sourceFile: "",
-};
-/**
+/*
  * Ezra is a simple Typescript-based JavaScript parser, and is one of the parsing engines that power Siphon.
+ * Ezra was written by Adebola Akomolafe and is available for use in Siphon under an MIT license.
  */
-class Ezra {
-  parse(input: string, options?: options) {
-    options = { ...defaults, ...options };
-    return new ezra_internals().parse(input);
-  }
+import Parser, { parserOptions } from "./ezra-parser";
+import Generator, { generatorOptions } from "./ezra-generator";
+import { Program } from "../../../../types";
+
+const Ezra = {
   /**
-   * Ezra's single `parse()` function takes in a string of valid Javasript text and attempts to generate an Abstract Syntax Tree from its content.
+   * Ezra's `parse()` function takes in a string of valid Javasript text and attempts to generate an Abstract Syntax Tree from its content.
    * If the content is syntactically inaccurate, it throws an error using Siphon's Error handling system.
    */
-  static parse = function (input: string, options?: options) {
-    return new Ezra().parse(input, options);
-  };
-}
+  parse(text: string, options?: parserOptions) {
+    const parser = new Parser();
+    return parser.parse(text, options);
+  },
+  /**
+   * The `generate()` function does the reverse of parsing.
+   * It receives the AST created by the `parse()` function and generates valid Javascript text from its nodes and their relationships.
+   */
+  generate(node: Program, options?: generatorOptions) {
+    const generator = new Generator();
+    return generator.generate(node, options);
+  },
+};
 
 export default Ezra;
