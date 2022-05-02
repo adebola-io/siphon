@@ -3,6 +3,8 @@ import {
   isValidExpression,
   MemberExpression,
   NewExpression,
+  CallExpression,
+  isChainExpression,
 } from "../../../../../types";
 import { isDigit, isValidIdentifierCharacter } from "../../../../../utils";
 import { ezra } from "./base";
@@ -19,8 +21,6 @@ ezra.reparse = function (node, context) {
       case this.eat("//"):
         this.skip();
         break;
-      case this.char === ";":
-        return node;
       case this.eat(","):
         if (this.requireComma()) {
           this.backtrack();
@@ -105,9 +105,15 @@ ezra.reparse = function (node, context) {
           return node;
         } else this.raise("JS_UNEXP_KEYWORD_OR_IDENTIFIER");
     }
-    if (node instanceof MemberExpression && isOptional(node)) {
+    // Chain Expressions.
+    if (
+      isChainExpression(node) ||
+      (node instanceof CallExpression && isChainExpression(node.callee))
+    ) {
       return this.chainExpression(node);
     }
+    // Terminated statements.
+    if (this.char === ";") return node;
   }
   if (node === undefined) this.raise("EXPRESSION_EXPECTED");
   return node;

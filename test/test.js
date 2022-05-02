@@ -1,1 +1,3 @@
-`This is a ${template}${halo} literal`;
+const { hasOnlyExpressionInitializer } = require("typescript");
+
+hasOnlyExpressionInitialize?.r();

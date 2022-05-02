@@ -124,7 +124,7 @@ ezra.tryExpressionStatement = function () {
   expstat.loc.start = expstat.expression.loc.start;
   expstat.loc.end = expstat.expression.loc.end;
   this.operators.pop();
-  this.eat(";");
+  if (this.eat(";")) expstat.loc.end = this.j;
   return expstat;
 };
 ezra.blockStatement = function (eatComma) {

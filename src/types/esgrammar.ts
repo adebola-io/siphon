@@ -446,7 +446,9 @@ export function isOptional(node?: MemberExpression) {
     return false;
   } else return false;
 }
-
+export function isChainExpression(node?: JSNode) {
+  return node instanceof MemberExpression && isOptional(node);
+}
 export function isValidParameter(node?: JSNode) {
   return node
     ? node instanceof AssignmentExpression || node instanceof Identifier

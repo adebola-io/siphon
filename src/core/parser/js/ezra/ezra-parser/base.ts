@@ -3,6 +3,7 @@ import {
   AssignmentPattern,
   BlockStatement,
   BreakStatement,
+  CallExpression,
   ChainExpression,
   ClassDeclaration,
   ClassExpression,
@@ -60,7 +61,9 @@ export class ezra_parse_internals extends parse_utils {
   nullLiteral!: () => Literal;
   templateLiteral!: () => TemplateLiteral;
   memberExpression!: (object: JSNode) => JSNode;
-  chainExpression!: (exp: MemberExpression) => ChainExpression;
+  chainExpression!: (
+    exp: MemberExpression | CallExpression | any
+  ) => ChainExpression;
   thisExpression!: () => ThisExpression;
   callExpression!: (callee: JSNode) => JSNode;
   arguments!: () => any;

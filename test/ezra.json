@@ -1,39 +1,87 @@
 {
   "type": "Program",
-  "loc": { "start": 0, "end": 43 },
+  "loc": { "start": 0, "end": 102 },
   "body": [
     {
+      "type": "VariableDeclaration",
+      "loc": { "start": 0, "end": 62 },
+      "kind": "const",
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "loc": { "start": 6, "end": 62 },
+          "id": {
+            "type": "ObjectPattern",
+            "loc": { "start": 6, "end": 38 },
+            "properties": [
+              {
+                "type": "Property",
+                "loc": { "start": 8, "end": 35 },
+                "kind": "init",
+                "method": false,
+                "shorthand": true,
+                "computed": false,
+                "key": {
+                  "type": "Identifier",
+                  "loc": { "start": 8, "end": 35 },
+                  "name": "hasOnlyExpressionInitializer"
+                },
+                "value": {
+                  "type": "Identifier",
+                  "loc": { "start": 8, "end": 35 },
+                  "name": "hasOnlyExpressionInitializer"
+                }
+              }
+            ]
+          },
+          "init": {
+            "type": "CallExpression",
+            "loc": { "start": 41, "end": 62 },
+            "callee": {
+              "type": "Identifier",
+              "loc": { "start": 41, "end": 47 },
+              "name": "require"
+            },
+            "arguments": [
+              {
+                "type": "Literal",
+                "loc": { "start": 49, "end": 61 },
+                "raw": "\"typescript\"",
+                "kind": "string",
+                "value": "typescript"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
       "type": "ExpressionStatement",
-      "loc": { "start": 1, "end": 39 },
+      "loc": { "start": 67, "end": 100 },
       "expression": {
-        "type": "TemplateLiteral",
-        "loc": { "start": 1, "end": 39 },
-        "expressions": [
-          {
-            "type": "Identifier",
-            "loc": { "start": 13, "end": 20 },
-            "name": "template"
+        "type": "ChainExpression",
+        "loc": { "start": 67, "end": 99 },
+        "expression": {
+          "type": "CallExpression",
+          "loc": { "start": 67, "end": 99 },
+          "callee": {
+            "type": "MemberExpression",
+            "loc": { "start": 67, "end": 96 },
+            "optional": true,
+            "computed": false,
+            "object": {
+              "type": "Identifier",
+              "loc": { "start": 67, "end": 93 },
+              "name": "hasOnlyExpressionInitialize"
+            },
+            "property": {
+              "type": "Identifier",
+              "loc": { "start": 96, "end": 96 },
+              "name": "r"
+            }
           },
-          {
-            "type": "Identifier",
-            "loc": { "start": 24, "end": 27 },
-            "name": "halo"
-          }
-        ],
-        "quasis": [
-          {
-            "type": "TemplateElement",
-            "loc": { "start": 1, "end": 11 },
-            "value": { "raw": "This is a ", "cooked": "This is a " },
-            "tail": false
-          },
-          {
-            "type": "TemplateElement",
-            "loc": { "start": 22, "end": 39 },
-            "value": { "raw": "\r\n literal", "cooked": "\r\n literal" },
-            "tail": true
-          }
-        ]
+          "arguments": []
+        }
       }
     }
   ]
