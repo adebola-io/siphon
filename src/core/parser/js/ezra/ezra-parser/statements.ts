@@ -64,7 +64,7 @@ ezra.statement = function () {
     case this.end:
       return;
     case this.eat("{"):
-      if (!["block", "global"].includes(this.contexts.top())) {
+      if (!["block", "global", "case"].includes(this.contexts.top())) {
         this.backtrack();
         return this.tryExpressionStatement();
       } else return this.blockStatement();

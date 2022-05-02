@@ -42,7 +42,7 @@ export class parse_utils {
    * @param message The error type to raise.
    */
   raise(message: ErrorTypes, token?: string, at?: number) {
-    Errors.enc(message, "test/test.js", at ?? this.j, {
+    Errors.enc(message, "test/test.min.js", at ?? this.j, {
       token: token ?? this.char,
     });
   }
@@ -50,7 +50,7 @@ export class parse_utils {
    * Checks if the current operator being parsed has a lower precedence than the operator parsed before it.
    */
   lowerPrecedence() {
-    // console.log(this.operators.top(), this.belly.top());
+    if (this.operators.top() === undefined) return false;
     if (
       precedence[this.operators.top()] > precedence[this.belly.top()] ||
       (precedence[this.operators.top()] === precedence[this.belly.top()] &&

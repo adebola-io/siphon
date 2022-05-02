@@ -53,7 +53,9 @@ ezra.templateLiteral = function () {
       end = this.j - 2;
       this.belly.pop();
       this.belly.push("{");
-      var expression = this.group();
+      var expression = this.group("expression");
+      if (expression === undefined)
+        this.raise("EXPRESSION_EXPECTED", undefined, this.j - 1);
       template.expressions.push(expression);
       if (raw !== "") {
         var element = new TemplateElement(start);

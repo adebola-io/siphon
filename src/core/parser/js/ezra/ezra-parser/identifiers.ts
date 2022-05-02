@@ -3,7 +3,7 @@ import { isDigit, isValidIdentifierCharacter } from "../../../../../utils";
 import { ezra } from "./base";
 
 const keywords: any = {
-  arguments: true,
+  // arguments: true,
   await: true,
   break: true,
   case: true,
