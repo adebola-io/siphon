@@ -1,11 +1,6 @@
 import Errors from "../../../errors";
 import { siphonOptions } from "../../../types";
-import {
-  operators,
-  stringMarkers,
-  isNum,
-  JSkeywords,
-} from "../../../utils";
+import { operators, stringMarkers, isNum, JSkeywords } from "../../../utils";
 export interface Token {
   token_type?: string;
   start: number;

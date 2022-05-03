@@ -1,4 +1,4 @@
-import { PathLike, readFileSync} from "fs";
+import { PathLike, readFileSync } from "fs";
 import Errors from "../../../errors";
 import {
   checkForEnd,
