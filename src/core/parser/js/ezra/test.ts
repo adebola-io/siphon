@@ -5,7 +5,7 @@ import Ezra from ".";
 const text = readFileSync("test/test.js").toString();
 
 console.time();
-Ezra.parse(text, { sourceFile: "test/test.js" });
+Ezra.parse(text, { sourceFile: "test/test.min.js" });
 console.timeEnd();
 // writeFileSync("test/ezra.json", JSON.stringify(program));
 // const string = Ezra.generate(program, { format: false });

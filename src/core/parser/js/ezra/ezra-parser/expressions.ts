@@ -235,14 +235,15 @@ ezra.assignmentExpression = function (left) {
   assignexp.loc.end = this.j;
   return this.reparse(assignexp);
 };
-ezra.sequenceExpression = function (left) {
+ezra.sequenceExpression = function (left: any) {
   if (this.lowerPrecedence()) return left;
   const seqexp = new SequenceExpression(left.loc.start);
   this.operators.push(",");
-  if (left instanceof SequenceExpression) {
-    left.expressions.forEach((prev_exps) => {
-      seqexp.expressions.push(prev_exps);
-    });
+  if (left.type === "SequenceExpression") {
+    var expressions: any = left.expressions;
+    for (let i = 0; expressions[i]; i++) {
+      seqexp.expressions.push(expressions[i]);
+    }
   } else seqexp.expressions.push(left);
   seqexp.expressions.push(this.expression());
   this.operators.pop();

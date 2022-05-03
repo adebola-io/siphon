@@ -79,25 +79,28 @@ ezra.parameterize = function (params) {
     parameterNames: string[] = [];
   if (params === undefined) return parameterArray;
   if (params instanceof SequenceExpression) {
-    params.expressions.forEach((param: any) => {
-      if (!isValidParameter(param)) this.raise("JS_PARAM_DEC_EXPECTED");
-      if (param instanceof Identifier) {
-        parameterNames.includes(param.name)
-          ? this.raise("JS_PARAM_CLASH", param.name)
-          : parameterNames.push(param.name);
-        parameterArray.push(param);
+    var expressions: any = params.expressions;
+    for (let i = 0; expressions[i]; i++) {
+      if (!isValidParameter(expressions[i]))
+        this.raise("JS_PARAM_DEC_EXPECTED");
+      if (expressions[i] instanceof Identifier) {
+        parameterNames.includes(expressions[i].name)
+          ? this.raise("JS_PARAM_CLASH", expressions[i].name)
+          : parameterNames.push(expressions[i].name);
+        parameterArray.push(expressions[i]);
       } else {
-        parameterNames.includes(param.left.name)
-          ? this.raise("JS_PARAM_CLASH", param.name)
-          : parameterNames.push(param.left.name);
-        if (param.operator !== "=") this.raise("JS_PARAM_DEC_EXPECTED");
-        const pattern = new AssignmentPattern(param.loc.start);
-        pattern.left = param.left;
-        pattern.right = param.right;
-        pattern.loc.end = param.loc.end;
+        parameterNames.includes(expressions[i].left.name)
+          ? this.raise("JS_PARAM_CLASH", expressions[i].name)
+          : parameterNames.push(expressions[i].left.name);
+        if (expressions[i].operator !== "=")
+          this.raise("JS_PARAM_DEC_EXPECTED");
+        const pattern = new AssignmentPattern(expressions[i].loc.start);
+        pattern.left = expressions[i].left;
+        pattern.right = expressions[i].right;
+        pattern.loc.end = expressions[i].loc.end;
         parameterArray.push(pattern);
       }
-    });
+    }
   } else {
     if (!isValidParameter(params)) this.raise("JS_PARAM_DEC_EXPECTED");
     parameterArray.push(params);

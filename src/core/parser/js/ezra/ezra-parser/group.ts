@@ -51,9 +51,10 @@ ezra.group = function (context = "expression") {
       if (scope2.body[0] instanceof ExpressionStatment) {
         var expression = scope2.body[0].expression;
         if (expression instanceof SequenceExpression) {
-          expression.expressions.forEach((childexp) => {
-            args.push(childexp);
-          });
+          var expressions = expression.expressions;
+          for (let i = 0; expressions[i]; i++) {
+            args.push(expressions[i]);
+          }
         } else args.push(expression);
       } else if (scope2.body[0] !== undefined)
         this.raise("EXPRESSION_EXPECTED");
