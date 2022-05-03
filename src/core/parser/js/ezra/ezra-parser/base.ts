@@ -103,7 +103,7 @@ export class ezra_parse_internals extends parse_utils {
   tryStatement!: () => TryStatement;
   functionDeclaration!: () => FunctionDeclaration;
   variableDeclaration!: () => VariableDeclaration;
-  declarators!: (expression: any, kind: string) => any;
+  declarator!: (kind: string) => any;
   classDeclaration!: () => ClassDeclaration;
   privateIdentifier!: () => PrivateIdentifier;
   definitionKey!: () => { key: any; isComputed: boolean };

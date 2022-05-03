@@ -4,13 +4,14 @@ import {
   JSNode,
   Program,
   SequenceExpression,
+  Statement,
 } from "../../../../../types";
 import { counterpart } from "../../../../../utils";
 import { ezra } from "./base";
 
 ezra.group = function (context = "expression") {
   let closure = this.belly.top(),
-    scope2 = new Program(this.j),
+    groupBody: any = [],
     parentOps = this.operators,
     parentBelly = this.belly;
   this.contexts.push(context);
@@ -18,8 +19,7 @@ ezra.group = function (context = "expression") {
   this.operators = new Stack();
   this.belly = new Stack();
   while (!this.end && this.char !== counterpart[closure]) {
-    const statement = this.statement(context);
-    scope2.push(statement);
+    groupBody.push(this.statement(context));
     this.outerspace();
   }
   if (this.end) this.raise("EXPECTED", counterpart[closure]);
@@ -37,39 +37,38 @@ ezra.group = function (context = "expression") {
     case "parameters":
     case "array":
     case "class_body":
-      return scope2.body;
+      return groupBody;
     case "call":
-      return scope2.body[0];
+      return groupBody[0];
     case "property":
-      if (scope2.body.length > 1) this.raise("JS_COMMA_IN_COMPUTED_PROP");
-      if (scope2.body.find((node) => node.type !== "ExpressionStatement")) {
+      if (groupBody.length !== 1) this.raise("JS_COMMA_IN_COMPUTED_PROP");
+      if (groupBody[0].type !== "ExpressionStatement") {
         this.raise("EXPRESSION_EXPECTED");
-      } else return scope2.body.map((expstat: any) => expstat.expression);
+      } else return groupBody[0].expression;
     case "function":
       let args: Array<JSNode | undefined> = [];
-      if (scope2.body.length > 1) this.raise("EXPRESSION_EXPECTED");
-      if (scope2.body[0] instanceof ExpressionStatment) {
-        var expression = scope2.body[0].expression;
+      if (groupBody.length > 1) this.raise("EXPRESSION_EXPECTED");
+      if (groupBody[0] instanceof ExpressionStatment) {
+        var expression = groupBody[0].expression;
         if (expression instanceof SequenceExpression) {
           var expressions = expression.expressions;
           for (let i = 0; expressions[i]; i++) {
             args.push(expressions[i]);
           }
         } else args.push(expression);
-      } else if (scope2.body[0] !== undefined)
-        this.raise("EXPRESSION_EXPECTED");
+      } else if (groupBody[0] !== undefined) this.raise("EXPRESSION_EXPECTED");
       return args;
     case "expression":
-      if (scope2.body[0] === undefined) {
+      if (groupBody[0] === undefined) {
         var mark = this.j - 2;
         this.outerspace();
         if (this.eat("=>"))
           return this.arrowFunctionExpression(undefined, mark);
       }
     default:
-      if (scope2.body.length > 1) {
+      if (groupBody.length > 1) {
         this.raise("EXPRESSION_EXPECTED");
-      } else return scope2.body[0];
+      } else return groupBody[0];
   }
-  return scope2.body;
+  return groupBody;
 };

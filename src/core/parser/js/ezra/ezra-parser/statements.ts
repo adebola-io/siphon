@@ -1,8 +1,5 @@
 import {
-  ArrayExpression,
   ArrayPattern,
-  AssignmentExpression,
-  BinaryExpression,
   BlockStatement,
   BreakStatement,
   CatchClause,
@@ -15,11 +12,8 @@ import {
   IfStatement,
   isValidForInParam,
   isValidForParam,
-  JSNode,
-  ObjectExpression,
   ObjectPattern,
   ReturnStatement,
-  SequenceExpression,
   SwitchCase,
   SwitchStatement,
   ThrowStatement,
@@ -80,10 +74,6 @@ ezra.statement = function () {
       return this.forStatement();
     case this.match("try"):
       return this.tryStatement();
-    case this.match("else"):
-      this.raise("JS_ILLEGAL_ELSE");
-    case this.match("case"):
-      this.raise("JS_ILLEGAL_CASE");
     case this.match("while"):
       return this.whileStatement();
     case this.match("break"):
@@ -110,6 +100,10 @@ ezra.statement = function () {
         this.goto(pos);
         return this.tryExpressionStatement();
       } else return this.importDeclaration();
+    case this.match("else"):
+      this.raise("JS_ILLEGAL_ELSE");
+    case this.match("case"):
+      this.raise("JS_ILLEGAL_CASE");
     case this.match("export"):
       return this.exportDeclaration();
     case this.match("default"):
@@ -273,28 +267,32 @@ ezra.tryStatement = function () {
   if (!this.eat("{")) this.raise("OPEN_CURLY_EXPECTED");
   trystat.block = this.blockStatement();
   this.outerspace();
-  if (!this.match("catch")) this.raise("EXPECTED", "catch");
-  trystat.handler = new CatchClause(this.j - 5);
-  this.outerspace();
-  if (this.eat("(")) {
-    const param = this.group("parameters");
-    if (param.length > 1) this.raise("CATCH_NEW_PARAM");
-    if (param[0] === undefined) this.raise("IDENTIFIER_EXPECTED");
-    if (!(param[0] instanceof Identifier)) {
-      this.raise("CATCH_ASSIGN");
-    }
-    trystat.handler.param = param[0];
-  } else trystat.handler.param = null;
-  this.outerspace();
-  if (!this.eat("{")) this.raise("OPEN_CURLY_EXPECTED");
-  trystat.handler.body = this.blockStatement();
-  trystat.handler.loc.end = trystat.handler.body.loc.end;
-  this.outerspace();
+  if (this.match("catch")) {
+    trystat.handler = new CatchClause(this.j - 5);
+    this.outerspace();
+    if (this.eat("(")) {
+      const param = this.group("parameters");
+      if (param.length > 1) this.raise("CATCH_NEW_PARAM");
+      if (param[0] === undefined) this.raise("IDENTIFIER_EXPECTED");
+      if (!(param[0] instanceof Identifier)) {
+        this.raise("CATCH_ASSIGN");
+      }
+      trystat.handler.param = param[0];
+    } else trystat.handler.param = null;
+    this.outerspace();
+    if (!this.eat("{")) this.raise("OPEN_CURLY_EXPECTED");
+    trystat.handler.body = this.blockStatement();
+    trystat.handler.loc.end = trystat.handler.body.loc.end;
+    this.outerspace();
+  } else trystat.handler = null;
   if (this.match("finally")) {
     this.outerspace();
     if (!this.eat("{")) this.raise("OPEN_CURLY_EXPECTED");
     trystat.finalizer = this.blockStatement();
   } else trystat.finalizer = null;
+  if (trystat.handler === null && trystat.finalizer === null) {
+    this.raise("EXPECTED", "catch");
+  }
   trystat.loc.end = this.j - 1;
   return trystat;
 };
@@ -312,59 +310,57 @@ ezra.returnStatement = function () {
   return retstat;
 };
 ezra.variableDeclaration = function () {
-  let kind = this.belly.pop();
-  const vardec = new VariableDeclaration(this.j - kind.length);
+  const kind = this.belly.pop(),
+    vardec = new VariableDeclaration(this.j - kind.length);
   vardec.kind = kind;
   this.outerspace();
-  vardec.declarations = this.declarators(this.expression(), kind);
+  this.contexts.push("declaration");
+  do {
+    vardec.declarations.push(this.declarator(kind));
+  } while (this.char === "," ? (this.next(), true) : false);
+  this.contexts.pop();
   vardec.loc.end = this.j;
   this.outerspace();
   this.eat(";");
   return vardec;
 };
-ezra.declarators = function (expressionList, kind) {
-  const declarations: VariableDeclarator[] = [];
-  const confirmDec = (expression: JSNode) => {
-    var declarator = new VariableDeclarator(expression.loc.start);
-    if (expression instanceof AssignmentExpression) {
-      if (expression.operator !== "=") {
-        this.raise("JS_UNEXPECTED_TOKEN", expression.operator);
-      }
-      if (expression.left instanceof Identifier) {
-        declarator.id = expression.left;
-        declarator.loc.end = declarator.init?.loc.end;
-      } else if (expression.left instanceof ObjectExpression) {
-        declarator.id = new ObjectPattern(expression.left.loc.start);
-        declarator.id.properties = expression.left.properties;
-        declarator.id.loc.end = expression.left.loc.end;
-      } else if (expression.left instanceof ArrayExpression) {
-        declarator.id = new ArrayPattern(expression.left.loc.start);
-        declarator.id.elements = expression.left.elements;
-        declarator.id.loc.end = expression.left.loc.end;
-      } else this.raise("IDENTIFIER_EXPECTED");
-      declarator.init = expression.right;
-    } else if (expression instanceof Identifier) {
-      if (kind === "const") this.raise("CONST_INIT");
-      else declarator.id = expression;
-    } else if (/ObjectExpression|ArrayExpression/.test(expression.type)) {
-      this.raise("DESTRUCTURING_ERROR");
-    } else if (
-      expression instanceof BinaryExpression &&
-      expression.operator === "in" &&
-      this.contexts.top() === "for"
-    ) {
-      declarator.id = expression.left;
-      declarator.init = expression.right;
-      declarator.in = true;
-    } else this.raise("IDENTIFIER_EXPECTED");
-    declarator.loc.end = expression.loc.end;
-    if (declarator.init === undefined) declarator.init = null;
-    return declarator;
-  };
-  if (expressionList instanceof SequenceExpression) {
-    expressionList.expressions.forEach((expression: any) => {
-      declarations.push(confirmDec(expression));
-    });
-  } else declarations.push(confirmDec(expressionList));
-  return declarations;
+ezra.declarator = function (kind) {
+  // Normalize variable declarations.
+  let declarator = new VariableDeclarator(this.j),
+    decExp: any = this.expression();
+  if (decExp === undefined) this.raise("VARIABLE_DECLARATION_EXPECTED");
+  // Initialized declarators.
+  if (decExp.type === "AssignmentExpression") {
+    if (decExp.operator !== "=") {
+      this.raise("JS_UNEXPECTED_TOKEN", decExp.operator, decExp.left?.loc.end);
+    }
+    // Get declaration IDs, either Object patterns, array patterns or identifiers.
+    const type: any = { [decExp.left.type]: true };
+    switch (true) {
+      case type.Identifier:
+        declarator.id = decExp.left;
+        break;
+      case type.ArrayExpression:
+        declarator.id = new ArrayPattern(decExp.left.loc.start);
+        declarator.id.elements = decExp.left.elements;
+        break;
+      case type.ObjectExpression:
+        declarator.id = new ObjectPattern(decExp.left.loc.start);
+        declarator.id.properties = decExp.left.properties;
+        break;
+      default:
+        this.raise("IDENTIFIER_EXPECTED", undefined, decExp.left.loc.end);
+    }
+    declarator.id.loc.end = decExp.left.loc.end;
+    declarator.init = decExp.right;
+  }
+  // Uninitialized declarators.
+  if (decExp instanceof Identifier) {
+    // Block uninitialized const variables.
+    if (kind === "const") this.raise("CONST_INIT");
+    declarator.id = decExp;
+    declarator.init = null;
+  }
+  declarator.loc.end = decExp.loc.end;
+  return declarator;
 };

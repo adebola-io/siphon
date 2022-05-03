@@ -32,6 +32,12 @@ ezra.expression = function (type) {
       return this.reparse(this.stringLiteral());
     case /`/.test(this.char):
       return this.reparse(this.templateLiteral());
+    case this.char === ":":
+      if (!(type === "ternary" || type === "case"))
+        this.raise("JS_UNEXPECTED_TOKEN");
+    case this.char === undefined:
+    case this.char === ";":
+      return;
     case this.eat("/"):
       return this.reparse(this.regexLiteral());
     case this.eat("("):
@@ -40,17 +46,6 @@ ezra.expression = function (type) {
       return this.reparse(this.arrayExpression());
     case this.eat("{"):
       return this.reparse(this.objectExpression());
-    case this.match("null"):
-      return this.reparse(this.nullLiteral());
-    case this.match("this"):
-      return this.reparse(this.thisExpression());
-    case this.match("true"):
-    case this.match("false"):
-      return this.reparse(this.booleanLiteral());
-    case isDigit(this.char):
-      return this.reparse(this.numberLiteral(), "number");
-    case this.match("new"):
-      return this.reparse(this.newExpression());
     case this.eat("++"):
     case this.eat("--"):
     case this.eat("!"):
@@ -65,6 +60,17 @@ ezra.expression = function (type) {
     case this.eat("..."):
       if (this.allowSpread()) return this.spreadElement();
       else this.raise("EXPRESSION_EXPECTED");
+    case this.match("new"):
+      return this.reparse(this.newExpression());
+    case this.match("null"):
+      return this.reparse(this.nullLiteral());
+    case this.match("this"):
+      return this.reparse(this.thisExpression());
+    case this.match("true"):
+    case this.match("false"):
+      return this.reparse(this.booleanLiteral());
+    case isDigit(this.char):
+      return this.reparse(this.numberLiteral(), "number");
     case this.match("class"):
       return this.reparse(this.classExpression());
     case this.match("super"):
@@ -75,13 +81,6 @@ ezra.expression = function (type) {
       return this.reparse(this.functionExpression());
     case isValidIdentifierCharacter(this.char):
       return this.reparse(this.identifier());
-    case this.char === ":":
-      if (!(type === "ternary" || type === "case"))
-        this.raise("JS_UNEXPECTED_TOKEN");
-    case this.char === undefined:
-      return;
-    case this.char === ";":
-      return;
     default:
       this.raise("JS_UNEXPECTED_TOKEN");
   }

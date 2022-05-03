@@ -251,7 +251,7 @@ export class ThrowStatement extends JSNode {
 export class TryStatement extends JSNode {
   type = "ThrowStatement";
   block!: BlockStatement;
-  handler!: CatchClause;
+  handler!: CatchClause | null;
   finalizer!: BlockStatement | null;
 }
 export class CatchClause extends JSNode {

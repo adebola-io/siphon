@@ -8,10 +8,16 @@ import {
   isDigit,
   isValidIdentifierCharacter,
   precedence,
-  trace,
 } from "../../../../../utils";
-var spreadcontexts = ["array", "expression", "object"];
-var commacontexts = ["array", "object", "property", "parameters", "call"];
+var spreadcontexts: any = { array: true, expression: true, object: true },
+  commacontexts: any = {
+    array: true,
+    object: true,
+    property: true,
+    parameters: true,
+    call: true,
+    declaration: true,
+  };
 export class parse_utils {
   text!: string;
   options!: parserOptions;
@@ -22,10 +28,10 @@ export class parse_utils {
   context!: Context;
   contexts = new Stack();
   allowSpread() {
-    return spreadcontexts.includes(this.contexts.top());
+    return spreadcontexts[this.contexts.top()];
   }
   requireComma() {
-    return commacontexts.includes(this.contexts.top());
+    return commacontexts[this.contexts.top()];
   }
   /** The index of the current character being evaluated. */
   i = 0;
@@ -67,7 +73,7 @@ export class parse_utils {
   }
   /**
    * Checks if the next sequence of characters in the stream match a particular pattern.
-   * If
+   * If a match is found, it 'eats' the pattern up and advances the token to the next character.
    * @param ptn The string pattern to check for.
    */
   eat(ptn: string) {
@@ -108,7 +114,8 @@ export class parse_utils {
     this.recede(this.belly.pop().length);
   }
   match(ptn: string) {
-    return this.text.slice(this.i, this.i + ptn.length) === ptn &&
+    return ptn[0] === this.char &&
+      this.text.slice(this.i, this.i + ptn.length) === ptn &&
       !isValidIdentifierCharacter(this.peek(ptn.length))
       ? (this.next(ptn.length), this.belly.push(ptn), true)
       : false;
