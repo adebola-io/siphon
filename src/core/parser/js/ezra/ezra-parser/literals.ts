@@ -10,20 +10,27 @@ import { ezra } from "./base";
 ezra.numberLiteral = function () {
   const numlit = new Literal(this.j);
   numlit.kind = "number";
-  numlit.raw += this.count();
-  if (this.char === "n") {
-    numlit.kind = "bigint";
-    numlit.bigint = numlit.raw;
-    numlit.raw += "n";
-    this.next();
-  } else if (this.char === ".") {
-    this.next();
-    numlit.raw += "." + this.count();
+  if (this.eat("0x")) {
+    this.belly.pop();
+    numlit.raw = "Ox" + this.count();
+    if (isAlphabetic(this.char)) this.raise("ID_FOLLOWS_LITERAL");
+    numlit.value = parseInt(numlit.raw.slice(2), 16);
+  } else {
+    numlit.raw += this.count();
+    if (this.char === "n") {
+      numlit.kind = "bigint";
+      numlit.bigint = numlit.raw;
+      numlit.raw += "n";
+      this.next();
+    } else if (this.char === ".") {
+      this.next();
+      numlit.raw += "." + this.count();
+    }
+    if (this.char === "n") this.raise("BIGINT_DECIMAL");
+    else if (isAlphabetic(this.char)) this.raise("ID_FOLLOWS_LITERAL");
+    numlit.value = parseFloat(numlit.raw ?? "");
   }
-  if (this.char === "n") this.raise("BIGINT_DECIMAL");
-  else if (isAlphabetic(this.char)) this.raise("ID_FOLLOWS_LITERAL");
   numlit.loc.end = this.j;
-  numlit.value = parseFloat(numlit.raw ?? "");
   return numlit;
 };
 ezra.stringLiteral = function () {
