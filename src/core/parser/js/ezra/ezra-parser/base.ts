@@ -1,3 +1,4 @@
+import { parserOptions } from ".";
 import {
   ArrayExpression,
   AssignmentPattern,
@@ -48,7 +49,7 @@ import {
 import { parse_utils } from "./utils";
 
 export class ezra_parse_internals extends parse_utils {
-  parse!: (input: string, from?: number, context?: Context) => Program;
+  parse!: (input: string, options: parserOptions, from?: number) => Program;
   group!: (context?: Context) => any;
   statement!: (context?: Context) => Statement | undefined;
   expression!: (type?: string) => JSNode;
@@ -118,11 +119,12 @@ export class ezra_parse_internals extends parse_utils {
   switchCases!: () => SwitchCase[];
 }
 export var ezra = ezra_parse_internals.prototype;
-ezra.parse = function (input, from = 0) {
+ezra.parse = function (input, options, from = 0) {
   this.scope = new Program(0);
   this.text = input;
   this.next(0);
   this.contexts.push("global");
+  this.options = options;
   this.j = this.from = from;
   while (!this.end) this.scope.push(this.statement());
   this.scope.loc.end = this.text.length;

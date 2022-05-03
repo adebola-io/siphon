@@ -91,15 +91,17 @@ ezra.booleanLiteral = function () {
   return boollit;
 };
 ezra.regexLiteral = function () {
-  const regexlit = new Literal(this.j);
+  const regexlit = new Literal(this.j - 1);
   regexlit.kind = "regex";
   let reg = this.regex(this.i);
   regexlit.raw = eval("/" + reg.value + "/").toString();
+  regexlit.regex = { pattern: regexlit.raw.slice(1, -1), flags: reg.flags };
   regexlit.value = new RegExp(
     regexlit.raw.slice(1, -1),
     reg.flags.length > 0 ? reg.flags : undefined
   );
   this.goto(reg.end);
+  regexlit.loc.end = this.j;
   return regexlit;
 };
 ezra.nullLiteral = function () {

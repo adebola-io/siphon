@@ -69,8 +69,11 @@ ezra.arrowFunctionExpression = function (params, startAt) {
   arrowfunc.params = params ? this.parameterize(params) : [];
   this.outerspace();
   arrowfunc.id = null;
-  if (this.eat("{")) arrowfunc.body = this.blockStatement(false);
-  else arrowfunc.body = this.expression();
+  if (this.eat("{")) {
+    this.contexts.push("function");
+    arrowfunc.body = this.blockStatement(false);
+    this.contexts.pop();
+  } else arrowfunc.body = this.expression();
   arrowfunc.loc.end = this.j;
   return this.reparse(arrowfunc);
 };

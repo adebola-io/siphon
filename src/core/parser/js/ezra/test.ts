@@ -1,22 +1,21 @@
 import { readFileSync, writeFileSync } from "fs";
 import { Parser as Acorn } from "acorn";
+import * as Esprima from "esprima";
 import Ezra from ".";
 
 const text = readFileSync("test/test.js").toString();
 
-// console.time();
-// Ezra.parse(text, { sourceFile: "test/test.min.js" });
-// console.timeEnd();
+console.time();
 const program = Ezra.parse(text, { sourceFile: "test/test.js" });
-// const string = Ezra.generate(program, { format: false });
-
-// console.time();
-// Acorn.parse(text, { ecmaVersion: 2022 });
-// console.timeEnd();
-// const program = Acorn.parse(text, { ecmaVersion: 2022 });
-// writeFileSync("test/acorn.json", JSON.stringify(program));
-// console.log(string);
-
+console.timeEnd();
 writeFileSync("test/ezra.json", JSON.stringify(program));
 
-console.log(program);
+console.time();
+const program2 = Esprima.parseScript(text, { loc: true });
+console.timeEnd();
+writeFileSync("test/esprima.json", JSON.stringify(program2));
+
+console.time();
+const program3 = Acorn.parse(text, { ecmaVersion: 2022, locations: false });
+console.timeEnd();
+writeFileSync("test/acorn.json", JSON.stringify(program3));

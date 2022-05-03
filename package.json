@@ -25,7 +25,9 @@
     "siphon-cli": "bin/siphon"
   },
   "devDependencies": {
+    "@types/esprima": "^4.0.3",
     "@types/node": "^17.0.23",
+    "esprima": "^4.0.1",
     "tslib": "^2.3.1",
     "typescript": "^4.5.5"
   },

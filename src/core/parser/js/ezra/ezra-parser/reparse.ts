@@ -11,14 +11,11 @@ import { ezra } from "./base";
 
 ezra.reparse = function (node, context) {
   if (isValidExpression(node)) {
-    var onnewLine = "";
-    while (/\s|\n|\r/.test(this.char)) {
-      onnewLine += this.char;
-      this.next();
-    }
+    var pos = this.j;
+    this.outerspace();
     switch (true) {
-      case this.eat("/*"):
       case this.eat("//"):
+      case this.eat("/*"):
         this.skip();
         break;
       case this.eat(","):
@@ -38,8 +35,9 @@ ezra.reparse = function (node, context) {
         } else return this.callExpression(node);
       case this.eat("++"):
       case this.eat("--"):
-        if (onnewLine.includes("\n")) {
-          this.recede();
+        if (/\n/.test(this.text.slice(pos, this.j))) {
+          this.belly.pop();
+          this.goto(pos);
           return node;
         } else {
           return this.updateExpression(node, false);
@@ -92,18 +90,21 @@ ezra.reparse = function (node, context) {
         return this.conditionalExpression(node);
       case this.eat("="):
         return this.assignmentExpression(node);
-      case this.eat("{"):
+      case this.char === "{":
         if (this.contexts.top() === "super_class") {
-          this.backtrack();
+          this.recede();
           return node;
         }
       case isValidIdentifierCharacter(this.char):
       case /'|`|"/.test(this.char):
       case isDigit(this.char):
-        if (onnewLine.includes("\n")) {
-          this.recede();
+        // Check if the next expression is on a new line.
+        if (/\n/.test(this.text.slice(pos, this.j))) {
+          this.goto(pos);
           return node;
-        } else this.raise("JS_UNEXP_KEYWORD_OR_IDENTIFIER");
+        } else {
+          this.raise("JS_UNEXP_KEYWORD_OR_IDENTIFIER");
+        }
     }
     // Chain Expressions.
     if (

@@ -21,7 +21,7 @@ var defaults: parserOptions = {
 class Parser {
   parse(input: string, options?: parserOptions) {
     options = { ...defaults, ...options };
-    return new ezra_parse_internals().parse(input);
+    return new ezra_parse_internals().parse(input, options);
   }
 }
 

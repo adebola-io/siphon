@@ -30,26 +30,28 @@ import {
 } from "../../../../../types";
 import { ezra } from "./base";
 
+var statementScope: any = { block: true, global: true, case: true };
 ezra.statement = function () {
   this.outerspace();
-  switch (this.contexts.top()) {
-    case "class_body":
+  let context: any = { [this.contexts.top()]: true };
+  switch (true) {
+    case context.class_body:
       return this.definition();
-    case "object":
+    case context.object:
       return this.property();
-    case "parameters":
+    case context.parameters:
       return this.parameter();
-    case "array":
+    case context.array:
       return this.elements();
-    case "import":
+    case context.import:
       return this.importSpecifier();
-    case "export":
+    case context.export:
       return this.exportSpecifier();
-    case "expression":
+    case context.expression:
       return this.expression();
-    case "call":
+    case context.call:
       return this.arguments();
-    case "switch_block":
+    case context.switch_block:
       if (this.char === "}") return;
       if (!(this.match("case") || this.match("default")) && !this.end) {
         this.raise("JS_CASE_EXPECTED");
@@ -64,7 +66,7 @@ ezra.statement = function () {
     case this.end:
       return;
     case this.eat("{"):
-      if (!["block", "global", "case"].includes(this.contexts.top())) {
+      if (statementScope[this.contexts.top()] === undefined) {
         this.backtrack();
         return this.tryExpressionStatement();
       } else return this.blockStatement();
@@ -256,8 +258,10 @@ ezra.breakStatement = function () {
 };
 ezra.throwStatement = function () {
   const throwstat = new ThrowStatement(this.j - 5);
-  this.innerspace();
-  if (/\n|;/.test(this.char)) this.raise("EXPRESSION_EXPECTED");
+  var pos = this.j;
+  this.outerspace();
+  if (/\n|;/.test(this.text.slice(pos, this.j)) || this.char === "}")
+    this.raise("EXPRESSION_EXPECTED");
   else throwstat.argument = this.expression();
   this.eat(";");
   throwstat.loc.end = throwstat.argument?.loc.end;
@@ -298,10 +302,10 @@ ezra.returnStatement = function () {
   let contexts: any = { ...this.contexts };
   if (!contexts.arr.includes("function")) this.raise("JS_ILLEGAL_RETURN");
   const retstat = new ReturnStatement(this.j - 6);
-  this.innerspace();
-  if (/\n/.test(this.char)) {
+  var pos = this.j;
+  this.outerspace();
+  if (/\n|;/.test(this.text.slice(pos, this.j))) {
     retstat.argument = null;
-    this.next();
   } else retstat.argument = this.expression() ?? null;
   this.eat(";");
   retstat.loc.end = this.j;

@@ -61,6 +61,5 @@ ezra.identifier = function (allowKeyword = false) {
   if (!allowKeyword && keywords[id.name]) {
     this.raise("RESERVED", id.name, id.loc.end);
   }
-  this.innerspace(true);
   return id;
 };

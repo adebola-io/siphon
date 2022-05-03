@@ -1,3 +1,4 @@
+import { parserOptions } from ".";
 import { Stack } from "../../../../../../structures";
 import Errors from "../../../../../errors";
 import { Context, ErrorTypes, Program } from "../../../../../types";
@@ -13,6 +14,7 @@ var spreadcontexts = ["array", "expression", "object"];
 var commacontexts = ["array", "object", "property", "parameters", "call"];
 export class parse_utils {
   text!: string;
+  options!: parserOptions;
   /** The program node output. */
   scope!: Program;
   /** The current character being parsed. */
@@ -42,7 +44,7 @@ export class parse_utils {
    * @param message The error type to raise.
    */
   raise(message: ErrorTypes, token?: string, at?: number) {
-    Errors.enc(message, "test/test.js", at ?? this.j, {
+    Errors.enc(message, this.options.sourceFile, at ?? this.j, {
       token: token ?? this.char,
     });
   }
@@ -74,7 +76,7 @@ export class parse_utils {
       : false;
   }
   remains() {
-    if (this.char === undefined) this.end = true;
+    this.end = this.char === undefined;
   }
   peek(i = 1) {
     return this.text[this.i + i];
