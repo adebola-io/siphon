@@ -1,104 +1,55 @@
 {
   "type": "Program",
   "start": 0,
-  "end": 102,
+  "end": 36,
   "body": [
     {
-      "type": "VariableDeclaration",
+      "type": "ClassDeclaration",
       "start": 0,
-      "end": 63,
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "start": 6,
-          "end": 62,
-          "id": {
-            "type": "ObjectPattern",
-            "start": 6,
-            "end": 38,
-            "properties": [
-              {
-                "type": "Property",
-                "start": 8,
-                "end": 36,
-                "method": false,
-                "shorthand": true,
-                "computed": false,
-                "key": {
-                  "type": "Identifier",
-                  "start": 8,
-                  "end": 36,
-                  "name": "hasOnlyExpressionInitializer"
-                },
-                "kind": "init",
-                "value": {
-                  "type": "Identifier",
-                  "start": 8,
-                  "end": 36,
-                  "name": "hasOnlyExpressionInitializer"
-                }
-              }
-            ]
-          },
-          "init": {
-            "type": "CallExpression",
-            "start": 41,
-            "end": 62,
-            "callee": {
-              "type": "Identifier",
-              "start": 41,
-              "end": 48,
-              "name": "require"
-            },
-            "arguments": [
-              {
-                "type": "Literal",
-                "start": 49,
-                "end": 61,
-                "value": "typescript",
-                "raw": "\"typescript\""
-              }
-            ],
-            "optional": false
-          }
-        }
-      ],
-      "kind": "const"
-    },
-    {
-      "type": "ExpressionStatement",
-      "start": 67,
-      "end": 100,
-      "expression": {
-        "type": "ChainExpression",
-        "start": 67,
-        "end": 99,
-        "expression": {
-          "type": "CallExpression",
-          "start": 67,
-          "end": 99,
-          "callee": {
-            "type": "MemberExpression",
-            "start": 67,
-            "end": 97,
-            "object": {
-              "type": "Identifier",
-              "start": 67,
-              "end": 94,
-              "name": "hasOnlyExpressionInitialize"
-            },
-            "property": {
-              "type": "Identifier",
-              "start": 96,
-              "end": 97,
-              "name": "r"
-            },
+      "end": 34,
+      "id": {
+        "type": "Identifier",
+        "start": 6,
+        "end": 17,
+        "name": "RandomClass"
+      },
+      "superClass": null,
+      "body": {
+        "type": "ClassBody",
+        "start": 18,
+        "end": 34,
+        "body": [
+          {
+            "type": "MethodDefinition",
+            "start": 23,
+            "end": 31,
+            "static": false,
             "computed": false,
-            "optional": true
-          },
-          "arguments": [],
-          "optional": false
-        }
+            "key": {
+              "type": "Identifier",
+              "start": 23,
+              "end": 26,
+              "name": "get"
+            },
+            "kind": "method",
+            "value": {
+              "type": "FunctionExpression",
+              "start": 26,
+              "end": 31,
+              "id": null,
+              "expression": false,
+              "generator": false,
+              "async": false,
+              "params": [],
+              "body": {
+                "type": "BlockStatement",
+                "start": 29,
+                "end": 31,
+                "body": []
+              }
+            }
+          }
+        ]
       }
     }
   ],

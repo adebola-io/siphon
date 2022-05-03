@@ -8,7 +8,7 @@ import {
   PrivateIdentifier,
   ClassExpression,
 } from "../../../../../types";
-import { isDigit } from "../../../../../utils";
+import { isDigit, isValidIdentifierCharacter } from "../../../../../utils";
 import { ezra } from "./base";
 
 ezra.super = function () {
@@ -18,6 +18,7 @@ ezra.super = function () {
   if (this.char !== "(") this.raise("EXPECTED", "(");
   return this.reparse(sup);
 };
+var getOrSet = ["get", "set"];
 ezra.classDeclaration = function () {
   const cl = new ClassDeclaration(this.j - 5);
   this.outerspace();
@@ -46,38 +47,29 @@ ezra.classDeclaration = function () {
 ezra.definition = function () {
   if (this.eat(";")) return;
   var start = this.j,
-    key: any,
     definition: any,
-    isComputed = false,
+    kind: string | undefined,
     isStatic = false;
   if (this.match("static")) {
     isStatic = true;
     this.outerspace();
   }
-  switch (true) {
-    case this.eat("["):
-      key = this.group("property");
-      isComputed = true;
-      break;
-    case isDigit(this.char):
-      key = this.numberLiteral();
-      break;
-    case this.eat("#"):
-      key = this.privateIdentifier();
-      break;
-    case /'|"/.test(this.char):
-      key = this.stringLiteral();
-    default:
-      key = this.identifier(true);
-  }
-  this.outerspace();
-  // Block constructor identifier.
-  if (
-    key instanceof Identifier &&
-    key.name === "constructor" &&
-    this.char !== "("
-  ) {
-    this.raise("EXPECTED", "(");
+  var { key, isComputed } = this.definitionKey();
+  // Getters and setters.
+  // Block the use of 'constructor' as an identifier.
+  if (key instanceof Identifier) {
+    if (key.name === "constructor" && this.char !== "(")
+      this.raise("RESERVED", "constructor");
+    if (
+      getOrSet.includes(key.name) &&
+      !(isComputed || /;|\(|\=/.test(this.char))
+    ) {
+      kind = key.name;
+      let actual = this.definitionKey();
+      key = actual.key;
+      isComputed = actual.isComputed;
+      if (this.char !== "(") this.raise("EXPECTED", "(");
+    }
   }
   if (this.eat("(")) {
     // METHOD DEFINITIONS.
@@ -92,18 +84,18 @@ ezra.definition = function () {
             this.raise("JS_STATIC_CONSTRUCTOR", undefined, key.loc.start - 1);
           else definition.kind = "constructor";
           break;
-        case "get":
-          definition.kind = "get";
-          break;
-        case "set":
-          definition.kind = "set";
-          break;
         default:
-          definition.kind = "method";
+          definition.kind = kind ?? "method";
       }
       definition.key = key;
     } else definition.kind = "method";
     definition.value = this.functionExpression();
+    // Parameters for 'set' methods.
+    if (kind === "set" && definition.value.params.length !== 1) {
+      this.raise("JS_INVALID_SETTER_PARAMS", undefined, key.loc.end);
+    } else if (kind === "get" && definition.value.params.length !== 0) {
+      this.raise("JS_INVALID_GETTER_PARAMS", undefined, key.loc.end);
+    }
     definition.loc.end = this.j;
   } else {
     // PROPERTY DEFINITIONS.
@@ -133,6 +125,28 @@ ezra.definition = function () {
   this.outerspace();
   this.eat(";");
   return definition;
+};
+ezra.definitionKey = function () {
+  this.outerspace();
+  var key: any,
+    isComputed = false;
+  switch (true) {
+    case this.eat("["):
+      key = this.group("property");
+      isComputed = true;
+      break;
+    case isDigit(this.char):
+      key = this.numberLiteral();
+      break;
+    case this.eat("#"):
+      key = this.privateIdentifier();
+      break;
+    case /'|"/.test(this.char):
+      key = this.stringLiteral();
+    default:
+      key = this.identifier(true);
+  }
+  return { key, isComputed };
 };
 ezra.privateIdentifier = function () {
   const priv = new PrivateIdentifier(this.j);

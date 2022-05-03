@@ -209,6 +209,14 @@ const Errors = {
         err("Variable declaration or statement expected.", source, charac);
       case "JS_DEC_OR_STATEMENT_EXPECTED":
         err("Declaration or statement expected", source, charac);
+      case "JS_INVALID_SETTER_PARAMS":
+        err(
+          `A 'set' accessor must have exactly one parameter.`,
+          source,
+          charac
+        );
+      case "JS_INVALID_GETTER_PARAMS":
+        err(`A 'get' accessor cannot have parameters.`, source, charac);
       case "JS_ILLEGAL_IMPORT":
         err(
           "An import statement can only be used at the top level of a module.",

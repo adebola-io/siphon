@@ -105,6 +105,7 @@ export class ezra_parse_internals extends parse_utils {
   declarators!: (expression: any, kind: string) => any;
   classDeclaration!: () => ClassDeclaration;
   privateIdentifier!: () => PrivateIdentifier;
+  definitionKey!: () => { key: any; isComputed: boolean };
   definition!: () => PropertyDefinition | MethodDefinition;
   importDeclaration!: () => ImportDeclaration;
   importSpecifier!: () => ImportSpecifier;

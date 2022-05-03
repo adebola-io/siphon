@@ -42,7 +42,7 @@ export class parse_utils {
    * @param message The error type to raise.
    */
   raise(message: ErrorTypes, token?: string, at?: number) {
-    Errors.enc(message, "test/test.min.js", at ?? this.j, {
+    Errors.enc(message, "test/test.js", at ?? this.j, {
       token: token ?? this.char,
     });
   }
@@ -196,7 +196,7 @@ export class parse_utils {
   glazeOverComments(contextual?: boolean) {
     if (this.eat("//") || this.eat("/*")) this.skip(true);
   }
-  /** Skip over new lines and/or character spaces in a local expression, declaration or scope. */
+  /** Skip over new lines and/or character spaces in a local expression, declaration or scope, where the position of the new line can affect the interpretation of expressions. */
   innerspace(skip_new_line = false) {
     if (skip_new_line)
       while (/\s|\r|\n/.test(this.char))
@@ -206,7 +206,7 @@ export class parse_utils {
     this.glazeOverComments(skip_new_line);
     if (/\s|\r|\n/.test(this.char)) this.innerspace(skip_new_line);
   }
-  /** Skip over new lines and space characters in the global scope of the program. */
+  /** Skip over new lines, space characters and comments in the global scope of the program. */
   outerspace() {
     while (/\s|\r|\n/.test(this.char)) this.next();
     this.glazeOverComments();
