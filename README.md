@@ -19,7 +19,7 @@
 
 ## Overview
 
-Siphon is a simple Vanilla JS web bundler that reads HTML documents and resolves their assets into fewer files for production.
+Siphon is a simple web bundler that reads HTML documents and resolves their assets into fewer files for production.
 
 It can also format and minify your source code.
 
