@@ -1,3 +1,4 @@
+import { timeStamp } from "console";
 import {
   ArrayPattern,
   BlockStatement,
@@ -55,6 +56,10 @@ ezra.statement = function () {
   switch (true) {
     case this.end:
       return;
+    case this.eat("/*"):
+    case this.eat("//"):
+      this.skip();
+      break;
     case this.eat("{"):
       if (statementScope[this.contexts.top()] === undefined) {
         this.backtrack();
@@ -74,7 +79,9 @@ ezra.statement = function () {
       return this.whileStatement();
     case this.match("break"):
       return this.breakStatement();
-    case this.match("const") || this.match("var") || this.match("let"):
+    case this.match("const"):
+    case this.match("var"):
+    case this.match("let"):
       return this.variableDeclaration();
     case this.match("class"):
       return this.classDeclaration();

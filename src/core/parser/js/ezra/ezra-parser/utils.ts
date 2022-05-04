@@ -6,6 +6,7 @@ import {
   assoc,
   isAlphabetic,
   isDigit,
+  isHexDigit,
   isValidIdentifierCharacter,
   precedence,
 } from "../../../../../utils";
@@ -131,9 +132,15 @@ export class parse_utils {
       : false;
   }
   /** Counts all the succeeding characters in the text stream that are numbers. */
-  count() {
+  count(base = 10) {
     let num = "";
-    while (isDigit(this.char)) (num += this.char), this.next();
+    switch (base) {
+      case 10:
+        while (isDigit(this.char)) (num += this.char), this.next();
+        break;
+      case 16:
+        while (isHexDigit(this.char)) (num += this.char), this.next();
+    }
     return num;
   }
   /** Skips over suceeding comments in the text stream. */

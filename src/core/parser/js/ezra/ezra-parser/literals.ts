@@ -12,7 +12,7 @@ ezra.numberLiteral = function () {
   numlit.kind = "number";
   if (this.eat("0x")) {
     this.belly.pop();
-    numlit.raw = "Ox" + this.count();
+    numlit.raw = "Ox" + this.count(16);
     if (isAlphabetic(this.char)) this.raise("ID_FOLLOWS_LITERAL");
     numlit.value = parseInt(numlit.raw.slice(2), 16);
   } else {

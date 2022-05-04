@@ -415,6 +415,9 @@ export function trace(source: PathLike, character: number) {
   }
   return { line, col: col + 1 };
 }
+export function isHexDigit(character: string) {
+  return isDigit(character) || /[A-F]|[a-f]/.test(character);
+}
 export function isAlphaNumeric(character: string | undefined) {
   return isAlphabetic(character) || isDigit(character);
 }
