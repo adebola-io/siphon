@@ -26,6 +26,7 @@ import {
   ImportExpression,
   ImportSpecifier,
   JSNode,
+  LabeledStatement,
   Literal,
   MemberExpression,
   MethodDefinition,
@@ -101,6 +102,7 @@ export class ezra_parse_internals extends parse_utils {
   switchStatement!: () => SwitchStatement;
   caseStatement!: (isDefault: boolean) => SwitchCase;
   returnStatement!: () => ReturnStatement;
+  labeledStatement!: (label: Identifier) => LabeledStatement;
   breakStatement!: () => BreakStatement;
   throwStatement!: () => ThrowStatement;
   tryStatement!: () => TryStatement;

@@ -5,6 +5,7 @@ import {
   NewExpression,
   CallExpression,
   isChainExpression,
+  Identifier,
 } from "../../../../../types";
 import { isDigit, isValidIdentifierCharacter } from "../../../../../utils";
 import { ezra } from "./base";
@@ -94,6 +95,13 @@ ezra.reparse = function (node, context) {
         return this.conditionalExpression(node);
       case this.eat("="):
         return this.assignmentExpression(node);
+      case this.char === ":":
+        if (!(node instanceof Identifier && this.operators.top() === "none")) {
+          this.raise("JS_UNEXPECTED_TOKEN", ":");
+        } else {
+          this.next();
+          return this.labeledStatement(node);
+        }
       case this.char === "{":
         if (this.contexts.top() === "super_class") {
           this.recede();

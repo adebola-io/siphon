@@ -9,6 +9,7 @@ import {
   ExpressionStatment,
   Identifier,
   IfStatement,
+  LabeledStatement,
   ObjectPattern,
   ReturnStatement,
   SwitchCase,
@@ -118,6 +119,7 @@ ezra.tryExpressionStatement = function () {
   this.operators.push("none");
   expstat.expression = this.expression();
   if (expstat.expression === undefined) return;
+  if (expstat.expression instanceof LabeledStatement) return expstat.expression;
   expstat.loc.start = expstat.expression.loc.start;
   expstat.loc.end = expstat.expression.loc.end;
   this.operators.pop();
@@ -272,6 +274,12 @@ ezra.returnStatement = function () {
   this.eat(";");
   retstat.loc.end = this.j;
   return retstat;
+};
+ezra.labeledStatement = function (label) {
+  var labelstat = new LabeledStatement(label.loc.start);
+  labelstat.label = label;
+  labelstat.body = this.statement();
+  return labelstat;
 };
 ezra.variableDeclaration = function () {
   const kind = this.belly.pop(),

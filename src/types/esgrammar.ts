@@ -187,10 +187,16 @@ export type Statement =
   | BlockStatement
   | ReturnStatement
   | TryStatement
+  | LabeledStatement
   | ThrowStatement;
 export class ExpressionStatment extends JSNode {
   type = "ExpressionStatement";
   expression?: Expression | Identifier | Literal;
+}
+export class LabeledStatement extends JSNode {
+  type = "LabeledStatement";
+  label!: Identifier;
+  body?: Statement;
 }
 export class EmptyStatement extends JSNode {
   type = "EmptyStatement";

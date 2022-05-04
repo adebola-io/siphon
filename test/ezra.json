@@ -1,1 +1,58 @@
-{"type":"Program","loc":{"start":0,"end":22},"body":[{"type":"ExpressionStatement","loc":{"start":0,"end":20},"expression":{"type":"Literal","loc":{"start":0,"end":19},"raw":"/[(`.[+/*%<>=,?^&]/","kind":"regex","regex":{"pattern":"[(`.[+/*%<>=,?^&]","flags":""},"value":{}}}]}
+{
+  "type": "Program",
+  "loc": { "start": 0, "end": 47 },
+  "body": [
+    {
+      "type": "FunctionDeclaration",
+      "loc": { "start": 0, "end": 45 },
+      "params": [],
+      "id": {
+        "type": "Identifier",
+        "loc": { "start": 9, "end": 9 },
+        "name": "p"
+      },
+      "body": {
+        "type": "BlockStatement",
+        "loc": { "start": 13, "end": 45 },
+        "body": [
+          {
+            "type": "LabeledStatement",
+            "loc": { "start": 18 },
+            "label": {
+              "type": "Identifier",
+              "loc": { "start": 18, "end": 21 },
+              "name": "loop"
+            },
+            "body": {
+              "type": "BlockStatement",
+              "loc": { "start": 24, "end": 42 },
+              "body": [
+                {
+                  "type": "ExpressionStatement",
+                  "loc": { "start": 31, "end": 37 },
+                  "expression": {
+                    "type": "BinaryExpression",
+                    "loc": { "start": 31, "end": 36 },
+                    "operator": ">",
+                    "left": {
+                      "type": "Identifier",
+                      "loc": { "start": 31, "end": 31 },
+                      "name": "s"
+                    },
+                    "right": {
+                      "type": "Literal",
+                      "loc": { "start": 35, "end": 36 },
+                      "raw": "0",
+                      "kind": "number",
+                      "value": 0
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
