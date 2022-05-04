@@ -96,6 +96,10 @@ export interface HTMLDocumentNode {
   children?: Array<HTMLDocumentNode>;
   classList?: Array<string>;
 }
+
+export interface datingOptions {
+  noDate?: boolean;
+}
 export interface Relation {
   from: PathLike;
   to: PathLike;

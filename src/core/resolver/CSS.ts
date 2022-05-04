@@ -9,7 +9,7 @@ import {
   Stylesheet,
 } from "../../types";
 import {
-  copy,
+  copyInBase64,
   fileExists,
   getFileName as fileName,
   relativePath as rel,
@@ -74,7 +74,7 @@ function resolveCSS(
               } else {
                 const file = basename(asset);
                 if (!assets[file] && fileExists(asset)) {
-                  copy(asset, `${outputDirectory}/${file}`);
+                  copyInBase64(asset, `${outputDirectory}/${file}`);
                   assets[file] = asset;
                   rule.notation[entry[0]] = `url(./${file})`;
                 } else if (assets[file] && assets[file] !== asset) {
@@ -83,7 +83,7 @@ function resolveCSS(
                   while (assets[newcopy]) {
                     newcopy = fileName(file) + `-${++id}` + extname(file);
                   }
-                  copy(asset, `${outputDirectory}/${newcopy}`);
+                  copyInBase64(asset, `${outputDirectory}/${newcopy}`);
                   assets[newcopy] = asset;
                   rule.notation[entry[0]] = `url(./${newcopy})`;
                 } else if (fileExists(asset)) {
@@ -107,7 +107,7 @@ function resolveCSS(
           } else {
             const file = basename(asset);
             if (!assets[file] && fileExists(asset)) {
-              copy(asset, `${outputDirectory}/${file}`);
+              copyInBase64(asset, `${outputDirectory}/${file}`);
               assets[file] = asset;
               rule.source = `url(./${file})`;
             } else if (assets[file] && assets[file] !== asset) {
@@ -116,7 +116,7 @@ function resolveCSS(
               while (assets[newcopy]) {
                 newcopy = fileName(file) + `-${++id}` + extname(file);
               }
-              copy(asset, `${outputDirectory}/${newcopy}`);
+              copyInBase64(asset, `${outputDirectory}/${newcopy}`);
               assets[newcopy] = asset;
               rule.source = `url(./${newcopy})`;
             } else if (fileExists(asset)) {

@@ -4,7 +4,7 @@ import Errors from "../../errors";
 import { HTMLDocumentNode, siphonOptions } from "../../types";
 import {
   fileExists,
-  copy,
+  copyInBase64,
   relativePath,
   tryMkingDir,
   getFileName,
@@ -101,14 +101,14 @@ class Resolver {
           image.attributes.src = this.injectMode
             ? truePath
             : `./${this.options.storeImagesSeparately ? "img/" : ""}${newname}`;
-          copy(
+          copyInBase64(
             truePath,
             `${this.outDir}/${
               this.options.storeImagesSeparately ? "img/" : ""
             }${newname}`
           );
         } else if (this.assets[fileMarker] === undefined) {
-          copy(
+          copyInBase64(
             truePath,
             `${this.outDir}/${
               this.options.storeImagesSeparately ? "img/" : ""
