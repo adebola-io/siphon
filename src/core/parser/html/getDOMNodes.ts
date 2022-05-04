@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import Errors from "../../../errors";
 import { HTMLDocumentNode } from "../../../types";
-import * as Structures from "../../../../structures";
+import * as Structures from "../../../structures";
 import getNodeAttributes from "./getNodeAttributes";
 import {
   checkForEnd,

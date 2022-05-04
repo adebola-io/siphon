@@ -1,6 +1,6 @@
 import { existsSync, watch } from "fs";
 import * as colors from "colors";
-import core from "../core";
+import bundler from "../core";
 import { newTimeStamp } from "../utils";
 import { siphonOptions } from "../types";
 import Errors from "../errors";
@@ -27,7 +27,7 @@ function watcher(options: siphonOptions) {
       try {
         let source = `${options.rootDir}/${relation.from}`,
           destination = `${options.outDir}/${relation.to}`;
-        core.bundler(source).into(destination, options);
+        bundler(source).into(destination, options);
         console.log();
         console.log(
           `${

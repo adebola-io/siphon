@@ -4,261 +4,199 @@ import { trace } from "../utils";
 import { red, bold } from "colors";
 import { ErrorTypes } from "../types";
 
-function err(message: string, source?: fs.PathLike, charac?: number): void {
+function error(msg: string, src?: fs.PathLike, char?: number): void {
   var pos: any;
-  if (source !== undefined && charac !== undefined) pos = trace(source, charac);
-  message = bold(
-    red(
-      `${message}` +
-        (source
-          ? `\n    at ${path.resolve(source.toString())}${
-              charac !== undefined ? `:${pos.line}:${pos.col}` : ""
-            }`
-          : "")
-    )
-  );
-  throw new Error(message);
+  msg = bold(red(`${msg}`));
+  if (src !== undefined) {
+    if (char !== undefined) pos = trace(src, char);
+    let pth =
+      path.resolve(src.toString()) + char !== undefined
+        ? `:${pos.line}:${pos.col}`
+        : "";
+    msg += bold(red("\n    " + `at ${pth}`));
+  }
+  throw new Error(msg);
 }
 
 const Errors = {
-  enc(type: ErrorTypes, source: fs.PathLike, charac?: number, options?: any) {
-    switch (type) {
-      case "FILE_NON_EXISTENT":
-        err(`Siphon could not find ${source.toString()}.`);
-      case "NO_ROOTDIR":
-        err(`The rootDir '${source}' does not exist.`);
-      case "SOMETHING_WENT_WRONG":
-        err(`Something went wrong while parsing your Javascript text.`, source);
-      case "CSS_NON_EXISTENT":
-        err(`The stylesheet '${source.toString()}' cannot be found.`);
-      case "CSS_SELF_IMPORT":
-        err(
-          `recursion_hell: The stylesheet ${source.toString()} has an import to itself.`
-        );
-      case "HTML_SELF_INJECT":
-        err(
-          `recursion_hell: The HTML file ${source.toString()} has an inject to itself.`
-        );
-      case "CSS_CIRCULAR_IMPORT":
-        err(
-          `The stylesheet ${source.toString()} has already been imported into this project.`
-        );
-      case "CSS_STRING_OR_URI_EXPECTED":
-        err("String or URL expected.", source, charac);
-      case "OPEN_BRAC_EXPECTED":
-        err("'(' was expected.", source, charac);
-      case "CLOSING_BRAC_EXPECTED":
-        err("')' was expected.", source, charac);
-      case "CLOSING_CURL_EXPECTED":
-        err("'}' was expected.", source, charac);
-      case "CLOSING_SQUARE_BRAC_EXPECTED":
-        err("']' was expected.", source, charac);
-      case "SEMI_COLON_EXPECTED":
-        err("Semicolon expected.", source, charac);
-      case "COLON_EXPECTED":
-        err("':' expected.", source, charac);
-      case "CSS_OPEN_CURL_EXPECTED":
-        err("'{' expected.", source, charac);
-      case "CATCH_NEW_PARAM":
-        err("A catch block can only have one paramater.", source, charac);
-      case "CATCH_ASSIGN":
-        err("A catch parameter must not have an initializer.");
-      case "CONST_INIT":
-        err("const variables must be initialized.", source, charac);
-      case "DESTRUCTURING_ERROR":
-        err("Destructured variables must have an initializer.", source, charac);
-      case "CSS_INVALID_IDENTIFIER":
-        err("Invalid CSS Identifier.", source, charac);
-      case "JS_INVALID_IDENTIFIER":
-        err("Invalid identifier.", source, charac);
-      case "JS_STATIC_CONSTRUCTOR":
-        err(
-          "'static' modifier cannot appear on a constructor declaration.",
-          source,
-          charac
-        );
-      case "JS_ILLEGAL_PRIV_IDENT":
-        err(
-          "Private identifiers cannot be used outside class bodies.",
-          source,
-          charac
-        );
-      case "JS_ILLEGAL_IMPORT_EXP":
-        err(
-          "Dynamic imports can only accept a module specifier and an optional assertion as arguments.",
-          source,
-          charac
-        );
-      case "JS_DUPLICATE_CONSTRUCTORS":
-        err("A class may only have one constructor.", source, charac);
-      case "JS_ILLEGAL_RETURN":
-        err(
-          `A 'return' statement can only be used within a function body.`,
-          source,
-          charac
-        );
-      case "JS_ILLEGAL_CONTINUE":
-        err(
-          `A 'continue' statement can only jump to a label of an enclosing iteration statement.`,
-          source,
-          charac
-        );
-      case "HTML_CIRCULAR_INJECT":
-        err(`Circular injection detected in ${source.toString()}.`);
-      case "NOT_A_DIRECTORY":
-        err(`The path ${source.toString()} does not lead to a directory.`);
-      case "COMMENT_UNCLOSED":
-        err(`Siphon encountered an unclosed comment.`, source, charac);
-      case "TAG_UNCLOSED":
-        err(`Expected a start tag.`, source, charac);
-      case "HTML_FRAGMENT":
-        err(`Siphon does not support HTML fragments.`, source, charac);
-      case "UNCLOSED_BLOCK_COMMENT":
-        err("*/ expected.", source, charac);
-      case "JS_UNEXPECTED_TOKEN":
-        err(`Unexpected token '${options.token}'.`, source, charac);
-      case "JS_ARGUMENT_EXPRESSION_EXPECTED":
-        err(`Argument expression expected.`, source, charac);
-      case "JS_INVALID_REGEX_FLAG":
-        err(`Invalid regular expression flag.`, source, charac);
-      case "JS_WHILE_EXPECTED":
-        err(`'while' expected.`, source, charac);
-      case "JS_INVALID_LHS_POFTIX":
-        err(
-          `Invalid left-hand side expression in postfix operation.`,
-          source,
-          charac
-        );
-      case "JS_PARAM_DEC_EXPECTED":
-        err("Parameter declaration expected.", source, charac);
-      case "JS_PARAM_CLASH":
-        err(
-          `The parameter '${options.token}' has already been declared.'`,
-          source,
-          charac
-        );
-      case "JS_INVALID_LHS_PREFIX":
-        err(
-          `Invalid left-hand side expression in prefix operation.`,
-          source,
-          charac
-        );
-      case "JS_INVALID_LHS_ASSIGN":
-        err(`Invalid left-hand side in assignment.`, source, charac);
-      case "JS_ILLEGAL_CASE":
-        err(
-          "A case can only be used within a switch statement.",
-          source,
-          charac
-        );
-      case "JS_EXPORT_EXPECTED":
-        err("'export' expected.", source, charac);
-      case "JS_ILLEGAL_ELSE":
-        err("Unexpected else statement.", source, charac);
-      case "JS_PROPERTY_DEC_EXPECTED":
-        err("Property declaration expected.", source, charac);
-      case "JS_REST_MUST_END":
-        err("A rest element must be last in a parameter list.", source, charac);
-      case "INVALID_NEW_META_PROPERTY":
-        err(
-          `'${options.token}' is not a valid meta-property for keyword 'new'. Did you mean 'target'?`,
-          source,
-          charac
-        );
-      case "INVALID_TAG":
-        err(`Invalid tag Name '${options.name}'`, source, charac);
-      case "MODULE_REQUIRES_SRC":
-        err(`HTML module tags require a src attribute.`);
-      case "INVALID_VOID_TAG":
-        err(`'${options.name}' cannot be used as a void tag.`, source, charac);
-      case "ABRUPT":
-        err(`Unexpected end of file.`, source);
-      case "CLOSING_TAG_ATTR":
-        err(`Attributes are not allowed in the closing tag.`, source, charac);
-      case "UNEXPECTED_CLOSE":
-        err(`Encountered unexpected closing tag.`, source, charac);
-      case "OPEN_CURLY_EXPECTED":
-        err(`Siphon expected a {`, source, charac);
-      case "UNSUPPORTED_IMAGE_FORMAT":
-        err(
-          `${options.src} is not a supported image format. \n\n To stop image checking, set checkImageTypes to false in your config file.`,
-          source,
-          charac
-        );
-      case "JS_UNEXP_KEYWORD_OR_IDENTIFIER":
-        err(`Unexpected keyword or Identifier.`, source, charac);
-      case "UNTERMINATED_STRING_LITERAL":
-        err(
-          `Siphon encountered an unterminated string literal.`,
-          source,
-          charac
-        );
-      case "UNTERMINATED_REGEX_LITERAL":
-        err(
-          `Siphon encountered an unterminated regular expression literal.`,
-          source,
-          charac
-        );
-      case "RESERVED":
-        err(
-          `'${options.token}' is a reserved keyword and cannot be used as an identifer.`,
-          source,
-          charac
-        );
-      case "EXPECTED":
-        err(`'${options.token}' expected.`, source, charac);
-      case "COMMA_EXPECTED":
-        err(`A ',' was expected.`, source, charac);
-      case "JS_CASE_EXPECTED":
-        err("'case' or 'default' expected.", source, charac);
-      case "EXPRESSION_EXPECTED":
-        err("An expression was expected.", source, charac);
-      case "VARIABLE_DECLARATION_EXPECTED":
-        err("Variable declaration or statement expected.", source, charac);
-      case "JS_DEC_OR_STATEMENT_EXPECTED":
-        err("Declaration or statement expected", source, charac);
-      case "JS_INVALID_SETTER_PARAMS":
-        err(
-          `A 'set' accessor must have exactly one parameter.`,
-          source,
-          charac
-        );
-      case "JS_INVALID_GETTER_PARAMS":
-        err(`A 'get' accessor cannot have parameters.`, source, charac);
-      case "JS_ILLEGAL_IMPORT":
-        err(
-          "An import statement can only be used at the top level of a module.",
-          source,
-          charac
-        );
-      case "JS_COMMA_IN_COMPUTED_PROP":
-        err(
-          "Commas are not allowed in computed property names.",
-          source,
-          charac
-        );
-      case "IDENTIFIER_EXPECTED":
-        err("Identifier expected.", source, charac);
-      case "EMPTY_CONST_DECLARATION":
-        err("'const' declarations must be initialized.", source, charac);
-      case "BIGINT_DECIMAL":
-        err("A bigint literal must be an integer.", source, charac);
-      case "ID_FOLLOWS_LITERAL":
-        err(
-          "An identifier or keyword cannot immediately follow a numeric literal.",
-          source,
-          charac
-        );
-      case "MISSING_DESC_INITIALIZER":
-        err("Destructured variables must have an initializer.", source, charac);
-      case "INVALID_ASSIGNMENT_LEFT":
-        err("Invalid left-hand side in assignment.", source, charac);
-      case "SHEBANG_NOT_ALLOWED":
-        err("Shebang comments are not suppoerted in the browser.");
+  enc(type: ErrorTypes, src: fs.PathLike, index?: number, options?: any) {
+    var e = { [type]: true },
+      message = "";
+    switch (true) {
+      case e.FILE_NON_EXISTENT:
+        error(`Siphon could not find ${src.toString()}.`);
+      case e.NO_ROOTDIR:
+        error(`The rootDir '${src}' does not exist.`);
+      case e.SOMETHING_WENT_WRONG:
+        error(`Something went wrong while parsing your Javascript text.`, src);
+      case e.CSS_NON_EXISTENT:
+        error(`The stylesheet '${src.toString()}' cannot be found.`);
+      case e.CSS_SELF_IMPORT:
+        error(`The stylesheet ${src.toString()} has an import to itself.`);
+      case e.HTML_SELF_INJECT:
+        error(`The HTML file ${src.toString()} has an inject to itself.`);
+      case e.CSS_CIRCULAR_IMPORT:
+        error(`The stylesheet ${src.toString()} has already been imported.`);
+      case e.CSS_STRING_OR_URI_EXPECTED:
+        error("String or URL expected.", src, index);
+      case e.OPEN_BRAC_EXPECTED:
+        error("'(' expected.", src, index);
+      case e.CLOSING_CURL_EXPECTED:
+        error("'}' was expected.", src, index);
+      case e.CLOSING_SQUARE_BRAC_EXPECTED:
+        error("']' was expected.", src, index);
+      case e.SEMI_COLON_EXPECTED:
+        error("Semicolon expected.", src, index);
+      case e.COLON_EXPECTED:
+        error("':' expected.", src, index);
+      case e.CSS_OPEN_CURL_EXPECTED:
+        error("'{' expected.", src, index);
+      case e.CATCH_NEW_PARAM:
+        error("A catch block can only have one paramater.", src, index);
+      case e.CATCH_ASSIGN:
+        error("A catch parameter must not have an initializer.");
+      case e.CONST_INIT:
+        error("const variables must be initialized.", src, index);
+      case e.DESTRUCTURING_ERROR:
+        error("Destructured variables must have an initializer.", src, index);
+      case e.CSS_INVALID_IDENTIFIER:
+        error("Invalid CSS Identifier.", src, index);
+      case e.JS_INVALID_IDENTIFIER:
+        error("Invalid identifier.", src, index);
+      case e.JS_STATIC_CONSTRUCTOR:
+        message =
+          "'static' modifier cannot appear on a constructor declaration.";
+        error(message, src, index);
+      case e.JS_ILLEGAL_PRIV_IDENT:
+        message = "Private identifiers cannot be used outside class bodies.";
+        error(message, src, index);
+      case e.JS_ILLEGAL_IMPORT_EXP:
+        message =
+          "Dynamic imports can only accept a module specifier and an optional assertion as arguments.";
+        error(message, src, index);
+      case e.JS_DUPLICATE_CONSTRUCTORS:
+        error("A class may only have one constructor.", src, index);
+      case e.JS_ILLEGAL_RETURN:
+        message = `A 'return' statement can only be used within a function body.`;
+        error(message, src, index);
+      case e.JS_ILLEGAL_CONTINUE:
+        message = `A 'continue' statement can only jump to a label of an enclosing iteration statement.`;
+        error(message, src, index);
+      case e.HTML_CIRCULAR_INJECT:
+        error(`Circular module detected in ${src.toString()}.`);
+      case e.NOT_A_DIRECTORY:
+        error(`The path ${src.toString()} does not lead to a directory.`);
+      case e.COMMENT_UNCLOSED:
+        error(`Unclosed comment.`, src, index);
+      case e.TAG_UNCLOSED:
+        error(`Expected a start tag.`, src, index);
+      case e.HTML_FRAGMENT:
+        error(`Siphon does not support HTML fragments.`, src, index);
+      case e.UNCLOSED_BLOCK_COMMENT:
+        error("*/ expected.", src, index);
+      case e.JS_UNEXPECTED_TOKEN:
+        error(`Unexpected token '${options.token}'.`, src, index);
+      case e.JS_ARGUMENT_EXPRESSION_EXPECTED:
+        error(`Argument expression expected.`, src, index);
+      case e.JS_INVALID_REGEX_FLAG:
+        error(`Invalid regular expression flag.`, src, index);
+      case e.JS_WHILE_EXPECTED:
+        error(`'while' expected.`, src, index);
+      case e.JS_INVALID_LHS_POFTIX:
+        message = `Invalid left-hand side expression in postfix operation.`;
+        error(message, src, index);
+      case e.JS_PARAM_DEC_EXPECTED:
+        error("Parameter declaration expected.", src, index);
+      case e.JS_PARAM_CLASH:
+        message = `The parameter '${options.token}' has already been declared.'`;
+        error(message, src, index);
+      case e.JS_INVALID_LHS_PREFIX:
+        message = `Invalid left-hand side expression in prefix operation.`;
+        error(message, src, index);
+      case e.JS_INVALID_LHS_ASSIGN:
+        error(`Invalid left-hand side in assignment.`, src, index);
+      case e.JS_ILLEGAL_CASE:
+        error("A case can only be used within a switch statement.", src, index);
+      case e.JS_EXPORT_EXPECTED:
+        error("'export' expected.", src, index);
+      case e.JS_ILLEGAL_ELSE:
+        error("Unexpected else statement.", src, index);
+      case e.JS_PROPERTY_DEC_EXPECTED:
+        error("Property declaration expected.", src, index);
+      case e.JS_REST_MUST_END:
+        error("A rest element must be last in a parameter list.", src, index);
+      case e.INVALID_NEW_META_PROPERTY:
+        message = `'${options.token}' is not a valid meta-property for keyword 'new'. Did you mean 'target'?`;
+        error(message, src, index);
+      case e.INVALID_TAG:
+        error(`Invalid tag Name '${options.name}'`, src, index);
+      case e.MODULE_REQUIRES_SRC:
+        error(`HTML module tags require a src attribute.`);
+      case e.INVALID_VOID_TAG:
+        error(`'${options.name}' cannot be used as a void tag.`, src, index);
+      case e.ABRUPT:
+        error(`Unexpected end of file.`, src);
+      case e.CLOSING_TAG_ATTR:
+        error(`Attributes are not allowed in the closing tag.`, src, index);
+      case e.UNEXPECTED_CLOSE:
+        error(`Encountered unexpected closing tag.`, src, index);
+      case e.OPEN_CURLY_EXPECTED:
+        error(`'{' expected.`, src, index);
+      case e.UNSUPPORTED_IMAGE_FORMAT:
+        message = `${options.src} is not a supported image format. \n\n To stop image checking, set checkImageTypes to false in your config file.`;
+        error(message, src, index);
+      case e.JS_UNEXP_KEYWORD_OR_IDENTIFIER:
+        error(`Unexpected keyword or Identifier.`, src, index);
+      case e.UNTERMINATED_STRING_LITERAL:
+        error(`Siphon encountered an unterminated string literal.`, src, index);
+      case e.UNTERMINATED_REGEX_LITERAL:
+        message = `Siphon encountered an unterminated regular expression literal.`;
+        error(message, src, index);
+      case e.RESERVED:
+        message = `'${options.token}' is a reserved keyword and cannot be used as an identifer.`;
+        error(message, src, index);
+      case e.EXPECTED:
+        error(`'${options.token}' expected.`, src, index);
+      case e.COMMA_EXPECTED:
+        error(`A ',' was expected.`, src, index);
+      case e.JS_CASE_EXPECTED:
+        error("'case' or 'default' expected.", src, index);
+      case e.EXPRESSION_EXPECTED:
+        error("An expression was expected.", src, index);
+      case e.VARIABLE_DECLARATION_EXPECTED:
+        error("Variable declaration or statement expected.", src, index);
+      case e.JS_DEC_OR_STATEMENT_EXPECTED:
+        error("Declaration or statement expected", src, index);
+      case e.JS_INVALID_SETTER_PARAMS:
+        error(`A 'set' accessor must have exactly one parameter.`, src, index);
+      case e.JS_INVALID_GETTER_PARAMS:
+        error(`A 'get' accessor cannot have parameters.`, src, index);
+      case e.JS_ILLEGAL_IMPORT:
+        message =
+          "An import statement can only be used at the top level of a module.";
+        error(message, src, index);
+      case e.JS_COMMA_IN_COMPUTED_PROP:
+        error("Commas are not allowed in computed property names.", src, index);
+      case e.IDENTIFIER_EXPECTED:
+        error("Identifier expected.", src, index);
+      case e.EMPTY_CONST_DECLARATION:
+        error("'const' declarations must be initialized.", src, index);
+      case e.BIGINT_DECIMAL:
+        error("A bigint literal must be an integer.", src, index);
+      case e.ID_FOLLOWS_LITERAL:
+        message =
+          "An identifier or keyword cannot immediately follow a numeric literal.";
+        error(message, src, index);
+      case e.MISSING_DESC_INITIALIZER:
+        error("Destructured variables must have an initializer.", src, index);
+      case e.INVALID_ASSIGNMENT_LEFT:
+        error("Invalid left-hand side in assignment.", src, index);
+      case e.SHEBANG_NOT_ALLOWED:
+        error("Shebang comments are not suppoerted in the browser.");
     }
   },
   custom(message: string, source: fs.PathLike, charac?: number) {
-    err(message, source, charac);
+    error(message, source, charac);
   },
 };
 

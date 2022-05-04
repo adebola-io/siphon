@@ -1,17 +1,34 @@
-import bundler from "./bundler";
-import formatter from "./formatter";
-import minifier from "./minifier";
-import Resolver from "./resolver";
-import parser from "./parser";
+import * as fs from "fs";
+import * as path from "path";
+import Errors from "../errors";
 import Generator from "./generator";
+import Resolver from "./resolver";
+import createDOMTree from "./parser/html/createDOMTree";
+import { siphonOptions } from "../types";
+import { forceCreateDir } from "../utils";
 
-const core = {
-  bundler,
-  minifier,
-  formatter,
-  parser,
-  Generator,
-  Resolver,
-};
+function bundler(source: fs.PathLike) {
+  return {
+    into(destination: fs.PathLike, options: siphonOptions) {
+      if (!fs.existsSync(source)) Errors.enc("FILE_NON_EXISTENT", source);
+      let fileExt = path.extname(source.toString());
+      switch (fileExt) {
+        case ".html":
+        case ".xhtml":
+        case ".mhtml":
+          var htmlTree = createDOMTree(source);
+          forceCreateDir(destination);
+          let resolver = new Resolver(source, destination, options);
+          htmlTree = resolver.resolve(htmlTree);
+          fs.writeFile(
+            destination,
+            new Generator().generate(htmlTree, options),
+            () => {}
+          );
+          return true;
+      }
+    },
+  };
+}
 
-export default core;
+export default bundler;

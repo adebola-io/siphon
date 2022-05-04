@@ -71,4 +71,4 @@ module.exports = {
 
 When the bundler is run, it will bundle files into a `dist` folder, rather than the default `build`.
 
-For more on configuration, see [Siphon Configs](CONFIG.md).
+For more on configuration, see [Siphon Configs](./docs/CONFIG.md).

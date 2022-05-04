@@ -1,9 +1,9 @@
 module.exports = {
-  rootDir: "test/src",
-  outDir: "test/build",
+  rootDir: "src/test/demo",
+  outDir: "src/test/proto",
   formatFiles: true,
   htmlInjects: true,
-  relations: [{ from: "start.html", to: "index.html" }],
-  internalStyles: true,
+  relations: [{ from: "index.html", to: "index.html" }],
+  internalStyles: false,
   internalJS: true,
 };

@@ -12,7 +12,7 @@ import {
 } from "../../utils";
 import createDOMTree from "../parser/html/createDOMTree";
 import tagNameSearch from "../parser/html/tagNameSearch";
-import resolveCSS from "./resolveCSS";
+import resolveCSS from "./CSS";
 
 class Resolver {
   constructor(
