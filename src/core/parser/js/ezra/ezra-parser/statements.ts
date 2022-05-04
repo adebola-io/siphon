@@ -21,7 +21,7 @@ import {
   VariableDeclarator,
   WhileStatement,
 } from "../../../../../types";
-import { isValidIdentifierCharacter } from "../../../../../utils";
+import { isDigit, isValidIdentifierCharacter } from "../../../../../utils";
 import { ezra } from "./base";
 import { keywords } from "./identifiers";
 
@@ -126,7 +126,7 @@ ezra.statement = function () {
 };
 ezra.tryExpressionStatement = function () {
   // Try labelled Statements.
-  if (isValidIdentifierCharacter(this.char)) {
+  if (isValidIdentifierCharacter(this.char) && !isDigit(this.char)) {
     var pos = this.j;
     let label = this.identifier(true);
     this.outerspace();

@@ -10,7 +10,13 @@ import { ezra } from "./base";
 ezra.numberLiteral = function () {
   const numlit = new Literal(this.j);
   numlit.kind = "number";
-  if (this.eat("0x")) {
+  if (this.belly.top() === "decim") {
+    this.belly.pop();
+    numlit.raw += "." + this.count();
+    if (isAlphabetic(this.char) || /\./.test(this.char)) {
+      this.raise("ID_FOLLOWS_LITERAL");
+    }
+  } else if (this.eat("0x")) {
     this.belly.pop();
     numlit.raw = "Ox" + this.count(16);
     if (isAlphabetic(this.char)) this.raise("ID_FOLLOWS_LITERAL");
@@ -26,7 +32,7 @@ ezra.numberLiteral = function () {
       this.next();
       numlit.raw += "." + this.count();
     }
-    if (this.eat("e")) {
+    if (this.eat("e") || this.eat("E")) {
       numlit.raw += this.belly.pop();
       if (this.eat("-")) {
         numlit.raw += this.belly.pop();

@@ -60,6 +60,10 @@ ezra.expression = function (type) {
     case this.eat("..."):
       if (this.allowSpread()) return this.spreadElement();
       else this.raise("EXPRESSION_EXPECTED");
+    case this.eat("."):
+      this.belly.pop();
+      this.belly.push("decim");
+      return this.reparse(this.numberLiteral());
     case this.match("new"):
       return this.reparse(this.newExpression());
     case this.match("null"):
