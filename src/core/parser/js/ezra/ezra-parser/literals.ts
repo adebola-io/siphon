@@ -17,6 +17,10 @@ ezra.numberLiteral = function () {
     numlit.value = parseInt(numlit.raw.slice(2), 16);
   } else {
     numlit.raw += this.count();
+    if (this.char === "e") {
+      this.next();
+      numlit.raw += "e" + this.count();
+    }
     if (this.char === "n") {
       numlit.kind = "bigint";
       numlit.bigint = numlit.raw;

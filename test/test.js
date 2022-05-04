@@ -1,1 +1,1 @@
-function p(y, ...p) {}
+10e3;
