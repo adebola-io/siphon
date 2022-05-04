@@ -1,6 +1,6 @@
 module.exports = {
-  rootDir: "src/test/demo",
-  outDir: "src/test/proto",
+  rootDir: "./source",
+  outDir: "./out",
   formatFiles: true,
   htmlInjects: true,
   relations: [{ from: "index.html", to: "index.html" }],

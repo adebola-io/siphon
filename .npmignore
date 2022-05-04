@@ -3,6 +3,8 @@ tsconfig.json
 siphon.config.js
 test
 dump
+docs
+package-lock.json
 scripts
 .vscode
 .gitgnore

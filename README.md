@@ -7,7 +7,7 @@
   <a href="https://packagephobia.now.sh/result?p=siphon-cli">
     <img src="https://packagephobia.now.sh/badge?p=siphon-cli" alt="install size" >
   </a>
-  <a href="https://github.com/adebola-xyz/siphon/blob/master/LICENSE.txt">
+  <a href="https://github.com/adebola-xyz/siphon/blob/master/LICENSE">
     <img src="https://img.shields.io/npm/l/siphon-cli.svg" alt="license">
   </a>
   </p>
@@ -71,4 +71,4 @@ module.exports = {
 
 When the bundler is run, it will bundle files into a `dist` folder, rather than the default `build`.
 
-For more on configuration, see [Siphon Configs](./docs/CONFIG.md).
+For more on configuration, see [Siphon Configs](https://github.com/adebola-xyz/siphon/blob/master/docs/CONFIG.md).
