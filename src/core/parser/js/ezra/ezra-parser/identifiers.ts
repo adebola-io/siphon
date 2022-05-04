@@ -2,7 +2,7 @@ import { Identifier, PrivateIdentifier } from "../../../../../types";
 import { isDigit, isValidIdentifierCharacter } from "../../../../../utils";
 import { ezra } from "./base";
 
-const keywords: any = {
+export const keywords: any = {
   // arguments: true,
   await: true,
   break: true,
@@ -58,7 +58,7 @@ ezra.identifier = function (allowKeyword = false) {
   while (isValidIdentifierCharacter(this.char))
     (id.name += this.char), this.next();
   id.loc.end = this.j - 1;
-  if (!allowKeyword && keywords[id.name]) {
+  if (!allowKeyword && keywords[id.name] === true) {
     this.raise("RESERVED", id.name, id.loc.end);
   }
   return id;

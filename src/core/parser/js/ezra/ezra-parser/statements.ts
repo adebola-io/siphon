@@ -20,7 +20,9 @@ import {
   VariableDeclarator,
   WhileStatement,
 } from "../../../../../types";
+import { isValidIdentifierCharacter } from "../../../../../utils";
 import { ezra } from "./base";
+import { keywords } from "./identifiers";
 
 var statementScope: any = { block: true, global: true, case: true };
 ezra.statement = function () {
@@ -115,11 +117,20 @@ ezra.statement = function () {
   }
 };
 ezra.tryExpressionStatement = function () {
+  // Try labelled Statements.
+  if (isValidIdentifierCharacter(this.char)) {
+    var pos = this.j;
+    let label = this.identifier(true);
+    this.outerspace();
+    if (this.char === ":") {
+      this.next();
+      return this.labeledStatement(label);
+    } else this.goto(pos);
+  }
   let expstat = new ExpressionStatment(this.j);
   this.operators.push("none");
   expstat.expression = this.expression();
   if (expstat.expression === undefined) return;
-  if (expstat.expression instanceof LabeledStatement) return expstat.expression;
   expstat.loc.start = expstat.expression.loc.start;
   expstat.loc.end = expstat.expression.loc.end;
   this.operators.pop();
@@ -276,6 +287,7 @@ ezra.returnStatement = function () {
   return retstat;
 };
 ezra.labeledStatement = function (label) {
+  if (keywords[label.name] === true) this.raise("JS_UNEXPECTED_TOKEN", ":");
   var labelstat = new LabeledStatement(label.loc.start);
   labelstat.label = label;
   labelstat.body = this.statement();

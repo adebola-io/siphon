@@ -59,11 +59,16 @@ export class parse_utils {
    * Checks if the current operator being parsed has a lower precedence than the operator parsed before it.
    */
   lowerPrecedence() {
-    if (this.operators.top() === undefined) return false;
+    // console.log(precedence[this.operators.top()], precedence[this.belly.top()]);
+    let topOperator: any = { ...this.operators },
+      bellyTop: any = { ...this.belly };
+    (topOperator = topOperator.arr[topOperator.arr.length - 1]),
+      (bellyTop = bellyTop.arr[bellyTop.arr.length - 1]);
+    if (topOperator === undefined) return false;
     if (
-      precedence[this.operators.top()] > precedence[this.belly.top()] ||
-      (precedence[this.operators.top()] === precedence[this.belly.top()] &&
-        assoc(this.operators.top()) === "LR")
+      precedence[topOperator] > precedence[bellyTop] ||
+      (precedence[topOperator] === precedence[bellyTop] &&
+        assoc(topOperator) === "LR")
     ) {
       this.backtrack();
       return true;

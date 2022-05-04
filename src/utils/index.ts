@@ -615,6 +615,8 @@ export const precedence: any = {
   call: 17,
   postfix: 16,
   prefix: 15,
+  "++": 15,
+  "--": 15,
   "**": 14,
   "*": 13,
   "/": 13,

@@ -1,55 +1,127 @@
 {
   "type": "Program",
-  "loc": { "start": 0, "end": 47 },
+  "loc": { "start": 0, "end": 75 },
   "body": [
     {
-      "type": "FunctionDeclaration",
-      "loc": { "start": 0, "end": 45 },
-      "params": [],
-      "id": {
-        "type": "Identifier",
-        "loc": { "start": 9, "end": 9 },
-        "name": "p"
-      },
-      "body": {
-        "type": "BlockStatement",
-        "loc": { "start": 13, "end": 45 },
-        "body": [
-          {
-            "type": "LabeledStatement",
-            "loc": { "start": 18 },
-            "label": {
-              "type": "Identifier",
-              "loc": { "start": 18, "end": 21 },
-              "name": "loop"
+      "type": "VariableDeclaration",
+      "loc": { "start": 0, "end": 46 },
+      "kind": "var",
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "loc": { "start": 4, "end": 9 },
+          "id": {
+            "type": "Identifier",
+            "loc": { "start": 4, "end": 4 },
+            "name": "i"
+          },
+          "init": {
+            "type": "Literal",
+            "loc": { "start": 8, "end": 9 },
+            "raw": "0",
+            "kind": "number",
+            "value": 0
+          }
+        },
+        {
+          "type": "VariableDeclarator",
+          "loc": { "start": 10, "end": 46 },
+          "id": {
+            "type": "Identifier",
+            "loc": { "start": 14, "end": 14 },
+            "name": "e"
+          },
+          "init": {
+            "type": "ConditionalExpression",
+            "loc": { "start": 18, "end": 46 },
+            "test": {
+              "type": "BinaryExpression",
+              "loc": { "start": 18, "end": 30 },
+              "operator": "==",
+              "left": {
+                "type": "Identifier",
+                "loc": { "start": 18, "end": 20 },
+                "name": "len"
+              },
+              "right": {
+                "type": "Literal",
+                "loc": { "start": 25, "end": 29 },
+                "raw": "null",
+                "kind": "null",
+                "value": null
+              }
             },
-            "body": {
-              "type": "BlockStatement",
-              "loc": { "start": 24, "end": 42 },
-              "body": [
-                {
-                  "type": "ExpressionStatement",
-                  "loc": { "start": 31, "end": 37 },
-                  "expression": {
-                    "type": "BinaryExpression",
-                    "loc": { "start": 31, "end": 36 },
-                    "operator": ">",
-                    "left": {
-                      "type": "Identifier",
-                      "loc": { "start": 31, "end": 31 },
-                      "name": "s"
-                    },
-                    "right": {
-                      "type": "Literal",
-                      "loc": { "start": 35, "end": 36 },
-                      "raw": "0",
-                      "kind": "number",
-                      "value": 0
-                    }
-                  }
-                }
-              ]
+            "consequent": {
+              "type": "Identifier",
+              "loc": { "start": 32, "end": 39 },
+              "name": "Infinity"
+            },
+            "alternate": {
+              "type": "Identifier",
+              "loc": { "start": 43, "end": 45 },
+              "name": "len"
             }
+          }
+        }
+      ]
+    },
+    {
+      "type": "ExpressionStatement",
+      "loc": { "start": 49, "end": 55 },
+      "expression": {
+        "type": "BinaryExpression",
+        "loc": { "start": 49, "end": 54 },
+        "operator": "<",
+        "left": {
+          "type": "Identifier",
+          "loc": { "start": 49, "end": 49 },
+          "name": "i"
+        },
+        "right": {
+          "type": "Identifier",
+          "loc": { "start": 53, "end": 53 },
+          "name": "e"
+        }
+      }
+    },
+    {
+      "type": "ExpressionStatement",
+      "loc": { "start": 57, "end": 73 },
+      "expression": {
+        "type": "SequenceExpression",
+        "loc": { "start": 57, "end": 72 },
+        "expressions": [
+          {
+            "type": "UpdateExpression",
+            "loc": { "start": 57, "end": 60 },
+            "operator": "++",
+            "argument": {
+              "type": "Identifier",
+              "loc": { "start": 59, "end": 59 },
+              "name": "i"
+            },
+            "prefix": true
+          },
+          {
+            "type": "UpdateExpression",
+            "loc": { "start": 62, "end": 72 },
+            "operator": "this",
+            "argument": {
+              "type": "MemberExpression",
+              "loc": { "start": 64, "end": 71 },
+              "optional": false,
+              "computed": false,
+              "object": {
+                "type": "ThisExpression",
+                "loc": { "start": 64, "end": 68 }
+              },
+              "property": {
+                "type": "Identifier",
+                "loc": { "start": 69, "end": 71 },
+                "name": "pos"
+              }
+            },
+            "prefix": true
           }
         ]
       }
