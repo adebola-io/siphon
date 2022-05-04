@@ -95,8 +95,7 @@ export class ezra_parse_internals extends parse_utils {
   blockStatement!: (eatComma?: boolean) => BlockStatement;
   tryExpressionStatement!: () => ExpressionStatment | undefined;
   ifStatement!: () => IfStatement;
-  loopParameters!: () => ForInStatement | ForOfStatement | ForStatement;
-  forStatement!: () => ForStatement | ForInStatement;
+  forStatement!: () => ForStatement | ForInStatement | ForOfStatement;
   forInStatement!: (start: number, params: any) => ForInStatement;
   whileStatement!: () => WhileStatement;
   doWhileStatement!: () => DoWhileStatement;

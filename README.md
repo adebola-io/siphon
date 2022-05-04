@@ -1,5 +1,5 @@
 <p align=center>
-  <img width=200 height=200 src="./img/siphon_proto.png"></img>
+  <img width=200 height=200 src="https://user-images.githubusercontent.com/60784068/166832164-edb160e5-4ae4-4085-bc53-28e3e6506537.png"></img>
   <p align=center>
   <a href="https://www.npmjs.com/package/siphon-cli">
     <img src="https://img.shields.io/npm/v/siphon-cli.svg" alt="npm version" >

@@ -3,10 +3,10 @@ import { Parser as Acorn } from "acorn";
 import * as Esprima from "esprima";
 import Ezra from ".";
 
-const text = readFileSync("test/test.js").toString();
+const text = readFileSync("src/test/index.js").toString();
 
 console.time();
-Ezra.parse(text, { sourceFile: "test/test.js" });
+Ezra.parse(text, { sourceFile: "src/test/index.js" });
 console.timeEnd();
 
 console.time();

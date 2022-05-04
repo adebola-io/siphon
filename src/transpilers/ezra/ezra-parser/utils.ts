@@ -241,7 +241,8 @@ export class parse_utils {
   }
   /** Skip over new lines, space characters and comments in the global scope of the program. */
   outerspace() {
-    while (/\s|\r|\n/.test(this.char)) this.next();
+    while (/\s|\r|\n/.test(this.text[this.i])) this.i++;
+    this.goto(this.i);
     this.glazeOverComments();
     if (/\s|\r|\n/.test(this.char)) this.outerspace();
   }
