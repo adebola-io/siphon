@@ -95,8 +95,8 @@ ezra.memberExpression = function (object) {
     if (memexp.property === undefined) this.raise("EXPRESSION_EXPECTED");
     memexp.computed = true;
   } else if (this.char === "#") {
-    let contexts: any = { ...this.contexts };
-    if (contexts.arr.includes("class_body")) {
+    let { arr }: any = { ...this.contexts };
+    if (arr.includes("class_body")) {
       this.next();
       memexp.property = this.privateIdentifier();
     } else this.raise("JS_ILLEGAL_PRIV_IDENT");

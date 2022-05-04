@@ -4,6 +4,7 @@ import {
   BlockStatement,
   BreakStatement,
   CatchClause,
+  ContinueStatement,
   DoWhileStatement,
   EmptyStatement,
   ExpressionStatment,
@@ -24,7 +25,12 @@ import { isValidIdentifierCharacter } from "../../../../../utils";
 import { ezra } from "./base";
 import { keywords } from "./identifiers";
 
-var statementScope: any = { block: true, global: true, case: true };
+var statementScope: any = {
+  block: true,
+  global: true,
+  case: true,
+  labelled: true,
+};
 ezra.statement = function () {
   this.outerspace();
   let context: any = { [this.contexts.top()]: true };
@@ -92,6 +98,8 @@ ezra.statement = function () {
       return this.throwStatement();
     case this.match("switch"):
       return this.switchStatement();
+    case this.match("continue"):
+      return this.continueStatement();
     case this.match("function"):
       return this.functionDeclaration();
     case this.match("return"):
@@ -227,6 +235,23 @@ ezra.breakStatement = function () {
   breakstat.loc.end = this.j;
   return breakstat;
 };
+ezra.continueStatement = function () {
+  var pos = this.j;
+  const continuestat = new ContinueStatement(this.j - 8);
+  this.outerspace();
+  if (this.char === ";" || /\n/.test(this.text.slice(pos, this.j))) {
+    continuestat.label = null;
+  } else {
+    continuestat.label = this.identifier();
+    var { arr }: any = { ...this.contexts };
+    if (!arr.find((a: any) => a.label === continuestat.label?.name)) {
+      this.raise("JS_ILLEGAL_CONTINUE");
+    }
+  }
+  this.outerspace();
+  this.eat(";");
+  return continuestat;
+};
 ezra.throwStatement = function () {
   const throwstat = new ThrowStatement(this.j - 5);
   var pos = this.j;
@@ -274,12 +299,12 @@ ezra.tryStatement = function () {
   return trystat;
 };
 ezra.returnStatement = function () {
-  let contexts: any = { ...this.contexts };
-  if (!contexts.arr.includes("function")) this.raise("JS_ILLEGAL_RETURN");
+  let { arr }: any = { ...this.contexts };
+  if (!arr.includes("function")) this.raise("JS_ILLEGAL_RETURN");
   const retstat = new ReturnStatement(this.j - 6);
   var pos = this.j;
   this.outerspace();
-  if (/\n|;/.test(this.text.slice(pos, this.j))) {
+  if (this.char === ";" || /\n/.test(this.text.slice(pos, this.j))) {
     retstat.argument = null;
   } else retstat.argument = this.expression() ?? null;
   this.eat(";");
@@ -290,7 +315,11 @@ ezra.labeledStatement = function (label) {
   if (keywords[label.name] === true) this.raise("JS_UNEXPECTED_TOKEN", ":");
   var labelstat = new LabeledStatement(label.loc.start);
   labelstat.label = label;
+  this.contexts.push({ label: label.name });
+  this.contexts.push("labelled");
   labelstat.body = this.statement();
+  this.contexts.pop();
+  this.contexts.pop();
   return labelstat;
 };
 ezra.variableDeclaration = function () {
@@ -314,11 +343,11 @@ ezra.declarator = function (kind) {
     decExp: any = this.expression();
   if (decExp === undefined) this.raise("VARIABLE_DECLARATION_EXPECTED");
   const forLoopInit = () => {
-    let allContexts: any = { ...this.contexts };
+    let { arr }: any = { ...this.contexts };
     return (
       decExp.type === "BinaryExpression" &&
       (decExp.operator === "of" || decExp.operator === "in") &&
-      allContexts.arr.includes("for_params")
+      arr.includes("for_params")
     );
   };
   // Initialized declarators.

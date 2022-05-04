@@ -254,6 +254,10 @@ export class ForOfStatement extends JSNode {
 export class BreakStatement extends JSNode {
   type = "BreakStatement";
 }
+export class ContinueStatement extends JSNode {
+  type = "ContinueStatement";
+  label!: Identifier | null;
+}
 export class ReturnStatement extends JSNode {
   type = "ReturnStatement";
   argument?: Expression | null;

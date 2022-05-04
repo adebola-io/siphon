@@ -97,6 +97,12 @@ const Errors = {
           source,
           charac
         );
+      case "JS_ILLEGAL_CONTINUE":
+        err(
+          `A 'continue' statement can only jump to a label of an enclosing iteration statement.`,
+          source,
+          charac
+        );
       case "HTML_CIRCULAR_INJECT":
         err(`Circular injection detected in ${source.toString()}.`);
       case "NOT_A_DIRECTORY":

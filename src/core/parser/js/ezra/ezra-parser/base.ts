@@ -9,6 +9,7 @@ import {
   ClassDeclaration,
   ClassExpression,
   Context,
+  ContinueStatement,
   DoWhileStatement,
   EmptyStatement,
   ExportAllDeclaration,
@@ -105,6 +106,7 @@ export class ezra_parse_internals extends parse_utils {
   labeledStatement!: (label: Identifier) => LabeledStatement;
   breakStatement!: () => BreakStatement;
   throwStatement!: () => ThrowStatement;
+  continueStatement!: () => ContinueStatement;
   tryStatement!: () => TryStatement;
   functionDeclaration!: () => FunctionDeclaration;
   variableDeclaration!: () => VariableDeclaration;

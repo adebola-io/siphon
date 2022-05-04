@@ -17,4 +17,4 @@ console.timeEnd();
 // const program = Acorn.parse(text, { ecmaVersion: 2022, locations: false });
 // console.timeEnd();
 
-writeFileSync("test/ezra.json", JSON.stringify(program));
+// writeFileSync("test/ezra.json", JSON.stringify(program));
