@@ -154,7 +154,7 @@ ezra.newExpression = function () {
   const newexp = new NewExpression(this.j);
   this.contexts.push("new");
   this.operators.push("new");
-  newexp.callee = this.reparse(this.identifier());
+  newexp.callee = this.expression();
   if (this.eat("(")) newexp.arguments = this.group("call") ?? [];
   else newexp.arguments = [];
   this.operators.pop();

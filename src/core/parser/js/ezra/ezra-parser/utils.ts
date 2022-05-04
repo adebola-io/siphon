@@ -193,7 +193,19 @@ export class parse_utils {
       if (this.text[i] === "\\") {
         value += `\\${this.text[++i]}`;
         i++;
-      } else value += this.text[i++];
+      } else {
+        if (this.text[i] === "[") {
+          while (this.text[i] && this.text[i] !== "]") {
+            // ESCAPE SEQUENCE
+            if (this.text[i] === "\\") {
+              value += `\\${this.text[++i]}`;
+              i++;
+            } else value += this.text[i++];
+          }
+          if (!this.text[i]) this.raise("UNTERMINATED_REGEX_LITERAL");
+        }
+        value += this.text[i++];
+      }
     }
     if (!this.text[i] || this.text[i] == "\n")
       // ERROR: Regex expression is not closed.
