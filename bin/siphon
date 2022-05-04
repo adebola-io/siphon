@@ -19,11 +19,12 @@ if (existsSync("siphon.config.js")) {
 
 switch (true) {
   case (task.args.watch || task.args.w) &&
-    task.inputs.includes("bundle") &&
+    (task.inputs.includes("-bundle") || task.inputs.includes("-b")) &&
     task.inputs.length === 1:
     siphon.watcher(options);
     break;
-  case task.inputs.length === 2 && task.inputs[0] === "bundle":
+  case task.inputs.length === 2 &&
+    (task.inputs[0] === "-bundle" || task.inputs[0] === "-b"):
     siphon
       .bundler(task.inputs[1])
       .into(
@@ -33,7 +34,7 @@ switch (true) {
     console.log();
     console.log(bold(green("Bundled " + task.inputs[1] + " successfully.")));
     break;
-  case task.inputs.includes("bundle"):
+  case task.inputs.includes("-bundle") || task.inputs.includes("-b"):
     options.relations.forEach((relation) => {
       var source = `${options.rootDir}/${relation.from}`;
       var destination = "".concat(options.outDir, "/").concat(relation.to);

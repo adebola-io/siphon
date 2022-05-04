@@ -36,7 +36,7 @@ npm install -g siphon-cli
 Once it is installed, you can cd into a project folder with an `index.html` file and run the command:
 
 ```console
-siphon-cli bundle index.html
+siphon-cli -bundle index.html
 ```
 
 This command will read the file, determine all its required assets, and bundle them up into an `index.html` file in a `build` folder.
@@ -52,7 +52,7 @@ Running Siphon in watch mode will set it to automatically bundle up your project
 To run Siphon in watch mode, cd to the root of your project and run the command:
 
 ```console
-siphon-cli bundle --watch
+siphon-cli -bundle --w
 ```
 
 ---
