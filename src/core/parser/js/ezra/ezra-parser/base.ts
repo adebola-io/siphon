@@ -34,6 +34,7 @@ import {
   Program,
   Property,
   PropertyDefinition,
+  RestElement,
   ReturnStatement,
   SpreadElement,
   Statement,
@@ -81,7 +82,7 @@ export class ezra_parse_internals extends parse_utils {
   classExpression!: () => ClassExpression;
   super!: () => Super;
   importExpression!: () => ImportExpression;
-  parameter!: () => Identifier | AssignmentPattern;
+  parameter!: () => Identifier | AssignmentPattern | RestElement;
   arrowFunctionExpression!: (params?: JSNode, startAt?: number) => JSNode;
   arrayExpression!: () => ArrayExpression;
   elements!: () => any;
@@ -118,6 +119,7 @@ export class ezra_parse_internals extends parse_utils {
     | ExportAllDeclaration;
   exportSpecifier!: () => ExportSpecifier;
   spreadElement!: () => SpreadElement;
+  restElement!: () => RestElement;
   switchCases!: () => SwitchCase[];
 }
 export var ezra = ezra_parse_internals.prototype;

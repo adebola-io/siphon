@@ -151,6 +151,8 @@ const Errors = {
         err("Unexpected else statement.", source, charac);
       case "JS_PROPERTY_DEC_EXPECTED":
         err("Property declaration expected.", source, charac);
+      case "JS_REST_MUST_END":
+        err("A rest element must be last in a parameter list.", source, charac);
       case "INVALID_NEW_META_PROPERTY":
         err(
           `'${options.token}' is not a valid meta-property for keyword 'new'. Did you mean 'target'?`,

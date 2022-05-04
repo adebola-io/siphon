@@ -424,6 +424,10 @@ export class SpreadElement extends JSNode {
   type = "SpreadElement";
   argument!: Expression;
 }
+export class RestElement extends JSNode {
+  type = "RestElement";
+  argument!: Expression;
+}
 export function isValidExpression(node?: JSNodes) {
   return node
     ? node.type.endsWith("Expression") ||

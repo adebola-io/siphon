@@ -27,6 +27,7 @@ ezra.functionDeclaration = function () {
   return func;
 };
 ezra.parameter = function () {
+  if (this.eat("...")) return this.restElement();
   const name = this.identifier();
   this.outerspace();
   if (this.char === "," || this.char === ")") {

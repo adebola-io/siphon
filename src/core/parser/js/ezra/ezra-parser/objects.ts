@@ -1,6 +1,7 @@
 import {
   isValidPropertyKeyStart,
   Property,
+  RestElement,
   SpreadElement,
 } from "../../../../../types";
 import { isDigit, isValidIdentifierCharacter } from "../../../../../utils";
@@ -13,7 +14,16 @@ ezra.spreadElement = function () {
   this.eat(",");
   return spread;
 };
-
+ezra.restElement = function () {
+  const rest = new RestElement(this.j - 3);
+  rest.argument = this.expression();
+  rest.loc.end = rest.argument.loc.end;
+  // Rest elements must end a paramter lineup.
+  if (this.contexts.top() === "parameters" && this.char !== ")") {
+    this.raise("JS_REST_MUST_END");
+  }
+  return rest;
+};
 ezra.property = function () {
   if (this.eat("...")) return this.spreadElement();
   const prop = new Property(this.j);
