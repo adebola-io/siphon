@@ -626,6 +626,7 @@ export const precedence: any = {
   "<=": 10,
   ">=": 10,
   in: 10,
+  of: 10,
   instanceof: 10,
   "===": 9,
   "==": 9,

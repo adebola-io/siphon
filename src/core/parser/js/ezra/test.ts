@@ -6,13 +6,16 @@ import Ezra from ".";
 const text = readFileSync("test/test.js").toString();
 
 console.time();
-Ezra.parse(text, { sourceFile: "test/test.js" });
+const program = Ezra.parse(text, { sourceFile: "test/test.js" });
 console.timeEnd();
+// writeFileSync("test/ezra.json", JSON.stringify(program));
+console.log(program);
 
-console.time();
-Esprima.parseScript(text, { loc: true });
-console.timeEnd();
+// console.time();
+// Esprima.parseScript(text, { loc: true });
+// console.timeEnd();
 
-console.time();
-Acorn.parse(text, { ecmaVersion: 2022, locations: false });
-console.timeEnd();
+// console.time();
+// const program = Acorn.parse(text, { ecmaVersion: 2022, locations: false });
+// writeFileSync("test/acorn.json", JSON.stringify(program));
+// console.timeEnd();

@@ -32,7 +32,7 @@ ezra.group = function (context = "expression") {
     case "export":
     case "block":
     case "switch_block":
-    case "for":
+    case "for_params":
     case "object":
     case "parameters":
     case "array":

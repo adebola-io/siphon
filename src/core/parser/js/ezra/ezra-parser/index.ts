@@ -11,6 +11,7 @@ import "./functions.js";
 import "./classes.js";
 import "./objects.js";
 import "./identifiers.js";
+import "./for.js";
 
 export interface parserOptions {
   sourceFile: PathLike;

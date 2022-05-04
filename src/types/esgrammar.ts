@@ -161,6 +161,7 @@ export type Context =
   | "parameters"
   | "expression"
   | "for"
+  | "for_params"
   | "new"
   | "block"
   | "property"
@@ -235,6 +236,13 @@ export class ForInStatement extends JSNode {
   type = "ForInStatment";
   left!: any;
   right!: any;
+  body?: Statement;
+}
+export class ForOfStatement extends JSNode {
+  type = "ForOfStatement";
+  await = false;
+  left: any;
+  right: any;
   body?: Statement;
 }
 export class BreakStatement extends JSNode {

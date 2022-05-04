@@ -64,6 +64,10 @@ ezra.reparse = function (node, context) {
       case this.eat("||"):
       case this.eat("??"):
         return this.logicalExpression(node);
+      case this.match("of"):
+        const allcontexts: any = { ...this.contexts };
+        if (!allcontexts.arr.includes("for_params"))
+          this.raise("JS_UNEXP_KEYWORD_OR_IDENTIFIER");
       case this.eat("**"):
       case this.eat("*"):
       case this.eat("/"):

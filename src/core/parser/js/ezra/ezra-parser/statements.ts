@@ -6,12 +6,8 @@ import {
   DoWhileStatement,
   EmptyStatement,
   ExpressionStatment,
-  ForInStatement,
-  ForStatement,
   Identifier,
   IfStatement,
-  isValidForInParam,
-  isValidForParam,
   ObjectPattern,
   ReturnStatement,
   SwitchCase,
@@ -78,9 +74,7 @@ ezra.statement = function () {
       return this.whileStatement();
     case this.match("break"):
       return this.breakStatement();
-    case this.match("const"):
-    case this.match("var"):
-    case this.match("let"):
+    case this.match("const") || this.match("var") || this.match("let"):
       return this.variableDeclaration();
     case this.match("class"):
       return this.classDeclaration();
@@ -146,43 +140,6 @@ ezra.ifStatement = function () {
   if (this.match("else")) ifstat.alternate = this.statement();
   else ifstat.alternate = null;
   return ifstat;
-};
-ezra.forStatement = function () {
-  const start = this.j - 3;
-  const forstat = new ForStatement(start);
-  this.outerspace();
-  if (!this.eat("(")) this.raise("OPEN_BRAC_EXPECTED");
-  const paramBody = this.group("for");
-  if (isValidForInParam(paramBody)) {
-    return this.forInStatement(start, paramBody[0]);
-  } else if (!isValidForParam(paramBody)) this.raise("EXPRESSION_EXPECTED");
-  else if (paramBody[0].expression?.operator === "in") {
-    this.raise("CLOSING_BRAC_EXPECTED");
-  }
-  if (paramBody.body?.length === 0) this.raise("EXPRESSION_EXPECTED");
-  if (paramBody[0] instanceof VariableDeclaration) forstat.init = paramBody[0];
-  else forstat.init = paramBody[0].expression ?? null;
-  forstat.test = paramBody[1].expression ?? null;
-  forstat.update = paramBody[2]?.expression ?? null;
-  this.outerspace();
-  forstat.body = this.statement();
-  if (forstat.body === undefined) this.raise("EXPRESSION_EXPECTED");
-  return forstat;
-};
-ezra.forInStatement = function (start, param) {
-  const forin = new ForInStatement(start);
-  if (param instanceof VariableDeclaration) {
-    forin.right = param.declarations[0].init;
-    forin.left = param.declarations[0];
-    forin.left.init = null;
-    forin.left.loc.end = forin.left.id.loc.end;
-  } else {
-    forin.left = param.left;
-    forin.right = param.right;
-  }
-  this.outerspace();
-  forin.body = this.statement();
-  return forin;
 };
 ezra.emptyStatement = function () {
   const empty = new EmptyStatement(this.j - 1);
@@ -326,12 +283,20 @@ ezra.variableDeclaration = function () {
 };
 ezra.declarator = function (kind) {
   // Normalize variable declarations.
-  let declarator = new VariableDeclarator(this.j),
+  let declarator: any = new VariableDeclarator(this.j),
     decExp: any = this.expression();
   if (decExp === undefined) this.raise("VARIABLE_DECLARATION_EXPECTED");
+  const forLoopInit = () => {
+    let allContexts: any = { ...this.contexts };
+    return (
+      decExp.type === "BinaryExpression" &&
+      (decExp.operator === "of" || decExp.operator === "in") &&
+      allContexts.arr.includes("for_params")
+    );
+  };
   // Initialized declarators.
-  if (decExp.type === "AssignmentExpression") {
-    if (decExp.operator !== "=") {
+  if (decExp.type === "AssignmentExpression" || forLoopInit()) {
+    if (decExp.type === "AssignmentExpression" && decExp.operator !== "=") {
       this.raise("JS_UNEXPECTED_TOKEN", decExp.operator, decExp.left?.loc.end);
     }
     // Get declaration IDs, either Object patterns, array patterns or identifiers.
@@ -352,15 +317,19 @@ ezra.declarator = function (kind) {
         this.raise("IDENTIFIER_EXPECTED", undefined, decExp.left.loc.end);
     }
     declarator.id.loc.end = decExp.left.loc.end;
-    declarator.init = decExp.right;
+    if (forLoopInit()) {
+      declarator[decExp.operator] = true;
+      declarator["right_val"] = decExp.right;
+      declarator.init = null;
+    } else declarator.init = decExp.right;
   }
   // Uninitialized declarators.
-  if (decExp instanceof Identifier) {
+  else if (decExp.type === "Identifier") {
     // Block uninitialized const variables.
     if (kind === "const") this.raise("CONST_INIT");
     declarator.id = decExp;
     declarator.init = null;
-  }
+  } else this.raise("VARIABLE_DECLARATION_EXPECTED");
   declarator.loc.end = decExp.loc.end;
   return declarator;
 };

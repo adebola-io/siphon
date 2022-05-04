@@ -17,6 +17,7 @@ import {
   ExportSpecifier,
   ExpressionStatment,
   ForInStatement,
+  ForOfStatement,
   ForStatement,
   FunctionDeclaration,
   Identifier,
@@ -91,6 +92,7 @@ export class ezra_parse_internals extends parse_utils {
   blockStatement!: (eatComma?: boolean) => BlockStatement;
   tryExpressionStatement!: () => ExpressionStatment | undefined;
   ifStatement!: () => IfStatement;
+  loopParameters!: () => ForInStatement | ForOfStatement | ForStatement;
   forStatement!: () => ForStatement | ForInStatement;
   forInStatement!: (start: number, params: any) => ForInStatement;
   whileStatement!: () => WhileStatement;
