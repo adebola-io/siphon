@@ -1,16 +1,16 @@
 {
   "type": "Program",
-  "loc": { "start": 0, "end": 7 },
+  "loc": { "start": 0, "end": 11 },
   "body": [
     {
       "type": "ExpressionStatement",
-      "loc": { "start": 0, "end": 5 },
+      "loc": { "start": 0, "end": 9 },
       "expression": {
         "type": "Literal",
-        "loc": { "start": 0, "end": 4 },
-        "raw": "10e3",
+        "loc": { "start": 0, "end": 8 },
+        "raw": "10.9e-93",
         "kind": "number",
-        "value": 10000
+        "value": 1.09e-92
       }
     }
   ]

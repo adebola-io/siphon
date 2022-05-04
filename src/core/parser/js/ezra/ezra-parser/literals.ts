@@ -17,10 +17,6 @@ ezra.numberLiteral = function () {
     numlit.value = parseInt(numlit.raw.slice(2), 16);
   } else {
     numlit.raw += this.count();
-    if (this.char === "e") {
-      this.next();
-      numlit.raw += "e" + this.count();
-    }
     if (this.char === "n") {
       numlit.kind = "bigint";
       numlit.bigint = numlit.raw;
@@ -29,6 +25,13 @@ ezra.numberLiteral = function () {
     } else if (this.char === ".") {
       this.next();
       numlit.raw += "." + this.count();
+    }
+    if (this.eat("e")) {
+      numlit.raw += this.belly.pop();
+      if (this.eat("-")) {
+        numlit.raw += this.belly.pop();
+      }
+      numlit.raw += this.count();
     }
     if (this.char === "n") this.raise("BIGINT_DECIMAL");
     else if (isAlphabetic(this.char)) this.raise("ID_FOLLOWS_LITERAL");
