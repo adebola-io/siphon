@@ -13,10 +13,12 @@
     "node",
     "npm",
     "bundler",
-    "cli"
+    "cli",
+    "javascript",
+    "parser"
   ],
   "author": "Adebola Akomolafe",
-  "license": "MIT",
+  "license": "ISC",
   "dependencies": {
     "acorn": "^8.7.0",
     "colors": "^1.4.0"
