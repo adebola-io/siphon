@@ -2,7 +2,7 @@
   "name": "siphon-cli",
   "version": "0.0.3",
   "start-date": "25/3/22",
-  "description": "Format, minify and bundle up your HTML source code.",
+  "description": "Simple bundler for web applications. 📦🔧🧡",
   "main": "bin/siphon",
   "scripts": {
     "test": "node scripts/testing.js",
