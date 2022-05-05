@@ -20,21 +20,19 @@
 
 Siphon is a simple web bundler that reads HTML documents and resolves their assets into fewer files for production.
 
-It can also format and minify your source code.
-
 ---
 
 ## Quick Start
 
 To get started, install Siphon with the node command:
 
-```console
+```shell
 npm install -g siphon-cli
 ```
 
 Once it is installed, you can cd into a project folder with an `index.html` file and run the command:
 
-```console
+```shell
 siphon-cli -bundle index.html
 ```
 
@@ -50,7 +48,7 @@ Running Siphon in watch mode will set it to automatically bundle up your project
 
 To run Siphon in watch mode, cd to the root of your project and run the command:
 
-```console
+```shell
 siphon-cli -bundle --w
 ```
 
