@@ -8,7 +8,7 @@ import {
   PrivateIdentifier,
   ClassExpression,
 } from "../../../types";
-import { isDigit, isValidIdentifierCharacter } from "../../../utils";
+import { isDigit } from "../../../utils";
 import { ezra } from "./base";
 
 ezra.super = function () {
@@ -18,7 +18,7 @@ ezra.super = function () {
   if (this.char !== "(") this.raise("EXPECTED", "(");
   return this.reparse(sup);
 };
-var getOrSet = ["get", "set"];
+var getOrSet: any = { get: true, set: true };
 ezra.classDeclaration = function () {
   const cl = new ClassDeclaration(this.j - 5);
   this.outerspace();
@@ -61,7 +61,7 @@ ezra.definition = function () {
     if (key.name === "constructor" && this.char !== "(")
       this.raise("RESERVED", "constructor");
     if (
-      getOrSet.includes(key.name) &&
+      getOrSet[key.name] === true &&
       !(isComputed || /;|\(|\=/.test(this.char))
     ) {
       kind = key.name;

@@ -296,6 +296,7 @@ export type Expression =
   | ArrowFunctionExpression
   | FunctionExpression
   | ArrayExpression
+  | AwaitExpression
   | NewExpression
   | ImportExpression
   | UnaryExpression
@@ -354,6 +355,10 @@ export class UpdateExpression extends JSNode {
   operator!: string;
   prefix!: boolean;
   argument?: JSNodes;
+}
+export class AwaitExpression extends JSNode {
+  type = "AwaitExpression";
+  argument?: Expression;
 }
 export class MemberExpression extends JSNode {
   type = "MemberExpression";

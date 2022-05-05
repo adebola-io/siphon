@@ -1,14 +1,1 @@
-console.log
-
-
-
-
-
-
-
-
-
-
-
-
-('Hello from the other side')
+(function () {await function () {}})

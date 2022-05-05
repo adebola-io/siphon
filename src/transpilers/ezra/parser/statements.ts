@@ -1,5 +1,6 @@
 import {
   ArrayPattern,
+  ArrowFunctionExpression,
   BlockStatement,
   BreakStatement,
   CatchClause,
@@ -68,6 +69,8 @@ ezra.statement = function () {
     case this.eat("//"):
       this.skip();
       break;
+    case this.char === "(":
+      return this.tryExpressionStatement();
     case this.eat("{"):
       if (statementScope[this.contexts.top()] === undefined) {
         this.backtrack();
@@ -91,6 +94,8 @@ ezra.statement = function () {
     case this.match("var"):
     case this.match("let"):
       return this.variableDeclaration();
+    case this.match("async"):
+      return this.maybeAsync();
     case this.match("class"):
       return this.classDeclaration();
     case this.match("throw"):

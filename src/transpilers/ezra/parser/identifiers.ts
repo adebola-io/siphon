@@ -16,7 +16,7 @@ export const keywords: any = {
   delete: true,
   do: true,
   else: true,
-  eval: true,
+  // eval: true,
   extends: true,
   import: true,
   export: true,

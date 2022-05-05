@@ -86,6 +86,7 @@ ezra.reparse = function (node, context) {
       case this.eat("!="):
       case this.eat("&"):
       case this.eat("|"):
+      case this.eat("^"):
         return this.binaryExpression(node);
       case this.eat("?"):
         return this.conditionalExpression(node);

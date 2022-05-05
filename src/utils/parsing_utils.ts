@@ -423,6 +423,7 @@ export const precedence: any = {
   call: 17,
   postfix: 16,
   prefix: 15,
+  await: 15,
   "++": 15,
   "--": 15,
   "**": 14,

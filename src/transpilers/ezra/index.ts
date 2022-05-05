@@ -2,8 +2,8 @@
  * Ezra is a simple Typescript-based JavaScript parser, and is one of the parsing engines that power Siphon.
  * Ezra was written by Adebola Akomolafe and is available for use in Siphon under an MIT license.
  */
-import Parser, { parserOptions } from "./ezra-parser";
-import Generator, { generatorOptions } from "./ezra-generator";
+import Parser, { parserOptions } from "./parser";
+import Generator, { generatorOptions } from "./generator";
 import { Program } from "../../types";
 
 const Ezra = {
@@ -23,6 +23,7 @@ const Ezra = {
     const generator = new Generator();
     return generator.generate(node, options);
   },
+  traverse() {},
 };
 
 export default Ezra;

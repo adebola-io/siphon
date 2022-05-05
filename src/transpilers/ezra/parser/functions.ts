@@ -1,6 +1,7 @@
 import {
   ArrowFunctionExpression,
   AssignmentPattern,
+  ExpressionStatment,
   FunctionDeclaration,
   FunctionExpression,
   Identifier,
@@ -11,6 +12,38 @@ import {
 import { isValidIdentifierCharacter } from "../../../utils";
 import { ezra } from "./base";
 
+ezra.maybeAsync = function () {
+  var pos = this.j - this.belly.pop().length;
+  try {
+    const argument: any = this.statement();
+    if (
+      argument.type === "ExpressionStatement" &&
+      argument.expression.type === "ArrowFunctionExpression"
+    ) {
+      argument.expression.async = true;
+      return argument;
+    }
+    if (argument.type === "FunctionDeclaration") {
+      argument.async = true;
+      return argument;
+    }
+  } catch (e) {}
+  this.goto(pos);
+  return this.tryExpressionStatement();
+};
+var isAsync: any = { FunctionExpression: true, ArrowFunctionExpression: true };
+ezra.maybeAsyncExpression = function () {
+  var pos = this.j - this.belly.pop().length;
+  try {
+    const argument: any = this.expression();
+    if (isAsync[argument.type] === true) {
+      argument.async = true;
+      return argument;
+    }
+  } catch {}
+  this.goto(pos);
+  return this.reparse(this.identifier());
+};
 ezra.functionDeclaration = function () {
   const func = new FunctionDeclaration(this.j - 8);
   this.contexts.push("function");
@@ -80,7 +113,7 @@ ezra.arrowFunctionExpression = function (params, startAt) {
 };
 ezra.parameterize = function (params) {
   const parameterArray: Array<JSNodes> = [],
-    parameterNames: string[] = [];
+    parameterNames: any = {};
   if (params === undefined) return parameterArray;
   if (params instanceof SequenceExpression) {
     var expressions: any = params.expressions;
@@ -88,14 +121,14 @@ ezra.parameterize = function (params) {
       if (!isValidParameter(expressions[i]))
         this.raise("JS_PARAM_DEC_EXPECTED");
       if (expressions[i] instanceof Identifier) {
-        parameterNames.includes(expressions[i].name)
+        parameterNames[expressions[i].name] === true
           ? this.raise("JS_PARAM_CLASH", expressions[i].name)
-          : parameterNames.push(expressions[i].name);
+          : (parameterNames[expressions[i].name] = true);
         parameterArray.push(expressions[i]);
       } else {
-        parameterNames.includes(expressions[i].left.name)
+        parameterNames[expressions[i].left.name]
           ? this.raise("JS_PARAM_CLASH", expressions[i].name)
-          : parameterNames.push(expressions[i].left.name);
+          : parameterNames[expressions[i].left.name] === true;
         if (expressions[i].operator !== "=")
           this.raise("JS_PARAM_DEC_EXPECTED");
         const pattern = new AssignmentPattern(expressions[i].loc.start);

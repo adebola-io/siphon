@@ -1,6 +1,7 @@
 import {
   ArrayExpression,
   AssignmentExpression,
+  AwaitExpression,
   BinaryExpression,
   CallExpression,
   ChainExpression,
@@ -55,8 +56,9 @@ ezra.expression = function (type) {
     case this.match("typeof"):
     case this.match("void"):
     case this.match("delete"):
-    case this.match("await"):
       return this.reparse(this.unaryExpression());
+    case this.match("await"):
+      return this.reparse(this.awaitExpression());
     case this.eat("..."):
       if (this.allowSpread()) return this.spreadElement();
       else this.raise("EXPRESSION_EXPECTED");
@@ -73,6 +75,8 @@ ezra.expression = function (type) {
     case this.match("true"):
     case this.match("false"):
       return this.reparse(this.booleanLiteral());
+    case this.match("async"):
+      return this.reparse(this.maybeAsyncExpression());
     case isDigit(this.char):
       return this.reparse(this.numberLiteral(), "number");
     case this.match("class"):
@@ -188,7 +192,16 @@ ezra.unaryExpression = function () {
     return this.updateExpression(unexp.argument, true);
   return this.reparse(unexp);
 };
+ezra.awaitExpression = function () {
+  const awexp = new AwaitExpression(this.j - 5);
+  this.operators.push(this.belly.top());
+  awexp.argument = this.expression();
+  this.operators.pop();
+  awexp.loc.end = awexp.argument.loc.end;
+  return this.reparse(awexp);
+};
 ezra.binaryExpression = function (left) {
+  console.log(this.operators);
   if (this.lowerPrecedence()) return left;
   const binexp = new BinaryExpression(left.loc.start);
   binexp.left = left;
@@ -213,12 +226,12 @@ ezra.logicalExpression = function (left) {
 };
 ezra.conditionalExpression = function (test) {
   if (this.lowerPrecedence()) return test;
+  this.belly.pop();
   const condexp = new ConditionalExpression(test.loc.start);
   condexp.test = test;
   condexp.consequent = this.expression("ternary");
   if (!this.eat(":")) this.raise("COLON_EXPECTED");
   condexp.alternate = this.expression();
-  this.operators.pop();
   condexp.loc.end = this.j;
   return this.reparse(condexp);
 };

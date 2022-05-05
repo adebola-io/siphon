@@ -10,9 +10,8 @@ function error(msg: string, src?: fs.PathLike, char?: number): void {
   if (src !== undefined) {
     if (char !== undefined) pos = trace(src, char);
     let pth =
-      path.resolve(src.toString()) + char !== undefined
-        ? `:${pos.line}:${pos.col}`
-        : "";
+      path.resolve(src.toString()) +
+      (char !== undefined ? `:${pos.line}:${pos.col}` : "");
     msg += bold(red("\n    " + `at ${pth}`));
   }
   throw new Error(msg);

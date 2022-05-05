@@ -16,6 +16,7 @@ import {
   ExportDefaultDeclaration,
   ExportNamedDeclaration,
   ExportSpecifier,
+  Expression,
   ExpressionStatment,
   ForInStatement,
   ForOfStatement,
@@ -75,6 +76,7 @@ export class ezra_parse_internals extends parse_utils {
   newExpression!: () => JSNode;
   updateExpression!: (argument: JSNode, prefix?: boolean) => JSNode;
   unaryExpression!: () => JSNode;
+  awaitExpression!: () => JSNode;
   logicalExpression!: (left: JSNode) => JSNode;
   binaryExpression!: (left: JSNode) => JSNode;
   conditionalExpression!: (test: JSNode) => JSNode;
@@ -82,6 +84,8 @@ export class ezra_parse_internals extends parse_utils {
   sequenceExpression!: (left: JSNode) => JSNode;
   functionExpression!: (isAsync?: boolean) => JSNode;
   classExpression!: () => ClassExpression;
+  maybeAsync!: () => Statement | undefined;
+  maybeAsyncExpression!: () => Expression;
   super!: () => Super;
   importExpression!: () => ImportExpression;
   parameter!: () => Identifier | AssignmentPattern | RestElement;
