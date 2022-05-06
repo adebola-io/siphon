@@ -122,7 +122,7 @@ ezra.chainExpression = function (exp) {
   return chainexp;
 };
 ezra.thisExpression = function () {
-  const thisexp = new ThisExpression(this.j - 4);
+  const thisexp = new ThisExpression(this.j - this.belly.pop().length);
   thisexp.loc.end = this.j;
   return thisexp;
 };
@@ -201,7 +201,6 @@ ezra.awaitExpression = function () {
   return this.reparse(awexp);
 };
 ezra.binaryExpression = function (left) {
-  console.log(this.operators);
   if (this.lowerPrecedence()) return left;
   const binexp = new BinaryExpression(left.loc.start);
   binexp.left = left;
@@ -268,7 +267,7 @@ ezra.sequenceExpression = function (left: any) {
 };
 ezra.arrayExpression = function () {
   const array = new ArrayExpression(this.j - 1);
-  array.elements = this.group("array");
+  array.elements = this.group("array").flat(1);
   array.loc.end = this.j;
   return array;
 };

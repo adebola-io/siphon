@@ -1,8 +1,7 @@
 import { Program } from "../../../types";
 import { ezra_gen_internals } from "./base";
-import "./declarations";
-import "./expressions";
-import "./statements";
+import "./statement";
+import "./expression";
 export interface generatorOptions {
   format: boolean;
 }

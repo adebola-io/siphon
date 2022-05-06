@@ -1,13 +1,12 @@
 import {
   ArrayPattern,
-  ArrowFunctionExpression,
   BlockStatement,
   BreakStatement,
   CatchClause,
   ContinueStatement,
   DoWhileStatement,
   EmptyStatement,
-  ExpressionStatment,
+  ExpressionStatement,
   Identifier,
   IfStatement,
   LabeledStatement,
@@ -139,7 +138,7 @@ ezra.tryExpressionStatement = function () {
       return this.labeledStatement(label);
     } else this.goto(pos);
   }
-  let expstat = new ExpressionStatment(this.j);
+  let expstat = new ExpressionStatement(this.j);
   this.operators.push("none");
   expstat.expression = this.expression();
   if (expstat.expression === undefined) return;
@@ -182,7 +181,7 @@ ezra.whileStatement = function () {
   const whilestat = new WhileStatement(this.j - 5);
   this.outerspace();
   if (!this.eat("(")) this.raise("OPEN_BRAC_EXPECTED");
-  whilestat.test = this.group("while");
+  whilestat.test = this.group("expression");
   this.outerspace();
   whilestat.body = this.statement();
   if (whilestat.body === undefined) this.raise("EXPRESSION_EXPECTED");
@@ -207,7 +206,7 @@ ezra.switchStatement = function () {
   const switchstat = new SwitchStatement(this.j - 6);
   this.outerspace();
   if (!this.eat("(")) this.raise("OPEN_BRAC_EXPECTED");
-  switchstat.discriminant = this.group("switch");
+  switchstat.discriminant = this.group("expression");
   this.outerspace();
   if (!this.eat("{")) this.raise("OPEN_CURLY_EXPECTED");
   switchstat.cases = this.group("switch_block");
@@ -308,7 +307,7 @@ ezra.returnStatement = function () {
   const retstat = new ReturnStatement(this.j - 6);
   var pos = this.j;
   this.outerspace();
-  if (this.char === ";" || /\n/.test(this.text.slice(pos, this.j))) {
+  if (/;|\}/.test(this.char) || /\n/.test(this.text.slice(pos, this.j))) {
     retstat.argument = null;
   } else retstat.argument = this.expression() ?? null;
   this.eat(";");

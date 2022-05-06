@@ -1,5 +1,9 @@
 import { Stack } from "../../../structures";
-import { ExpressionStatment, JSNode, SequenceExpression } from "../../../types";
+import {
+  ExpressionStatement,
+  JSNode,
+  SequenceExpression,
+} from "../../../types";
 import { counterpart } from "../../../utils";
 import { ezra } from "./base";
 
@@ -13,7 +17,8 @@ ezra.group = function (context = "expression") {
   this.operators = new Stack();
   this.belly = new Stack();
   while (!this.end && this.char !== counterpart[closure]) {
-    groupBody.push(this.statement(context));
+    let statement = this.statement(context);
+    if (statement !== undefined) groupBody.push(statement);
     this.outerspace();
   }
   if (this.end) this.raise("EXPECTED", counterpart[closure]);
@@ -42,7 +47,7 @@ ezra.group = function (context = "expression") {
     case "function":
       let args: Array<JSNode | undefined> = [];
       if (groupBody.length > 1) this.raise("EXPRESSION_EXPECTED");
-      if (groupBody[0] instanceof ExpressionStatment) {
+      if (groupBody[0] instanceof ExpressionStatement) {
         var expression = groupBody[0].expression;
         if (expression instanceof SequenceExpression) {
           var expressions = expression.expressions;

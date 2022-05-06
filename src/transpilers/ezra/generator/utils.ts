@@ -1,13 +1,39 @@
 import { generatorOptions } from ".";
+import { JSNode } from "../../../types";
 
 export class gen_utils {
-  output = "";
+  state = "";
   indentLevel = 0;
   options!: generatorOptions;
-  lineLength = 50;
+  global: any = this;
+  fail() {}
+  render(node?: JSNode) {
+    this.global[node?.type ?? "fail"](node);
+  }
+  lineLength = 0;
+  /**
+   * Write to the state.
+   * @param text The text to write.
+   */
   write(text: string) {
-    this.output += text;
+    this.state += text;
     this.lineLength += text.length;
+  }
+  /**
+   * Only write to the state if a condition is true.
+   */
+  writeIf(text: string, condition?: boolean) {
+    if (condition) this.write(text);
+  }
+  renderTopLevel(node: any) {
+    if (
+      node.type === "ExpressionStatement" &&
+      /Function|Object|Class/.test(node.expression.type)
+    ) {
+      this.write("(");
+      this.render(node.expression);
+      this.write(")");
+    } else this.render(node);
   }
   /**
    * Add a new line and the nessary indentation to the output.
@@ -16,7 +42,8 @@ export class gen_utils {
     if (this.options.format) {
       this.write("\n");
       this.lineLength = 0;
-      for (let x = 0; x < this.indentLevel; x++) this.write("  ");
+      for (let x = 0; x < this.indentLevel; x++)
+        this.write("  "), (this.lineLength += 2);
     }
   }
   comma(node: any, i: number) {
@@ -25,19 +52,39 @@ export class gen_utils {
       this.space();
     }
   }
-  verticalAlign = false;
+  /** Align items in a sequence vertically for easier access. */
+  verticalAlign = 0;
   /**
    * Add a space to the output.
-   * @param isNecessary Whether or not the space is important for syntactic correctness.
+   * @param inBetween The text to write between the space and another space.
    */
-  space(isNecessary = false) {
-    if (this.options.format || isNecessary) this.output += " ";
+  space(inBetween?: string) {
+    if (this.options.format)
+      this.state += ` ${inBetween ? `${inBetween} ` : ""}`;
+    else if (inBetween) this.write(inBetween);
+  }
+  /** Print a list of nodes separated by commas. */
+  sequence(list: any[]) {
+    let i = 0;
+    if (list.length > 3) {
+      this.indentLevel++;
+      if (list[0].type !== "VariableDeclarator") this.newline();
+    }
+    for (i; list[i]; i++) {
+      this.render(list[i]);
+      this.comma(list, i);
+      if (list.length > 3 && i !== list.length - 1) this.newline();
+    }
+    if (list.length > 3) {
+      this.indentLevel--;
+      if (list[0].type !== "VariableDeclarator") this.newline();
+    }
   }
   /**
    * Erase written text;
    * @param length How far back to erase.
    */
   erase(length = 1) {
-    this.output = this.output.slice(0, -length);
+    this.state = this.state.slice(0, -length);
   }
 }

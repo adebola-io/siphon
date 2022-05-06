@@ -4,7 +4,7 @@ import {
   BinaryExpression,
   EmptyStatement,
   Expression,
-  ExpressionStatment,
+  ExpressionStatement,
   ForInStatement,
   ForOfStatement,
   ForStatement,
@@ -123,19 +123,19 @@ ezra.forStatement = function () {
     forstatement.init =
       parameters[0] instanceof VariableDeclaration
         ? parameters[0]
-        : parameters[0] instanceof ExpressionStatment
+        : parameters[0] instanceof ExpressionStatement
         ? parameters[0].expression
         : parameters[0] instanceof EmptyStatement
         ? null
         : this.raise("EXPRESSION_EXPECTED");
     forstatement.test =
-      parameters[1] instanceof ExpressionStatment
+      parameters[1] instanceof ExpressionStatement
         ? parameters[1].expression
         : parameters[1] instanceof EmptyStatement
         ? null
         : this.raise("EXPRESSION_EXPECTED");
     forstatement.update =
-      parameters[2] instanceof ExpressionStatment
+      parameters[2] instanceof ExpressionStatement
         ? parameters[2].expression
         : parameters[2] === undefined
         ? null

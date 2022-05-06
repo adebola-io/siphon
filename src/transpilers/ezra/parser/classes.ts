@@ -15,8 +15,8 @@ ezra.super = function () {
   const sup = new Super(this.j - 5);
   sup.loc.end = this.j;
   this.outerspace();
-  if (this.char !== "(") this.raise("EXPECTED", "(");
-  return this.reparse(sup);
+  if (!this.eat("(")) this.raise("EXPECTED", "(");
+  return this.callExpression(sup);
 };
 var getOrSet: any = { get: true, set: true };
 ezra.classDeclaration = function () {
@@ -29,6 +29,7 @@ ezra.classDeclaration = function () {
     this.contexts.push("super_class");
     cl.superClass = this.expression();
     this.contexts.pop();
+    this.outerspace();
   }
   if (!this.match("{")) this.raise("EXPECTED", "{");
   cl.body = new ClassBody(this.j);
@@ -77,7 +78,7 @@ ezra.definition = function () {
     definition = new MethodDefinition(start);
     definition.computed = isComputed;
     definition.static = isStatic;
-    if (key instanceof Identifier) {
+    if (key instanceof Identifier || key instanceof PrivateIdentifier) {
       switch (key.name) {
         case "constructor":
           if (isStatic)
@@ -89,7 +90,7 @@ ezra.definition = function () {
       }
       definition.key = key;
     } else definition.kind = "method";
-    definition.value = this.functionExpression();
+    definition.value = this.functionExpression(true);
     // Parameters for 'set' methods.
     if (kind === "set" && definition.value.params.length !== 1) {
       this.raise("JS_INVALID_SETTER_PARAMS", undefined, key.loc.end);
@@ -103,22 +104,17 @@ ezra.definition = function () {
     definition.computed = isComputed;
     definition.static = isStatic;
     definition.key = key;
+    this.outerspace();
     if (this.char === "=") {
       this.next();
       definition.value = this.expression();
       if (definition.value === undefined) this.raise("EXPRESSION_EXPECTED");
     } else if (!/}|;/.test(this.char)) {
-      this.recede();
       // Check that next definition begins on a new line.
-      var onNewLine = false;
-      while (/\s|\n|\r/.test(this.char)) {
-        if (this.char === "\n") {
-          onNewLine = true;
-          break;
-        } else this.recede();
-      }
-      if (!onNewLine) this.raise("JS_UNEXP_KEYWORD_OR_IDENTIFIER");
-      else definition.value = null;
+      if (/\n/.test(this.text.slice(key.loc.end, this.j))) {
+        this.recede();
+        definition.value = null;
+      } else this.raise("JS_UNEXP_KEYWORD_OR_IDENTIFIER");
     } else definition.value = null;
     definition.loc.end = this.j;
   }
@@ -160,9 +156,9 @@ ezra.classExpression = function () {
   const classexp = new ClassExpression(this.j - 5);
   this.outerspace();
   if (this.char !== "{") {
-    classexp.id = this.identifier();
+    if (!this.match("extends")) classexp.id = this.identifier();
     this.outerspace();
-    if (this.match("extends")) {
+    if (this.belly.top() === "extends" || this.match("extends")) {
       this.contexts.push("super_class");
       classexp.superClass = this.expression();
       this.contexts.pop();

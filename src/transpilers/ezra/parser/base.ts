@@ -17,7 +17,7 @@ import {
   ExportNamedDeclaration,
   ExportSpecifier,
   Expression,
-  ExpressionStatment,
+  ExpressionStatement,
   ForInStatement,
   ForOfStatement,
   ForStatement,
@@ -33,6 +33,7 @@ import {
   MemberExpression,
   MethodDefinition,
   ObjectExpression,
+  ObjectPattern,
   PrivateIdentifier,
   Program,
   Property,
@@ -88,7 +89,11 @@ export class ezra_parse_internals extends parse_utils {
   maybeAsyncExpression!: () => Expression;
   super!: () => Super;
   importExpression!: () => ImportExpression;
-  parameter!: () => Identifier | AssignmentPattern | RestElement;
+  parameter!: () =>
+    | Identifier
+    | AssignmentPattern
+    | RestElement
+    | ObjectPattern;
   arrowFunctionExpression!: (params?: JSNode, startAt?: number) => JSNode;
   arrayExpression!: () => ArrayExpression;
   elements!: () => any;
@@ -97,7 +102,7 @@ export class ezra_parse_internals extends parse_utils {
   parameterize!: (params: any) => Array<JSNode>;
   emptyStatement!: () => EmptyStatement;
   blockStatement!: (eatComma?: boolean) => BlockStatement;
-  tryExpressionStatement!: () => ExpressionStatment | undefined;
+  tryExpressionStatement!: () => ExpressionStatement | undefined;
   ifStatement!: () => IfStatement;
   forStatement!: () => ForStatement | ForInStatement | ForOfStatement;
   forInStatement!: (start: number, params: any) => ForInStatement;

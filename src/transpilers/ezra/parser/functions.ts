@@ -1,10 +1,11 @@
 import {
   ArrowFunctionExpression,
   AssignmentPattern,
-  ExpressionStatment,
+  ExpressionStatement,
   FunctionDeclaration,
   FunctionExpression,
   Identifier,
+  ObjectPattern,
   isValidParameter,
   JSNodes,
   SequenceExpression,
@@ -61,6 +62,13 @@ ezra.functionDeclaration = function () {
 };
 ezra.parameter = function () {
   if (this.eat("...")) return this.restElement();
+  if (this.eat("{")) {
+    var exp = this.objectExpression();
+    const objpattern = new ObjectPattern(this.j - 1);
+    objpattern.properties = exp.properties;
+    objpattern.loc.end = exp.loc.end;
+    return objpattern;
+  }
   const name = this.identifier();
   this.outerspace();
   if (this.char === "," || this.char === ")") {
@@ -77,7 +85,7 @@ ezra.parameter = function () {
   pattern.loc.end = defaultValue.loc.end;
   return pattern;
 };
-ezra.functionExpression = function (isAsync = false) {
+ezra.functionExpression = function (shouldReturn = false) {
   this.contexts.push("function");
   const func = new FunctionExpression(this.j - 8);
   this.outerspace();
@@ -85,7 +93,6 @@ ezra.functionExpression = function (isAsync = false) {
     func.id = this.identifier();
     this.outerspace();
   } else func.id = null;
-  func.async = isAsync;
   if (!this.eat("(")) this.raise("OPEN_BRAC_EXPECTED");
   else func.params = this.group("parameters");
   this.outerspace();
@@ -93,7 +100,7 @@ ezra.functionExpression = function (isAsync = false) {
   else func.body = this.blockStatement(false);
   func.loc.end = this.j;
   this.contexts.pop();
-  return this.reparse(func);
+  return shouldReturn ? func : this.reparse(func);
 };
 ezra.arrowFunctionExpression = function (params, startAt) {
   if (this.lowerPrecedence()) return params;

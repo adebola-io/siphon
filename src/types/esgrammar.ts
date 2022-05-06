@@ -89,7 +89,7 @@ export class FunctionDeclaration extends JSNode {
 }
 export class ClassDeclaration extends JSNode {
   type = "ClassDeclaration";
-  id: Identifier | null = null;
+  id!: Identifier;
   superClass: Expression | null = null;
   body!: ClassBody;
 }
@@ -176,7 +176,7 @@ export type Context =
   | "export";
 // Statements.
 export type Statement =
-  | ExpressionStatment
+  | ExpressionStatement
   | IfStatement
   | WhileStatement
   | DoWhileStatement
@@ -189,7 +189,7 @@ export type Statement =
   | TryStatement
   | LabeledStatement
   | ThrowStatement;
-export class ExpressionStatment extends JSNode {
+export class ExpressionStatement extends JSNode {
   type = "ExpressionStatement";
   expression?: Expression | Identifier | Literal;
 }
@@ -219,7 +219,7 @@ export class Comma extends JSNode {
 export class DoWhileStatement extends JSNode {
   type = "DoWhileStatement";
   test?: JSNodes;
-  body?: ExpressionStatment | BlockStatement;
+  body?: ExpressionStatement | BlockStatement;
 }
 export class SwitchStatement extends JSNode {
   type = "SwitchStatement";
@@ -239,7 +239,7 @@ export class ForStatement extends JSNode {
   body?: Statement;
 }
 export class ForInStatement extends JSNode {
-  type = "ForInStatment";
+  type = "ForInStatement";
   left!: any;
   right!: any;
   body?: Statement;
@@ -264,7 +264,7 @@ export class ReturnStatement extends JSNode {
 }
 export class ThrowStatement extends JSNode {
   type = "ThrowStatement";
-  argument?: Expression | null;
+  argument?: Expression;
 }
 export class TryStatement extends JSNode {
   type = "TryStatement";
@@ -345,7 +345,7 @@ export class Property extends JSNode {
   type = "Property";
   kind = "init";
   key!: Identifier | Literal;
-  value!: Expression | null;
+  value!: Expression;
   method = false;
   shorthand = false;
   computed = false;
@@ -363,13 +363,13 @@ export class AwaitExpression extends JSNode {
 export class MemberExpression extends JSNode {
   type = "MemberExpression";
   object?:
-    | ExpressionStatment
+    | ExpressionStatement
     | Identifier
     | Literal
     | MemberExpression
     | FunctionExpression
     | CallExpression;
-  property?: ExpressionStatment | Identifier | CallExpression;
+  property?: ExpressionStatement | Identifier | CallExpression;
   optional = false;
   computed = false;
 }
@@ -484,7 +484,7 @@ export function isValidParameter(node?: JSNode) {
 export function isValidForInParam(paramBody?: JSNode[]) {
   return paramBody
     ? (paramBody.length === 1 &&
-        paramBody[0] instanceof ExpressionStatment &&
+        paramBody[0] instanceof ExpressionStatement &&
         paramBody[0].expression instanceof BinaryExpression &&
         paramBody[0].expression.operator === "in") ||
         (paramBody[0] instanceof VariableDeclaration &&
