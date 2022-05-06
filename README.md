@@ -1,5 +1,6 @@
 <p align=center>
   <img width=200 height=200 src="https://user-images.githubusercontent.com/60784068/166832164-edb160e5-4ae4-4085-bc53-28e3e6506537.png"></img>
+  <h1 align=center> Siphon </h1>
   <p align=center>
   <a href="https://www.npmjs.com/package/siphon-cli">
     <img src="https://img.shields.io/npm/v/siphon-cli.svg" alt="npm version" >
@@ -13,15 +14,11 @@
   </p>
 </p>
 
-<h1 align=center> Siphon </h1>
-
 **Siphon is still in an early stage of development.**
 
 ## Overview
 
 Siphon is a simple web bundler that reads HTML documents and resolves their assets into fewer files for production.
-
-It can also format and minify your source code.
 
 ---
 
@@ -29,13 +26,13 @@ It can also format and minify your source code.
 
 To get started, install Siphon with the node command:
 
-```console
+```shell
 npm install -g siphon-cli
 ```
 
 Once it is installed, you can cd into a project folder with an `index.html` file and run the command:
 
-```console
+```shell
 siphon-cli -bundle index.html
 ```
 
@@ -51,7 +48,7 @@ Running Siphon in watch mode will set it to automatically bundle up your project
 
 To run Siphon in watch mode, cd to the root of your project and run the command:
 
-```console
+```shell
 siphon-cli -bundle --w
 ```
 
