@@ -65,7 +65,7 @@ ezra.templateLiteral = function () {
     if (this.char === "\\")
       (raw += `\\${(this.next(), this.char)}`), this.next();
     // Read an expression that is nested within the literal.
-    if (this.eat("${")) {
+    else if (this.eat("${")) {
       end = this.j - 2;
       this.belly.pop();
       this.belly.push("{");
@@ -79,13 +79,15 @@ ezra.templateLiteral = function () {
         element.tail = false;
         element.loc.end = end;
         template.quasis.push(element);
-        (raw = ""), (start = this.j);
+        raw = "";
       }
+      start = this.j;
     } else {
       raw += this.char;
       this.next();
     }
   }
+  if (this.end) this.raise("UNTERMINATED_STRING_LITERAL");
   // Push the tail quasis, i.e. the last string part of the template.
   if (raw !== "") {
     var element = new TemplateElement(start);

@@ -13,10 +13,24 @@ export class JSNode {
 export type JSNodes = Statement | Expression | Declaration;
 export class Program extends JSNode {
   type = "Program";
+  sourceType!: "module" | "script";
   /** Add a node to the global scope of the program. */
-  push(node?: JSNodes, options?: any) {
+  push(node?: JSNodes) {
     if (node) this.body.push(node);
+    // if (node instanceof ImportDeclaration) {
+    //   this.imports?.push(node);
+    // } else if (
+    //   node instanceof ExportAllDeclaration ||
+    //   node instanceof ExportNamedDeclaration ||
+    //   node instanceof ExportDefaultDeclaration
+    // ) {
+    //   this.exports?.push(node);
+    // }
   }
+  // imports?: ImportDeclaration[] = [];
+  // exports?: Array<
+  //   ExportAllDeclaration | ExportNamedDeclaration | ExportDefaultDeclaration
+  // > = [];
   /** Remove a node from the global scope of the program.*/
   pop() {
     // this.last = this.body[this.body.length - 2];
@@ -25,6 +39,9 @@ export class Program extends JSNode {
   body: Array<JSNodes> = [];
   /** The last node appended to the body of the program. */
   // last?: JSNodes;
+}
+export class EmptyNode extends JSNode {
+  type = "EmptyNode";
 }
 export class Literal extends JSNode {
   type = "Literal";
@@ -394,7 +411,7 @@ export class FunctionExpression extends JSNode {
   expression!: boolean;
   generator!: boolean;
   async!: boolean;
-  params!: Array<Expression>;
+  params!: Array<JSNode | undefined>;
   body!: BlockStatement;
 }
 export class BinaryExpression extends JSNode {

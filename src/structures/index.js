@@ -44,6 +44,7 @@ var Queue = /** @class */ (function () {
   };
   return Queue;
 })();
+var Graph = /** @class */ (function () {})();
 var TreeNode = /**@class */ function () {
   function TreeNode() {
     this.parent = null;

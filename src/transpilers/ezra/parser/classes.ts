@@ -78,18 +78,16 @@ ezra.definition = function () {
     definition = new MethodDefinition(start);
     definition.computed = isComputed;
     definition.static = isStatic;
-    if (key instanceof Identifier || key instanceof PrivateIdentifier) {
-      switch (key.name) {
-        case "constructor":
-          if (isStatic)
-            this.raise("JS_STATIC_CONSTRUCTOR", undefined, key.loc.start - 1);
-          else definition.kind = "constructor";
-          break;
-        default:
-          definition.kind = kind ?? "method";
-      }
-      definition.key = key;
-    } else definition.kind = "method";
+    switch (key.name) {
+      case "constructor":
+        if (isStatic)
+          this.raise("JS_STATIC_CONSTRUCTOR", undefined, key.loc.start - 1);
+        else definition.kind = "constructor";
+        break;
+      default:
+        definition.kind = kind ?? "method";
+    }
+    definition.key = key;
     definition.value = this.functionExpression(true);
     // Parameters for 'set' methods.
     if (kind === "set" && definition.value.params.length !== 1) {
@@ -139,9 +137,11 @@ ezra.definitionKey = function () {
       break;
     case /'|"/.test(this.char):
       key = this.stringLiteral();
+      break;
     default:
       key = this.identifier(true);
   }
+  this.outerspace();
   return { key, isComputed };
 };
 ezra.privateIdentifier = function () {

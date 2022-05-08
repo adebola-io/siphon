@@ -144,5 +144,6 @@ ezra.parse = function (input, options, from = 0) {
   this.j = this.from = from;
   while (!this.end) this.scope.push(this.statement());
   this.scope.loc.end = this.text.length;
+  this.scope.sourceType = this.options.sourceType;
   return this.scope;
 };

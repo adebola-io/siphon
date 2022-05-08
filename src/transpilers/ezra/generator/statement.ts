@@ -7,6 +7,7 @@ import {
   DoWhileStatement,
   EmptyStatement,
   ExportAllDeclaration,
+  ExportDefaultDeclaration,
   ExportNamedDeclaration,
   ExportSpecifier,
   ExpressionStatement,
@@ -130,27 +131,30 @@ ezra.BlockStatement = function (node: BlockStatement) {
 
 ezra.ImportDeclaration = function (node: ImportDeclaration) {
   var _default = false;
+  console.log(9);
   this.write("import ");
-  switch (node.specifiers[0].type) {
-    case "ImportDefaultSpecifier":
-      _default = true;
-      this.render(node.specifiers[0]);
-      if (node.specifiers.length > 1) {
-        this.write(", { ");
-        this.sequence(node.specifiers.slice(1));
+  if (node.specifiers?.length) {
+    switch (node.specifiers[0].type) {
+      case "ImportDefaultSpecifier":
+        _default = true;
+        this.render(node.specifiers[0]);
+        if (node.specifiers.length > 1) {
+          this.write(", { ");
+          this.sequence(node.specifiers.slice(1));
+          this.write(" }");
+        }
+        break;
+      case "ImportNamespaceSpecifier":
+        this.write("* as ");
+        this.render(node.specifiers[0]);
+        break;
+      default:
+        this.write("{ ");
+        this.sequence(node.specifiers);
         this.write(" }");
-      }
-      break;
-    case "ImportNamespaceSpecifier":
-      this.write("* as ");
-      this.render(node.specifiers[0]);
-      break;
-    default:
-      this.write("{ ");
-      this.sequence(node.specifiers);
-      this.write(" }");
+    }
+    this.write(" from ");
   }
-  this.write(" from ");
   this.render(node.source);
   this.write(";");
 };
@@ -181,6 +185,11 @@ ezra.ExportNamedDeclaration = function (node: ExportNamedDeclaration) {
     this.write(" from ");
     this.render(node.source);
   }
+  this.write(";");
+};
+ezra.ExportDefaultDeclaration = function (node: ExportDefaultDeclaration) {
+  this.write("export default ");
+  this.render(node.declaration);
   this.write(";");
 };
 ezra.ExportSpecifier = function (node: ExportSpecifier) {
@@ -216,7 +225,9 @@ ezra.IfStatement = function (node: IfStatement) {
   this.space();
   if (
     (this.lineLength >= 25 && node.consequent?.type !== "BlockStatement") ||
-    !["ExpressionStatement", "BlockStatement"].includes(node.consequent?.type)
+    !["ExpressionStatement", "BlockStatement"].includes(
+      node.consequent?.type ?? ""
+    )
   ) {
     this.indentLevel++;
     this.newline();

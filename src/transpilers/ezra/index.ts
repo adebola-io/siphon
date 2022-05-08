@@ -4,7 +4,9 @@
  */
 import Parser, { parserOptions } from "./parser";
 import Generator, { generatorOptions } from "./generator";
-import { Program } from "../../types";
+import { JSNode, Program } from "../../types";
+import Traverser from "./traverser";
+import { Config } from "./traverser/config";
 
 const Ezra = {
   /**
@@ -23,7 +25,10 @@ const Ezra = {
     const generator = new Generator();
     return generator.generate(node, options);
   },
-  traverse() {},
+  traverse(node: JSNode, config: Config) {
+    const traverser = new Traverser();
+    return traverser.traverse(node, config);
+  },
 };
 
 export default Ezra;

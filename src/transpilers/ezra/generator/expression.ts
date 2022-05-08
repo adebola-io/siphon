@@ -31,8 +31,9 @@ import {
 import { isAlphabetic, precedence } from "../../../utils";
 import { ezra } from "./base";
 function requiresBrackets(node: any, checker: string) {
-  return precedence[node[checker].operator] < precedence[node.operator];
+  return precedence[node[checker]?.operator] < precedence[node.operator];
 }
+ezra.EmptyNode = function () {};
 ezra.Identifier = function (node: Identifier) {
   this.write(node.name);
 };
@@ -64,7 +65,8 @@ ezra.BinaryExpression = function (node: BinaryExpression) {
   this.writeIf("(", condition);
   this.render(node.left);
   this.writeIf(")", condition);
-  this.space(node.operator);
+  if (isAlphabetic(node.operator)) this.write(" " + node.operator + " ");
+  else this.space(node.operator);
   condition = requiresBrackets(node, "right");
   this.writeIf("(", condition);
   this.render(node.right);

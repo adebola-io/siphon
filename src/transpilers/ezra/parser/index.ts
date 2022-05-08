@@ -15,9 +15,11 @@ import "./for.js";
 
 export interface parserOptions {
   sourceFile: PathLike;
+  sourceType?: "module" | "script";
 }
 var defaults: parserOptions = {
   sourceFile: "",
+  sourceType: "module",
 };
 class Parser {
   parse(input: string, options?: parserOptions) {

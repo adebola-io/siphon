@@ -66,18 +66,24 @@ export class gen_utils {
   /** Print a list of nodes separated by commas. */
   sequence(list: any[]) {
     let i = 0;
-    if (list.length > 3) {
+    if (list.length > 2) {
       this.indentLevel++;
       if (list[0].type !== "VariableDeclarator") this.newline();
+    } else if (list[0]?.type === "Property" && list[0].method) {
+      this.indentLevel++;
+      this.newline();
     }
     for (i; list[i]; i++) {
       this.render(list[i]);
       this.comma(list, i);
-      if (list.length > 3 && i !== list.length - 1) this.newline();
+      if (list.length > 2 && i !== list.length - 1) this.newline();
     }
-    if (list.length > 3) {
+    if (list.length > 2) {
       this.indentLevel--;
       if (list[0].type !== "VariableDeclarator") this.newline();
+    } else if (list[0]?.type === "Property" && list[0].method) {
+      this.indentLevel--;
+      this.newline();
     }
   }
   /**

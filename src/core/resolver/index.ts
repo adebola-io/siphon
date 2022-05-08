@@ -13,6 +13,7 @@ import {
 import createDOMTree from "../parser/html/createDOMTree";
 import tagNameSearch from "../parser/html/tagNameSearch";
 import resolveCSS from "./CSS";
+import JavascriptResolve from "./Javascript";
 
 class Resolver {
   constructor(
@@ -148,6 +149,12 @@ class Resolver {
       this.destination,
       this.options,
       this.assets
+    );
+    nodes = new JavascriptResolve().resolveJS(
+      nodes,
+      this.source,
+      this.options,
+      this.destination
     );
     // nodes = this.resolveJS(
     //   nodes,
