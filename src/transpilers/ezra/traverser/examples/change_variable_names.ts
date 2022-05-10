@@ -1,30 +1,72 @@
 import Ezra from "../..";
 import {
+  AssignmentExpression,
+  AssignmentPattern,
+  ClassBody,
   Identifier,
   MemberExpression,
   Program,
   Property,
+  PropertyDefinition,
 } from "../../../../types";
-import { newIdentifier } from "../helpers/creator";
+import { TraversalPath } from "../config";
+import { clone, newIdentifier } from "../helpers/creator";
+import uniqueify from "./uniqueify";
 
+function isNotRenamable(node: Identifier, path: TraversalPath) {
+  if (path.parent instanceof Property && path.parent.shorthand) {
+    path.parent.shorthand = false;
+  }
+  return (
+    (path.parent instanceof MemberExpression &&
+      path.parent.property === node) ||
+    (!/Block|Program/.test(path.scope.type) &&
+      !(
+        (path.parent instanceof PropertyDefinition &&
+          path.parent.value === node) ||
+        (path.parent instanceof Property && path.parent.value === node)
+      ))
+  );
+}
 function change_variable_names(ast: Program) {
   var i = -1;
+  uniqueify(ast);
   Ezra.traverse(ast, {
-    VariableDeclarator(node, p) {
+    enter(node: any, path) {
+      if (node.id === undefined) return;
       var oldname: string;
-      if (node.id.type === "Identifier") {
-        oldname = node.id.name;
-        node.id.name = Letter(++i);
-        Ezra.traverse(p.scope, {
-          Identifier(subnode, p2) {
-            if (
-              !/Block|Program/.test(p2.scope.type) ||
-              (p2.parent instanceof MemberExpression &&
-                p2.parent.property === subnode)
-            ) {
-              return;
+      if (node.id === null || node.id.type === "Identifier") {
+        var parameterMap = new Map();
+        if (/Function/.test(node.type) && node.params.length) {
+          node.params.forEach((parameter: any) => {
+            let oldParamName = parameter.name;
+            if (parameter instanceof Identifier) {
+              oldParamName = parameter.name;
+              parameter.name = Letter(++i);
+              parameterMap.set(oldParamName, parameter.name);
+            } else if (parameter instanceof AssignmentPattern) {
+              oldParamName = parameter.left.name;
+              parameter.left.name = Letter(++i);
+              parameterMap.set(oldParamName, parameter.left.name);
             }
-            if (subnode.name === oldname) subnode.name = node.id.name;
+          });
+          Ezra.traverse(node.body, {
+            Identifier(funcNode, p1a) {
+              if (isNotRenamable(funcNode, p1a)) return;
+              else if (parameterMap.has(funcNode.name)) {
+                funcNode.name = parameterMap.get(funcNode.name);
+              }
+            },
+          });
+        }
+        oldname = node.id?.name;
+        if (node.id) node.id.name = Letter(++i);
+        Ezra.traverse(path.scope, {
+          Identifier(subnode, p2) {
+            if (isNotRenamable(subnode, p2)) return;
+            else if (node.id && subnode.name === oldname) {
+              subnode.name = node.id.name;
+            }
           },
         });
       } else if (node.id.type === "ObjectPattern") {
@@ -32,14 +74,9 @@ function change_variable_names(ast: Program) {
           if (prop.shorthand && prop.key.type === "Identifier") {
             prop.value = newIdentifier(Letter(++i));
             prop.shorthand = false;
-            Ezra.traverse(p.scope, {
+            Ezra.traverse(path.scope, {
               Identifier(subnode, p2) {
-                if (!/Block|Program/.test(p2.scope.type)) return;
-                if (
-                  p2.parent instanceof MemberExpression &&
-                  p2.parent.property === subnode
-                )
-                  return;
+                if (isNotRenamable(subnode, p2)) return;
                 if (subnode.name === prop.key.name) {
                   subnode.name = prop.value.name;
                 }
@@ -52,15 +89,9 @@ function change_variable_names(ast: Program) {
     },
   });
 }
-const letters = "abcdefghijklmnopqrstuvwxyz";
+var letters: any = "abcdefghijklmnopqrstuvwxyz";
 function Letter(i: number) {
-  return i < 25
-    ? letters[i]
-    : i < 50
-    ? letters[50 - i] + letters[50 - i + 1]
-    : i < 100
-    ? letters[100 - 1] + letters.split("").reverse()[100 - i]
-    : letters.slice(0, 120 / i);
+  return "_" + letters[i % 25] + i.toString();
 }
 
 export default change_variable_names;

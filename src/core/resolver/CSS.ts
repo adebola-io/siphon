@@ -14,6 +14,7 @@ import {
   getFileName as fileName,
   relativePath as rel,
   stringifytoBase64,
+  tryMkingDir,
 } from "../../utils";
 import Palette from "../../transpilers/palette-css";
 import tagNameSearch from "../parser/html/tagNameSearch";
@@ -74,18 +75,28 @@ function resolveCSS(
               } else {
                 const file = basename(asset);
                 if (!assets[file] && fileExists(asset)) {
-                  copyInBase64(asset, `${outputDirectory}/${file}`);
+                  if (options.storeImagesSeparately) {
+                    copyInBase64(asset, `${outputDirectory}/img/${file}`);
+                    rule.notation[entry[0]] = `url(./img/${file})`;
+                  } else {
+                    copyInBase64(asset, `${outputDirectory}/${file}`);
+                    rule.notation[entry[0]] = `url(./${file})`;
+                  }
                   assets[file] = asset;
-                  rule.notation[entry[0]] = `url(./${file})`;
                 } else if (assets[file] && assets[file] !== asset) {
                   let id = 1;
                   let newcopy = fileName(file) + `-${id}` + extname(file);
                   while (assets[newcopy]) {
                     newcopy = fileName(file) + `-${++id}` + extname(file);
                   }
-                  copyInBase64(asset, `${outputDirectory}/${newcopy}`);
+                  if (options.storeImagesSeparately) {
+                    copyInBase64(asset, `${outputDirectory}/img/${newcopy}`);
+                    rule.notation[entry[0]] = `url(./img/${newcopy})`;
+                  } else {
+                    copyInBase64(asset, `${outputDirectory}/${newcopy}`);
+                    rule.notation[entry[0]] = `url(./${newcopy})`;
+                  }
                   assets[newcopy] = asset;
-                  rule.notation[entry[0]] = `url(./${newcopy})`;
                 } else if (fileExists(asset)) {
                   rule.notation[entry[0]] = `url(./${file})`;
                 }
@@ -106,21 +117,22 @@ function resolveCSS(
             rule.source = `url("${stringifytoBase64(asset)}")`;
           } else {
             const file = basename(asset);
+            tryMkingDir(`${outputDirectory}/fonts`);
             if (!assets[file] && fileExists(asset)) {
-              copyInBase64(asset, `${outputDirectory}/${file}`);
+              copyInBase64(asset, `${outputDirectory}/fonts/${file}`);
               assets[file] = asset;
-              rule.source = `url(./${file})`;
+              rule.source = `url(./fonts/${file})`;
             } else if (assets[file] && assets[file] !== asset) {
               let id = 1;
               let newcopy = fileName(file) + `-${id}` + extname(file);
               while (assets[newcopy]) {
                 newcopy = fileName(file) + `-${++id}` + extname(file);
               }
-              copyInBase64(asset, `${outputDirectory}/${newcopy}`);
+              copyInBase64(asset, `${outputDirectory}/fonts/${newcopy}`);
               assets[newcopy] = asset;
-              rule.source = `url(./${newcopy})`;
+              rule.source = `url(./fonts/${newcopy})`;
             } else if (fileExists(asset)) {
-              rule.source = `url(./${file})`;
+              rule.source = `url(./fonts/${file})`;
             }
           }
         }

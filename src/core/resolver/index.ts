@@ -64,9 +64,9 @@ class Resolver {
     const images: HTMLDocumentNode[] = tagNameSearch(nodes, "img").filter(
       (images) => {
         return !(
-          images.attributes?.src.startsWith("http://") ||
-          images.attributes?.src.startsWith("http://") ||
-          images.attributes?.src.includes(":")
+          images.attributes?.src?.startsWith("http://") ||
+          images.attributes?.src?.startsWith("http://") ||
+          (!this.options.wickedMode && images.attributes?.src?.includes(":"))
         );
       }
     );

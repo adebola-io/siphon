@@ -5,18 +5,18 @@ import {
   ThrowStatement,
 } from "../../../../../types";
 import {
-  newAssignmentExp as assign,
+  assignmentExpression as assign,
   newBinaryExp as binary,
-  newBlockStat as block,
-  newCallExp as call,
-  newExpressionStat as exprStat,
+  blockStatement as block,
+  callExpression as call,
+  expressionStatement as exprStat,
   newFunctionExp as _function,
   newIdentifier as id,
-  newMemberExp as member,
-  newNumber as num,
+  memberExpression as member,
+  numberLiteral as num,
   newString as str,
   this_,
-  unary,
+  unaryExpression,
   undefined_,
   use_strict,
 } from "../../helpers/creator";
@@ -53,7 +53,7 @@ let retstat = new ReturnStatement(0);
 retstat.argument = binary(
   call(member(this_, id("indexOf")), [searchString, position]),
   "!==",
-  unary("-", num(1))
+  unaryExpression("-", num(1))
 );
 
 let includes = new IfStatement(0);

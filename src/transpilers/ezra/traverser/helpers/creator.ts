@@ -14,6 +14,7 @@ import {
   Statement,
   ThisExpression,
   UnaryExpression,
+  UpdateExpression,
 } from "../../../../types";
 
 export function newFunctionExp(
@@ -33,7 +34,7 @@ export function newFunctionExp(
   return func;
 }
 
-export function newAssignmentExp(
+export function assignmentExpression(
   left: JSNode,
   operator: string,
   right: JSNode
@@ -44,17 +45,28 @@ export function newAssignmentExp(
   assign.right = right;
   return assign;
 }
-export function newExpressionStat(expression: Expression) {
+export function expressionStatement(expression: Expression) {
   let statement = new ExpressionStatement(0);
   statement.expression = expression;
   return statement;
 }
-export function unary(operator: string, argument: Expression) {
+export function unaryExpression(operator: string, argument: Expression) {
   const n = new UnaryExpression(0);
   n.prefix = true;
   n.operator = operator;
   n.argument = argument;
   return n;
+}
+export function updateExpression(
+  operator: string,
+  prefix: boolean,
+  argument: Expression
+) {
+  const u = new UpdateExpression(0);
+  u.prefix = prefix;
+  u.operator = operator;
+  u.argument = argument;
+  return u;
 }
 export function newBinaryExp(
   left: Expression,
@@ -67,13 +79,13 @@ export function newBinaryExp(
   binexp.right = right;
   return binexp;
 }
-export const use_strict = newExpressionStat(newString('"use strict"'));
-export function newBlockStat(body: Array<Statement>) {
+export const use_strict = expressionStatement(newString('"use strict"'));
+export function blockStatement(body: Array<Statement>) {
   const b = new BlockStatement(0);
   b.body.push(...body);
   return b;
 }
-export function newMemberExp(
+export function memberExpression(
   object: JSNode,
   property: JSNode,
   computed = false,
@@ -91,7 +103,7 @@ export function newIdentifier(name: string) {
   id.name = name;
   return id;
 }
-export function newCallExp(callee: JSNode, args: JSNode[] = []) {
+export function callExpression(callee: JSNode, args: JSNode[] = []) {
   const call = new CallExpression(0);
   call.callee = callee;
   call.arguments = args;
@@ -104,7 +116,7 @@ export function newString(raw: string) {
   string.value = eval(raw);
   return string;
 }
-export function newNumber(value: number) {
+export function numberLiteral(value: number) {
   const num = new Literal(0);
   num.kind = typeof value === "bigint" ? "bigint" : "number";
   num.value = value;
@@ -134,3 +146,6 @@ null_.raw = "null";
 null_.kind = "null";
 export var this_ = new ThisExpression(0);
 export var undefined_ = newIdentifier("undefined");
+export function clone(node: JSNode) {
+  return Object.assign(Object.create(Object.getPrototypeOf(node)), node);
+}

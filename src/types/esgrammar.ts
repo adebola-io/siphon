@@ -134,7 +134,9 @@ export class Super extends JSNode {
 }
 export class ImportDeclaration extends JSNode {
   type = "ImportDeclaration";
-  specifiers: Array<ImportSpecifier | ImportDefaultSpecifier> = [];
+  specifiers: Array<
+    ImportSpecifier | ImportDefaultSpecifier | ImportNamespaceSpecifier
+  > = [];
   source!: Literal;
 }
 export class ImportSpecifier extends JSNode {

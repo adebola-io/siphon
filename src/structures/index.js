@@ -24,6 +24,17 @@ var Stack = /** @class */ (function () {
   };
   return Stack;
 })();
+var Visitor = /** @class */ (function () {
+  var visitedKeys = new Map();
+  function Visitor() {}
+  Visitor.prototype.visit = function name(item) {
+    visitedKeys.set(item, true);
+  };
+  Visitor.prototype.visited = function (item) {
+    return visitedKeys.has(item);
+  };
+  return Visitor;
+})();
 var Queue = /** @class */ (function () {
   let arr = [];
   let f = 0;
@@ -137,3 +148,4 @@ exports.Queue = Queue;
 exports.TreeNode = TreeNode;
 exports.Tree = Tree;
 exports.Task = Task;
+exports.Visitor = Visitor;

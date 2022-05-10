@@ -4,9 +4,12 @@
  */
 import Parser, { parserOptions } from "./parser";
 import Generator, { generatorOptions } from "./generator";
+import Bundler from "./bundler";
 import { JSNode, Program } from "../../types";
 import Traverser from "./traverser";
 import { Config } from "./traverser/config";
+import { bundlerOptions } from "./bundler/utils";
+import { PathLike } from "fs";
 
 const Ezra = {
   /**
@@ -28,6 +31,10 @@ const Ezra = {
   traverse(node: JSNode, config: Config) {
     const traverser = new Traverser();
     return traverser.traverse(node, config);
+  },
+  bundle(entry: PathLike, options?: bundlerOptions) {
+    const bundler = new Bundler();
+    return bundler.bundle(entry, options);
   },
 };
 

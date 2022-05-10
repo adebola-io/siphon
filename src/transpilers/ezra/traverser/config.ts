@@ -8,6 +8,7 @@ import {
   ConditionalExpression,
   DoWhileStatement,
   ExportAllDeclaration,
+  ExportDefaultDeclaration,
   ExportNamedDeclaration,
   ExportSpecifier,
   ExpressionStatement,
@@ -24,8 +25,11 @@ import {
   MemberExpression,
   PrivateIdentifier,
   Program,
+  Property,
+  Super,
   SwitchStatement,
   TemplateLiteral,
+  ThisExpression,
   VariableDeclaration,
   VariableDeclarator,
   WhileStatement,
@@ -34,6 +38,7 @@ import {
 export interface TraversalPath {
   parent: JSNode;
   scope: JSNode;
+  route: JSNode[];
 }
 export interface Config {
   enter?: (node: JSNode, path: TraversalPath) => void;
@@ -83,14 +88,21 @@ export interface Config {
     node: ExportNamedDeclaration,
     path: TraversalPath
   ) => void;
+  ExportDefaultDeclaration?: (
+    node: ExportDefaultDeclaration,
+    path: TraversalPath
+  ) => void;
   ExportSpecifier?: (node: ExportSpecifier, path: TraversalPath) => void;
   LogicalExpression?: (node: LogicalExpression, path: TraversalPath) => void;
   BinaryExpression?: (node: BinaryExpression, path: TraversalPath) => void;
+  ThisExpression?: (node: ThisExpression, path: TraversalPath) => void;
+  Super?: (node: Super, path: TraversalPath) => void;
   ConditionalExpression?: (
     node: ConditionalExpression,
     path: TraversalPath
   ) => void;
   MemberExpression?: (node: MemberExpression, path: TraversalPath) => void;
+  Property?: (node: Property, path: TraversalPath) => void;
   CallExpression?: (node: CallExpression, path: TraversalPath) => void;
   AssignmentExpression?: (
     node: AssignmentExpression,

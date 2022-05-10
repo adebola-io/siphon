@@ -3,17 +3,15 @@ import {
   AssignmentPattern,
   BinaryExpression,
   ExpressionStatement,
-  FunctionDeclaration,
-  FunctionExpression,
   IfStatement,
   JSNode,
   Program,
 } from "../../../../types";
 import {
-  newAssignmentExp as assign,
+  assignmentExpression as assign,
   newIdentifier as identifier,
-  newMemberExp as member,
-  newNumber as number,
+  memberExpression as member,
+  numberLiteral as number,
   undefined_,
 } from "../helpers/creator";
 

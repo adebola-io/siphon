@@ -17,6 +17,16 @@ declare class Stack {
    */
   size(): number;
 }
+declare class Visitor {
+  /**
+   * Marks an item as visited.
+   */
+  visit: (item: any) => void;
+  /**
+   * Checks if an item has been visited
+   */
+  visited: (item: any) => boolean;
+}
 declare class TreeNode {
   /**
    * The parent node that this node is appended to.
@@ -89,6 +99,7 @@ declare module structures {
   export { Task };
   export { TreeNode };
   export { Queue };
+  export { Visitor };
 }
 
 export = structures;

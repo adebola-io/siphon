@@ -7,7 +7,11 @@ import {
   Property,
   VariableDeclarator,
 } from "../../../../types";
-import { newIdentifier, newMemberExp, newNumber } from "../helpers/creator";
+import {
+  newIdentifier,
+  memberExpression,
+  numberLiteral,
+} from "../helpers/creator";
 /**
  * Change destructured variable(s) to regular member access. e.g.
  * ```js
@@ -35,7 +39,7 @@ function rewrite_destructured_variables(ast: Program) {
             if (!property.computed && property.value instanceof Identifier) {
               let newDec = new VariableDeclarator(0);
               newDec.id = newIdentifier(property.value.name);
-              newDec.init = newMemberExp(settlerObject, property.key);
+              newDec.init = memberExpression(settlerObject, property.key);
               node.declarations.push(newDec);
             }
           }
@@ -53,7 +57,11 @@ function rewrite_destructured_variables(ast: Program) {
             if (element instanceof Identifier) {
               let newDec = new VariableDeclarator(0);
               newDec.id = newIdentifier(element.name);
-              newDec.init = newMemberExp(settlerObject, newNumber(k++), true);
+              newDec.init = memberExpression(
+                settlerObject,
+                numberLiteral(k++),
+                true
+              );
               node.declarations.push(newDec);
             }
           }

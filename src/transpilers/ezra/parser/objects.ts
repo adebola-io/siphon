@@ -1,4 +1,5 @@
 import {
+  Identifier,
   isValidPropertyKeyStart,
   Property,
   RestElement,
@@ -62,7 +63,10 @@ ezra.property = function () {
       prop.value = this.functionExpression();
     } else if (this.char === "," || this.char === "}") {
       prop.shorthand = true;
-      prop.value = prop.key;
+      let clone = new Identifier(prop.key.loc.start);
+      clone.name = prop.key.name;
+      clone.loc.end = prop.loc.end;
+      prop.value = clone;
     }
   }
   this.eat(",");

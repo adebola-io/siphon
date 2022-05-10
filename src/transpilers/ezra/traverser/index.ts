@@ -3,10 +3,16 @@ import { Config, TraversalPath } from "./config";
 
 class Traverser {
   traverse(node: any, config: Config) {
-    return this.visit(node, { ...config }, { parent: node, scope: node });
+    return this.visit(
+      node,
+      { ...config },
+      { parent: node, scope: node, route: [node] }
+    );
   }
   visit(node: any, config: any, path: TraversalPath) {
-    path.scope = /Block|Object|Class/.test(node.type) ? node : path.scope;
+    path.scope = /BlockStatement|ObjectExpression|ClassBody/.test(node.type)
+      ? (path.route.push(node), node)
+      : path.scope;
     Object.keys(node).forEach((key) => {
       if (node[key] instanceof Array) {
         for (let i = 0; node[key][i]; i++) {
@@ -14,6 +20,7 @@ class Traverser {
             node[key][i] = this.visit(node[key][i], config, {
               parent: node,
               scope: path.scope,
+              route: path.route,
             });
           }
         }
@@ -21,6 +28,7 @@ class Traverser {
         node[key] = this.visit(node[key], config, {
           parent: node,
           scope: path.scope,
+          route: path.route,
         });
       }
     });

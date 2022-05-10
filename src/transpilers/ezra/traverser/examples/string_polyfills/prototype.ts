@@ -1,6 +1,6 @@
-import { newIdentifier, newMemberExp } from "../../helpers/creator";
+import { newIdentifier, memberExpression } from "../../helpers/creator";
 
-const String_prototype = newMemberExp(
+const String_prototype = memberExpression(
   newIdentifier("String"),
   newIdentifier("prototype")
 );

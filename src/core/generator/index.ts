@@ -98,14 +98,14 @@ class Generator {
             default:
               html += `<${node.tagName}${attributeList}>`;
               if (node.children && options.formatFiles) {
-                if (node.children[0].type !== "text") {
+                if (node.children[0]?.type !== "text") {
                   html += "\n";
                 }
               }
               html += this.generate(node.children, options, spacers + tab);
               if (options.formatFiles) {
                 if (
-                  (node.children && node.children[0].type !== "text") ||
+                  (node.children && node.children[0]?.type !== "text") ||
                   (node.children &&
                     node.children[0].type == "text" &&
                     node.children[0].content &&
