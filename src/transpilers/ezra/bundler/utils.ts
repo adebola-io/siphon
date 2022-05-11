@@ -75,7 +75,6 @@ export class bundler_utils {
     var redefinitions: JSNode[] = [];
     var moduleImports: Map<string, Identifier> = new Map();
     var moduleExports: Map<Expression, Expression> = new Map();
-    rewrite_destructured_variables(ast);
     Ezra.traverse(ast, {
       ImportDeclaration: (node) => {
         let dependencyPath = this.getDependencyPath(node, filename);

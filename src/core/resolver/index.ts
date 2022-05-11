@@ -66,7 +66,7 @@ class Resolver {
         return !(
           images.attributes?.src?.startsWith("http://") ||
           images.attributes?.src?.startsWith("http://") ||
-          (!this.options.wickedMode && images.attributes?.src?.includes(":"))
+          (this.options.wickedMode && images.attributes?.src?.includes(":"))
         );
       }
     );

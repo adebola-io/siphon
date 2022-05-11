@@ -9,8 +9,7 @@ import {
 import { TraversalPath } from "../config";
 import { numberLiteral, null_ } from "../helpers/creator";
 /**
- * An optional member expression is a way to read nested onject properties if they exist withoue throwing errors.
- * @param ast The node to traverse.
+ * An optional member expression is a way to read nested object properties if they exist without throwing errors.
  */
 function resolve_optional_chaining(
   node: MemberExpression,

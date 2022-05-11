@@ -53,7 +53,11 @@ switch (true) {
       siphon.bundler(source).into(destination, options);
       console.log();
       console.log(
-        bold(green(" Bundling successful. Siphon found zero errors."))
+        bold(
+          green(
+            " Bundled " + source + " successfully. Siphon found zero errors."
+          )
+        )
       );
     });
     break;

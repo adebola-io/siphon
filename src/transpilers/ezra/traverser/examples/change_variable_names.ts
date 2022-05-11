@@ -19,7 +19,8 @@ function isNotRenamable(node: Identifier, path: TraversalPath) {
   }
   return (
     (path.parent instanceof MemberExpression &&
-      path.parent.property === node) ||
+      path.parent.property === node &&
+      !path.parent.computed) ||
     (!/Block|Program/.test(path.scope.type) &&
       !(
         (path.parent instanceof PropertyDefinition &&
@@ -28,7 +29,7 @@ function isNotRenamable(node: Identifier, path: TraversalPath) {
       ))
   );
 }
-function change_variable_names(ast: Program) {
+function mangle_variables(ast: Program) {
   var i = -1;
   uniqueify(ast);
   Ezra.traverse(ast, {
@@ -91,7 +92,7 @@ function change_variable_names(ast: Program) {
 }
 var letters: any = "abcdefghijklmnopqrstuvwxyz";
 function Letter(i: number) {
-  return "_" + letters[i % 25] + i.toString();
+  return letters[i % 25] + (i > 25 ? i.toString() : "");
 }
 
-export default change_variable_names;
+export default mangle_variables;
