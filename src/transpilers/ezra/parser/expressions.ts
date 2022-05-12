@@ -39,10 +39,14 @@ ezra.expression = function (type) {
     case this.char === undefined:
     case this.char === ";":
       return;
+    // React JSX.
+    case this.eat("<"):
+      if (this.options.parseJSX) return this.reparse(this.jsxElement(this.j));
+      else this.raise("JS_UNEXPECTED_TOKEN", "<");
     case this.eat("/"):
       return this.reparse(this.regexLiteral());
     case this.eat("("):
-      return this.reparse(this.group());
+      return this.reparse(this.group("expression"));
     case this.eat("["):
       return this.reparse(this.arrayExpression());
     case this.eat("{"):

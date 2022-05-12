@@ -10,4 +10,5 @@ export interface Asset {
 export interface Dependency {
   id: string;
   path: PathLike;
+  extension: string;
 }

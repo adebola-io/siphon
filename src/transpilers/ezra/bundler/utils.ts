@@ -1,43 +1,33 @@
-import { existsSync, PathLike, readFileSync } from "fs";
-import { resolve } from "path";
-import Ezra from "..";
+import { existsSync, PathLike } from "fs";
+import { extname, resolve } from "path";
 import Errors from "../../../errors";
 import {
-  ClassDeclaration,
-  EmptyNode,
-  Expression,
   FunctionDeclaration,
   Identifier,
   IfStatement,
-  ImportDefaultSpecifier,
-  ImportNamespaceSpecifier,
-  ImportSpecifier,
-  JSNode,
   Program,
   ReturnStatement,
   VariableDeclaration,
   VariableDeclarator,
 } from "../../../types";
 import { fileExists, relativePath as pathFrom } from "../../../utils";
-import rewrite_destructured_variables from "../traverser/examples/rewrite_destructured_variables";
 import {
-  assignmentExpression,
   blockStatement,
-  callExpression,
   expressionStatement,
   newIdentifier,
-  memberExpression,
   numberLiteral,
   updateExpression,
 } from "../traverser/helpers/creator";
-import { Dependency, Asset } from "./types";
+import { Asset } from "./types";
 
 export interface bundlerOptions {
   format: boolean;
+  sourceMaps: boolean;
   indent: number;
 }
 export const defaults: bundlerOptions = {
   format: false,
+  sourceMaps: true,
   indent: 0,
 };
 var ID = 0;
@@ -45,10 +35,21 @@ export class bundler_utils {
   options!: bundlerOptions;
   entry!: PathLike;
   tree = new Program(0);
+  sourceMappings: Map<string, Array<string>> = new Map();
+  createJSAsset!: (filename: PathLike) => Asset;
+  createUnknownAsset!: (filename: PathLike) => Asset;
+  /**
+   * A tracking of all identifiers being used in the bundle, to prevent name clashes.
+   */
+  globalIdentifierMap: Map<string, boolean> = new Map();
+  globalAssetMap: Map<string, string> = new Map();
   /** Recursively read a file and build its dependencies. */
   start(file: PathLike) {
     file = resolve(file.toString());
-    let asset = this.createAsset(file);
+    var asset: Asset;
+    if (extname(file) === ".js") {
+      asset = this.createJSAsset(file);
+    } else asset = this.createUnknownAsset(file);
     this.assets.set(file, asset);
     this.tree.body.push(...asset.module);
     asset.dependencies.forEach((dependency) => {
@@ -57,113 +58,6 @@ export class bundler_utils {
     });
   }
   assets: Map<string, Asset> = new Map();
-  createAsset(filename: PathLike) {
-    let content = readFileSync(filename, "utf-8");
-    const ast = Ezra.parse(content, {
-      sourceFile: filename,
-    });
-    const dependencies: Dependency[] = [];
-    /** Build a map of all identifiers used in the file to prevent name clashes. */
-    Ezra.traverse(ast, {
-      Identifier: (node) => {
-        if (!this.globalIdentifierMap.has(node.name))
-          this.globalIdentifierMap.set(node.name, true);
-      },
-    });
-    var ezraModule = this.ModuleIdentifierNode(filename.toString());
-    var fullSourceExports: string[] = [];
-    var redefinitions: JSNode[] = [];
-    var moduleImports: Map<string, Identifier> = new Map();
-    var moduleExports: Map<Expression, Expression> = new Map();
-    Ezra.traverse(ast, {
-      ImportDeclaration: (node) => {
-        let dependencyPath = this.getDependencyPath(node, filename);
-        let imported = this.ModuleIdentifierNode(dependencyPath);
-        let dependency: Dependency = {
-          id: imported.name,
-          path: dependencyPath,
-        };
-        // Create two declarations, one for the original initialization of the import, another to hold the imported values.
-        const assignDec = new VariableDeclaration(0);
-        assignDec.kind = "const";
-        const assignDeclarator = new VariableDeclarator(0);
-        const placeholder = this.uniqueIdentifier("module");
-        const importedInit = callExpression(imported, []);
-        assignDeclarator.id = placeholder;
-        assignDeclarator.init = importedInit;
-        assignDec.declarations.push(assignDeclarator);
-        const declaration2 = new VariableDeclaration(0);
-        declaration2.kind = "const";
-        if (node.specifiers.length === 0) {
-          fullSourceExports.push(dependencyPath);
-          return new EmptyNode(0);
-        } else
-          for (const specifier of node.specifiers) {
-            const declarator = new VariableDeclarator(0);
-            declarator.id = specifier.local;
-            if (specifier instanceof ImportDefaultSpecifier) {
-              declarator.init = memberExpression(
-                placeholder,
-                newIdentifier("default")
-              );
-            } else if (specifier instanceof ImportSpecifier) {
-              declarator.init = memberExpression(
-                placeholder,
-                specifier.imported
-              );
-            } else if (specifier instanceof ImportNamespaceSpecifier) {
-              declarator.init = placeholder;
-            }
-            declaration2.declarations.push(declarator);
-          }
-        redefinitions.push(assignDec);
-        dependencies.push(dependency);
-        return declaration2;
-      },
-      ExportNamedDeclaration: (node, path) => {
-        if (node.declaration) {
-          if (
-            node.declaration instanceof FunctionDeclaration ||
-            node.declaration instanceof ClassDeclaration
-          ) {
-            moduleExports.set(node.declaration.id, node.declaration.id);
-          } else if (node.declaration instanceof VariableDeclaration) {
-            node.declaration.declarations.forEach((declaration) => {
-              moduleExports.set(declaration.id, declaration.id);
-            });
-          }
-          return node.declaration;
-        } else if (node.specifiers) {
-          for (const specifier of node.specifiers) {
-            moduleExports.set(specifier.local, specifier.exported);
-          }
-          return new EmptyNode(0);
-        }
-      },
-      ExportDefaultDeclaration(node, path) {
-        moduleExports.set(node.declaration, newIdentifier("default"));
-        return new EmptyNode(0);
-      },
-      ThisExpression(node, path) {
-        if (path.scope.type === "Program") return newIdentifier("globalThis");
-      },
-    });
-    ast.body.splice(0, 0, ...redefinitions);
-    // Push all exports.
-    moduleExports.forEach((value, key) => {
-      ast.push(
-        expressionStatement(
-          assignmentExpression(memberExpression(ezraModule, value), "=", key)
-        )
-      );
-    });
-    return {
-      id: ezraModule.name,
-      dependencies,
-      filename,
-      module: this.prepareModule(ast, ezraModule),
-    };
-  }
   /**
    * Takes a relative import in a file and returns the absolute path name to the imported file.
    * @param node The string literal node.
@@ -197,11 +91,6 @@ export class bundler_utils {
 
     return dependencyPath;
   }
-  /**
-   * A tracking of all identifiers being used in the bundle, to prevent name clashes.
-   */
-  globalIdentifierMap: Map<string, boolean> = new Map();
-  globalAssetMap: Map<string, string> = new Map();
   /**
    * Creates a new Identifier.
    */

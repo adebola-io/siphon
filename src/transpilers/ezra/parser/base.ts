@@ -28,6 +28,15 @@ import {
   ImportExpression,
   ImportSpecifier,
   JSNode,
+  JSXAttribute,
+  JSXClosingElement,
+  JSXElement,
+  JSXExpressionContainer,
+  JSXIdentifier,
+  JSXMemberExpression,
+  JSXNamespacedName,
+  JSXOpeningElement,
+  JSXText,
   LabeledStatement,
   Literal,
   MemberExpression,
@@ -133,6 +142,16 @@ export class ezra_parse_internals extends parse_utils {
   spreadElement!: () => SpreadElement;
   restElement!: () => RestElement;
   switchCases!: () => SwitchCase[];
+  jsxElement!: (start: number) => JSXElement;
+  jsxText!: () => JSXText;
+  JSXReparse!: (node: any) => any;
+  jsxOpeningElement!: (start: number) => JSXOpeningElement;
+  jsxClosingElement!: (start: number) => JSXClosingElement;
+  jsxIdentifier!: () => JSXMemberExpression | JSXNamespacedName | JSXIdentifier;
+  jsxAttribute!: () => JSXAttribute | undefined;
+  JSXMemberExpression!: (object: Identifier) => any;
+  JSXNamespacedName!: (namespace: Identifier) => any;
+  jsxExpressionContainer!: () => JSXExpressionContainer;
 }
 export var ezra = ezra_parse_internals.prototype;
 ezra.parse = function (input, options, from = 0) {

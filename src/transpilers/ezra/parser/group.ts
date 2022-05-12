@@ -20,9 +20,10 @@ ezra.group = function (context = "expression") {
     let statement = this.statement(context);
     if (statement !== undefined) groupBody.push(statement);
     this.outerspace();
+    if (this.char === "/" && context === "JSX_attribute") break;
   }
   if (this.end) this.raise("EXPECTED", counterpart[closure]);
-  else this.eat(counterpart[closure]);
+  else if (context !== "JSX_attribute") this.eat(counterpart[closure]);
   this.operators = parentOps;
   this.belly = parentBelly;
   this.contexts.pop();
@@ -36,6 +37,7 @@ ezra.group = function (context = "expression") {
     case "parameters":
     case "array":
     case "class_body":
+    case "JSX_attribute":
       return groupBody;
     case "call":
       return groupBody[0];

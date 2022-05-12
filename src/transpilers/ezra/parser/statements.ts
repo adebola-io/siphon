@@ -50,6 +50,8 @@ ezra.statement = function () {
       return this.expression();
     case context.call:
       return this.arguments();
+    case context.JSX_attribute:
+      return this.jsxAttribute();
     case context.switch_block:
       if (this.char === "}") return;
       if (!(this.match("case") || this.match("default")) && !this.end) {

@@ -14,6 +14,7 @@ import { clone, newIdentifier } from "../helpers/creator";
 import uniqueify from "./uniqueify";
 
 function isNotRenamable(node: Identifier, path: TraversalPath) {
+  if (node.name === "proc") console.log(path.parent);
   if (path.parent instanceof Property && path.parent.shorthand) {
     path.parent.shorthand = false;
   }

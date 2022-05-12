@@ -470,4 +470,5 @@ export const counterpart: any = {
   "[": "]",
   "(": ")",
   "{": "}",
+  "<": ">",
 };

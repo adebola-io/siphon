@@ -12,14 +12,17 @@ import "./classes.js";
 import "./objects.js";
 import "./identifiers.js";
 import "./for.js";
+import "./JSX.js";
 
 export interface parserOptions {
   sourceFile: PathLike;
   sourceType?: "module" | "script";
+  parseJSX?: boolean;
 }
 var defaults: parserOptions = {
   sourceFile: "",
   sourceType: "module",
+  parseJSX: false,
 };
 class Parser {
   parse(input: string, options?: parserOptions) {

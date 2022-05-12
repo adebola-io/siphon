@@ -30,7 +30,7 @@ export class bundler_internals extends bundler_utils {
       LogicalExpression: resolve_nullish_coalescing,
       VariableDeclaration: rewrite_destructured_variables,
     });
-    mangle_variables(this.tree);
+    // mangle_variables(this.tree);
     return this.tree;
   }
 }

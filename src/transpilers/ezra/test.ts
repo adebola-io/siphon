@@ -11,10 +11,10 @@ import {
   VariableDeclaration,
 } from "../../types";
 
-// const text = readFileSync("src/test/source/main.js").toString();
+const text = readFileSync("src/test/source/main.js").toString();
 
 // console.time();
-// Esprima.parseScript(text, { loc: true });
+// const program = Esprima.parseScript(text, { loc: true, jsx: true });
 // console.timeEnd();
 
 // console.time();
@@ -22,10 +22,14 @@ import {
 // console.timeEnd();
 
 // console.time();
-
+const program = Ezra.parse(text, {
+  sourceFile: "src/test/source/main.js",
+  parseJSX: true,
+});
 // const string = Ezra.generate(program, { format: true, indent: 0 });
 // console.timeEnd();
 // console.log(string);
 // eval(string);
-// writeFileSync("src/test/result.json", JSON.stringify(program));
+console.log(program);
+writeFileSync("src/test/result.json", JSON.stringify(program));
 // writeFileSync("src/test/result.js", string);

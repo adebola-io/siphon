@@ -1,0 +1,116 @@
+{
+  "type": "Program",
+  "loc": { "start": 0, "end": 111 },
+  "body": [
+    {
+      "type": "ExpressionStatement",
+      "loc": { "start": 0, "end": 109 },
+      "expression": {
+        "type": "JSXElement",
+        "loc": { "start": 0, "end": 108 },
+        "openingElement": {
+          "type": "JSXOpeningElement",
+          "loc": { "start": 0, "end": 35 },
+          "name": {
+            "type": "JSXNamespacedName",
+            "loc": { "start": 1 },
+            "namespace": {
+              "type": "Identifier",
+              "loc": { "start": 1, "end": 1 },
+              "name": "p"
+            },
+            "name": {
+              "type": "JSXIdentifier",
+              "loc": { "start": 3, "end": 11 },
+              "name": "encodeURI"
+            }
+          },
+          "attributes": [
+            {
+              "type": "JSXAttribute",
+              "loc": { "start": 13, "end": 34 },
+              "name": {
+                "type": "JSXIdentifier",
+                "loc": { "start": 13, "end": 21 },
+                "name": "className"
+              },
+              "value": {
+                "type": "Literal",
+                "loc": { "start": 23, "end": 34 },
+                "raw": "\"copyright\"",
+                "kind": "string",
+                "value": "copyright"
+              }
+            }
+          ],
+          "selfClosing": false,
+          "tagName": "p:encodeURI"
+        },
+        "children": [
+          {
+            "type": "JSXText",
+            "loc": { "start": 39, "end": 65 },
+            "raw": "&copy; Adebola Akomolafe, ",
+            "value": "&copy; Adebola Akomolafe, "
+          },
+          {
+            "type": "JSXExpressionContainer",
+            "loc": { "start": 65, "end": 91 },
+            "expression": {
+              "type": "CallExpression",
+              "loc": { "start": 70, "end": 90 },
+              "callee": {
+                "type": "MemberExpression",
+                "loc": { "start": 70, "end": 87 },
+                "optional": false,
+                "computed": false,
+                "object": {
+                  "type": "NewExpression",
+                  "loc": { "start": 70, "end": 73 },
+                  "callee": {
+                    "type": "Identifier",
+                    "loc": { "start": 70, "end": 73 },
+                    "name": "Date"
+                  },
+                  "arguments": []
+                },
+                "property": {
+                  "type": "Identifier",
+                  "loc": { "start": 77, "end": 87 },
+                  "name": "getFullYear"
+                }
+              },
+              "arguments": []
+            }
+          },
+          {
+            "type": "JSXText",
+            "loc": { "start": 91, "end": 94 },
+            "raw": ".\r\n",
+            "value": "."
+          }
+        ],
+        "closingElement": {
+          "type": "JSXClosingElement",
+          "loc": { "start": 94, "end": 108 },
+          "name": {
+            "type": "JSXNamespacedName",
+            "loc": { "start": 96 },
+            "namespace": {
+              "type": "Identifier",
+              "loc": { "start": 96, "end": 96 },
+              "name": "p"
+            },
+            "name": {
+              "type": "JSXIdentifier",
+              "loc": { "start": 98, "end": 106 },
+              "name": "encodeURI"
+            }
+          },
+          "tagName": "p:encodeURI"
+        }
+      }
+    }
+  ],
+  "sourceType": "module"
+}

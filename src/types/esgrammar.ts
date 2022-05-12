@@ -192,7 +192,8 @@ export type Context =
   | "switch_block"
   | "class_body"
   | "import"
-  | "export";
+  | "export"
+  | "JSX_attribute";
 // Statements.
 export type Statement =
   | ExpressionStatement
@@ -321,6 +322,7 @@ export type Expression =
   | UnaryExpression
   | ThisExpression
   | ClassExpression
+  | JSXElement
   | Literal;
 export class NewExpression extends JSNode {
   type = "NewExpression";
@@ -461,6 +463,54 @@ export class SpreadElement extends JSNode {
 export class RestElement extends JSNode {
   type = "RestElement";
   argument!: Expression;
+}
+
+// JSX
+export class JSXElement extends JSNode {
+  type = "JSXElement";
+  openingElement!: JSXOpeningElement;
+  children!: Array<JSXElement | JSXText | JSXExpressionContainer>;
+  closingElement!: JSXClosingElement | null;
+}
+export class JSXOpeningElement extends JSNode {
+  type = "JSXOpeningElement";
+  name!: JSXIdentifier | JSXNamespacedName | JSXMemberExpression;
+  attributes!: JSXAttribute[];
+  tagName!: string;
+  selfClosing!: boolean;
+}
+export class JSXClosingElement extends JSNode {
+  type = "JSXClosingElement";
+  name!: JSXIdentifier | JSXNamespacedName | JSXMemberExpression;
+  tagName!: string;
+}
+export class JSXIdentifier extends JSNode {
+  type = "JSXIdentifier";
+  name!: string;
+}
+export class JSXAttribute extends JSNode {
+  type = "JSXAttribute";
+  name!: JSXIdentifier;
+  value!: JSXExpressionContainer | Literal | null;
+}
+export class JSXExpressionContainer extends JSNode {
+  type = "JSXExpressionContainer";
+  expression!: Expression;
+}
+export class JSXText extends JSNode {
+  type = "JSXText";
+  value!: string;
+  raw!: string;
+}
+export class JSXMemberExpression extends JSNode {
+  type = "JSXMemberExpression";
+  object!: JSXIdentifier;
+  property!: JSXIdentifier;
+}
+export class JSXNamespacedName extends JSNode {
+  type = "JSXNamespacedName";
+  namespace!: JSXIdentifier;
+  name!: JSXIdentifier;
 }
 export function isValidExpression(node?: JSNodes) {
   return node

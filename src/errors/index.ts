@@ -124,6 +124,9 @@ const Errors = {
         error("Property declaration expected.", src, index);
       case e.JS_REST_MUST_END:
         error("A rest element must be last in a parameter list.", src, index);
+      case e.JSX_NO_CLOSE:
+        message = `JSX element '${options.token}' has no corresponding closing tag.`;
+        error(message, src, index);
       case e.INVALID_NEW_META_PROPERTY:
         message = `'${options.token}' is not a valid meta-property for keyword 'new'. Did you mean 'target'?`;
         error(message, src, index);
