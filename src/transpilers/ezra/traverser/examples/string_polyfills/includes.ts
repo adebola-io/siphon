@@ -6,7 +6,7 @@ import {
 } from "../../../../../types";
 import {
   assignmentExpression as assign,
-  newBinaryExp as binary,
+  binaryExpression as binary,
   blockStatement as block,
   callExpression as call,
   expressionStatement as exprStat,

@@ -5,5 +5,6 @@ module.exports = {
   htmlInjects: true,
   relations: [{ from: "source/index.html", to: "index.html" }],
   internalStyles: false,
+  allowJSX: true,
   internalJS: false,
 };

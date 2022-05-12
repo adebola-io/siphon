@@ -115,6 +115,7 @@ export interface siphonOptions {
   internalJS: boolean;
   internalStyles: boolean;
   checkImageTypes: boolean;
+  allowJSX: boolean;
   preserveComments: boolean;
   wickedMode: boolean;
 }

@@ -8,6 +8,7 @@ const defaults: siphonOptions = {
   htmlModules: false,
   formatFiles: true,
   internalJS: false,
+  allowJSX: false,
   internalStyles: false,
   checkImageTypes: true,
   preserveComments: false,

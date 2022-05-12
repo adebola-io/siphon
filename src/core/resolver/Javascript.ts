@@ -39,7 +39,12 @@ class JavascriptResolve {
       if (script.attributes.type === "module") this.isModule = true;
       else Errors.enc("SOMETHING_WENT_WRONG", pathToFile);
       if (!fileExists(pathToFile)) Errors.enc("FILE_NON_EXISTENT", pathToFile);
-      outputAst.body.push(...bundler.bundle(pathToFile).body);
+      outputAst.body.push(
+        ...bundler.bundle(pathToFile, {
+          allowJSX: this.options.allowJSX,
+          sourceMaps: false,
+        }).body
+      );
       delete script.type;
     }
     if (this.options.internalJS || this.options.wickedMode) {

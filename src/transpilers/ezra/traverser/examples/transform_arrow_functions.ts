@@ -10,7 +10,15 @@ import {
 import { TraversalPath } from "../config";
 
 /**
- * Replace all instances of arrow functions with function expressions.
+ * Replace all instances of arrow functions with function expressions. e.g.
+ * ```js
+ * //from
+ * const log = (message) => console.log(message);
+ * //to
+ * const log = function (message) {
+ *  console.log(message)
+ * };
+ * ```
  */
 function transform_arrow_functions(
   node: ArrowFunctionExpression,

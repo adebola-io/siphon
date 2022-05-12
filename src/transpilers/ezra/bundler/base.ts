@@ -8,8 +8,9 @@ import transform_template_literals from "../traverser/examples/transform_templat
 import resolve_optional_chaining from "../traverser/examples/resolve_optional_chaining";
 import resolve_nullish_coalescing from "../traverser/examples/resolve_nullish_coalescing";
 import rewrite_destructured_variables from "../traverser/examples/rewrite_destructured_variables";
-import mangle_variables from "../traverser/examples/change_variable_names";
+import transpileJSX from "../traverser/examples/JSX_transpiling/transpile_jsx";
 import transform_arrow_functions from "../traverser/examples/transform_arrow_functions";
+import default_handler from "../traverser/examples/JSX_transpiling/default_handler";
 
 export class bundler_internals extends bundler_utils {
   bundle(entry: PathLike, options?: bundlerOptions) {
@@ -17,6 +18,8 @@ export class bundler_internals extends bundler_utils {
     this.tree = new Program(0);
     this.entry = entry;
     this.start(entry);
+    var defaultJSXFunctionName = this.uniqueIdentifier("").name;
+    if (this.hasJSX) this.tree.push(default_handler(defaultJSXFunctionName));
     // Add a function call to the entry module.
     if (this.tree.body[1] instanceof FunctionDeclaration) {
       this.tree.push(callExpression(this.tree.body[1].id, []));
@@ -29,6 +32,9 @@ export class bundler_internals extends bundler_utils {
       ArrowFunctionExpression: transform_arrow_functions,
       LogicalExpression: resolve_nullish_coalescing,
       VariableDeclaration: rewrite_destructured_variables,
+      JSXElement(node, path) {
+        return transpileJSX(node, path, defaultJSXFunctionName);
+      },
     });
     // mangle_variables(this.tree);
     return this.tree;

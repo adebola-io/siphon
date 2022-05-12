@@ -10,7 +10,13 @@ import { TraversalPath } from "../config";
 import { newString } from "../helpers/creator";
 
 /**
- * Transforms a template literal e.g. ``My name is ${name}`` to an equivalent string expression. e.g. `"My name is" + name`
+ * Transforms a template literal e.g.
+ * ```js
+ * //from
+ * `My name is ${name}. How do you do?`;
+ * //to an equivalent string expression.
+ * "My name is" + name + ". How do you do?";
+ * ```
  */
 function transform_template_literals(
   node: TemplateLiteral,

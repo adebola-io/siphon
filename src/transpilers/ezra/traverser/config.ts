@@ -20,6 +20,8 @@ import {
   ImportNamespaceSpecifier,
   ImportSpecifier,
   JSNode,
+  JSXElement,
+  JSXText,
   Literal,
   LogicalExpression,
   MemberExpression,
@@ -108,4 +110,6 @@ export interface Config {
     node: AssignmentExpression,
     path: TraversalPath
   ) => void;
+  JSXElement?: (node: JSXElement, path: TraversalPath) => void;
+  JSXText?: (node: JSXText, path: TraversalPath) => void;
 }

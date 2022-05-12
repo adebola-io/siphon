@@ -21,20 +21,19 @@ import {
 import { Asset } from "./types";
 
 export interface bundlerOptions {
-  format: boolean;
   sourceMaps: boolean;
-  indent: number;
+  allowJSX: boolean;
 }
 export const defaults: bundlerOptions = {
-  format: false,
   sourceMaps: true,
-  indent: 0,
+  allowJSX: false,
 };
 var ID = 0;
 export class bundler_utils {
   options!: bundlerOptions;
   entry!: PathLike;
   tree = new Program(0);
+  hasJSX?: boolean;
   sourceMappings: Map<string, Array<string>> = new Map();
   createJSAsset!: (filename: PathLike) => Asset;
   createUnknownAsset!: (filename: PathLike) => Asset;
@@ -47,14 +46,15 @@ export class bundler_utils {
   start(file: PathLike) {
     file = resolve(file.toString());
     var asset: Asset;
-    if (extname(file) === ".js") {
+    if (/js/.test(extname(file))) {
       asset = this.createJSAsset(file);
     } else asset = this.createUnknownAsset(file);
     this.assets.set(file, asset);
     this.tree.body.push(...asset.module);
     asset.dependencies.forEach((dependency) => {
-      if (!this.assets.has(dependency.path.toString()))
+      if (!this.assets.has(dependency.path.toString())) {
         this.start(dependency.path);
+      }
     });
   }
   assets: Map<string, Asset> = new Map();
@@ -74,6 +74,12 @@ export class bundler_utils {
         case fileExists(dependencyPath + "/index.js"):
           dependencyPath += "/index.js";
           break;
+        case this.options.allowJSX && fileExists(dependencyPath + ".jsx"):
+          dependencyPath += ".jsx";
+          break;
+        case this.options.allowJSX && fileExists(dependencyPath + "/index.jsx"):
+          dependencyPath += "/index.jsx";
+          break;
         case existsSync(`node_modules/${node.source.value}`):
           let node_module = `node_modules/${node.source.value}`;
           if (fileExists(`${node_module}/package.json`)) {
@@ -89,7 +95,7 @@ export class bundler_utils {
       }
     }
 
-    return dependencyPath;
+    return resolve(dependencyPath);
   }
   /**
    * Creates a new Identifier.

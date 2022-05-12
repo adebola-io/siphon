@@ -1,3 +1,5 @@
-<p:encodeURI className="copyright">
-  &copy; Adebola Akomolafe, {new Date().getFullYear()}.
-</p:encodeURI>;
+console.log(
+  <div>
+    <li>akomolafe sefunmi</li>
+  </div>
+);

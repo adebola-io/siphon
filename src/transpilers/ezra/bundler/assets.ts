@@ -33,6 +33,7 @@ ezra.createJSAsset = function (filename: PathLike) {
   let content = readFileSync(filename, "utf-8");
   const ast = Ezra.parse(content, {
     sourceFile: filename,
+    parseJSX: this.options.allowJSX,
   });
   const dependencies: Dependency[] = [];
   /** Build a map of all identifiers used in the file to prevent name clashes. */
@@ -42,6 +43,9 @@ ezra.createJSAsset = function (filename: PathLike) {
       //   }
       if (!this.globalIdentifierMap.has(node.name))
         this.globalIdentifierMap.set(node.name, true);
+    },
+    JSXElement: () => {
+      if (!this.hasJSX) this.hasJSX = true;
     },
   });
   var ezraModule = this.ModuleIdentifierNode(filename.toString());

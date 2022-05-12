@@ -68,7 +68,7 @@ export function updateExpression(
   u.argument = argument;
   return u;
 }
-export function newBinaryExp(
+export function binaryExpression(
   left: Expression,
   operator: string,
   right: Expression
