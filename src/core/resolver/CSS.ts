@@ -162,7 +162,7 @@ function resolveCSS(
   /** Output CSS Text */
   let outputText = "";
   /** Directory to create bundled css if need be. */
-  let outputDirectory = resolve(options.outDir.toString());
+  let outputDirectory = rel(destination, "./");
   /** List of imported stylesheets to prevent circular import loop. */
   links.forEach((link) => {
     const href = rel(source, link.attributes.href);

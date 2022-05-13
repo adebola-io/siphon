@@ -33,6 +33,7 @@ export function stringifytoBase64(file: PathLike) {
 export function tryMkingDir(src: PathLike) {
   if (!(existsSync(src) && lstatSync(src).isDirectory())) mkdirSync(src);
 }
+
 /**
  * Returns true if a specified path exists and leads to a file.
  */

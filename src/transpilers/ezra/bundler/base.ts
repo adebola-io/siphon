@@ -18,6 +18,7 @@ export class bundler_internals extends bundler_utils {
     this.tree = new Program(0);
     this.entry = entry;
     this.start(entry);
+    // Add JSX Handler.
     var defaultJSXFunctionName = this.uniqueIdentifier("").name;
     if (this.hasJSX) this.tree.push(default_handler(defaultJSXFunctionName));
     // Add a function call to the entry module.

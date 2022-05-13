@@ -1,10 +1,9 @@
-import { PathLike, readFileSync, writeFileSync } from "fs";
+import { PathLike, writeFileSync } from "fs";
 import { HTMLDocumentNode, Program, siphonOptions } from "../../types";
 import Errors from "../../errors";
 import { relativePath, fileExists, getFileName } from "../../utils";
 import tagNameSearch from "../parser/html/tagNameSearch";
 import Ezra from "../../transpilers/ezra";
-import { resolve } from "path";
 import { bundler_internals } from "../../transpilers/ezra/bundler/base";
 
 /**
@@ -67,7 +66,7 @@ class JavascriptResolve {
     } else {
       // External scripts.
       let bundle = getFileName(this.destination) + ".bundle.js";
-      let outputFolder = resolve(this.options.outDir.toString());
+      let outputFolder = relativePath(this.destination, "./");
       writeFileSync(
         `${outputFolder}/${bundle}`,
         Ezra.generate(outputAst, {

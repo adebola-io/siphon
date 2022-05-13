@@ -126,19 +126,6 @@ class Resolver {
     });
     return nodes;
   }
-  resolveScripts(nodes: HTMLDocumentNode[]) {
-    const scripts: HTMLDocumentNode[] = tagNameSearch(nodes, "script").filter(
-      (script) => script.attributes?.src
-    );
-    if (this.options.internalJS) {
-      scripts.forEach((script) => {
-        let truePath = relativePath(this.source, script.attributes.src);
-        if (!fileExists(truePath)) Errors.enc("FILE_NON_EXISTENT", truePath);
-        script.content = readFileSync(truePath).toString();
-        delete script.attributes.src;
-      });
-    }
-  }
   resolveCSS = resolveCSS;
   resolve(nodes: HTMLDocumentNode[]) {
     if (this.options.htmlModules) this.resolveModules(nodes);
