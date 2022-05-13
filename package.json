@@ -1,6 +1,6 @@
 {
   "name": "siphon-cli",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "start-date": "25/3/22",
   "description": "Simple bundler for web applications. 📦🔧🧡",
   "main": "lib/client/index.js",
@@ -21,19 +21,13 @@
   "author": "Adebola Akomolafe",
   "license": "ISC",
   "dependencies": {
-    "acorn": "^8.7.0",
     "colors": "^1.4.0"
   },
   "bin": {
     "siphon-cli": "bin/siphon"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^22.0.0",
-    "@rollup/plugin-node-resolve": "^13.3.0",
-    "@types/esprima": "^4.0.3",
     "@types/node": "^17.0.23",
-    "esprima": "^4.0.1",
-    "rollup": "^2.72.0",
     "tslib": "^2.3.1",
     "typescript": "^4.5.5"
   },
