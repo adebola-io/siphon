@@ -1,6 +1,4 @@
 import Ezra from "../../..";
-import { FunctionDeclaration, VariableDeclaration } from "../../../../../types";
-import { newIdentifier as i, newString } from "../../helpers/creator";
 
 /**
  * Creates the node notation for a helper function that will handle the conversion of CSSStyleDeclaration objects to style strings.
@@ -29,7 +27,7 @@ function object_to_style(functionName: string) {
   const text = `function ${functionName}(object) {
     let styleString = "";
     Object.entries(object).forEach((entry) => {
-      if (entry[1].length && !(entry[0].slice(0,2) === "--")) {
+      if (entry[1]?.length && !(entry[0].slice(0,2) === "--")) {
         let i = 0;
         while (i < entry[0].length) {
           if (entry[0][i].toUpperCase() === entry[0][i])

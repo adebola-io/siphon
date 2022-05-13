@@ -55,7 +55,7 @@ switch (true) {
       console.log(
         bold(
           green(
-            " Bundled " + source + " successfully. Siphon found zero errors."
+            "Bundled " + source + " successfully. Siphon found zero errors."
           )
         )
       );

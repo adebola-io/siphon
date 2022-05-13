@@ -51,11 +51,14 @@ export const keywords: any = {
   yield: true,
 };
 
-ezra.identifier = function (allowKeyword = false) {
+ezra.identifier = function (allowKeyword = false, allowHyphen = false) {
   const id = new Identifier(this.j);
   if (!isValidIdentifierCharacter(this.char)) this.raise("IDENTIFIER_EXPECTED");
   if (isDigit(this.char)) this.raise("ID_FOLLOWS_LITERAL");
-  while (isValidIdentifierCharacter(this.char))
+  while (
+    isValidIdentifierCharacter(this.char) ||
+    (allowHyphen && this.char === "-")
+  )
     (id.name += this.char), this.next();
   id.loc.end = this.j - 1;
   if (!allowKeyword && keywords[id.name] === true) {

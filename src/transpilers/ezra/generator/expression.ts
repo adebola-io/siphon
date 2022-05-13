@@ -61,13 +61,17 @@ ezra.TemplateLiteral = function (node: TemplateLiteral) {
   this.write("`");
 };
 ezra.BinaryExpression = function (node: BinaryExpression) {
-  var condition = requiresBrackets(node, "left");
+  var condition =
+    requiresBrackets(node, "left") ||
+    (node.left && /Sequence|Conditional/.test(node.left.type));
   this.writeIf("(", condition);
   this.render(node.left);
   this.writeIf(")", condition);
   if (isAlphabetic(node.operator)) this.write(" " + node.operator + " ");
   else this.space(node.operator);
-  condition = requiresBrackets(node, "right");
+  condition =
+    requiresBrackets(node, "right") ||
+    (node.right && /Sequence|Conditional/.test(node.right.type));
   this.writeIf("(", condition);
   this.render(node.right);
   this.writeIf(")", condition);

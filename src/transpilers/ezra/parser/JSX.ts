@@ -60,7 +60,7 @@ ezra.jsxText = function () {
 ezra.jsxAttribute = function () {
   if (/\//.test(this.char)) return;
   const attrib = new JSXAttribute(this.j);
-  let attribName = this.identifier(true);
+  let attribName = this.identifier(true, true);
   attrib.name = new JSXIdentifier(this.j);
   attrib.name.name = attribName.name;
   attrib.name.loc = attribName.loc;
@@ -84,7 +84,7 @@ ezra.jsxAttribute = function () {
 };
 ezra.jsxIdentifier = function () {
   const jsxident = new JSXIdentifier(this.j);
-  const identifier = this.identifier(true);
+  const identifier = this.identifier(true, true);
   if (this.char === ":") return this.JSXNamespacedName(identifier);
   else if (this.char === ".") return this.JSXMemberExpression(identifier);
   jsxident.loc = identifier.loc;
@@ -104,7 +104,7 @@ ezra.JSXReparse = function (node) {
 };
 ezra.JSXMemberExpression = function (object) {
   this.next();
-  const prop = this.identifier(true);
+  const prop = this.identifier(true, true);
   const jsxmem = new JSXMemberExpression(object.loc.start);
   jsxmem.object = object;
   jsxmem.property = new JSXIdentifier(prop.loc.start);

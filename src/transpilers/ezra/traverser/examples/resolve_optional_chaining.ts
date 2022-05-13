@@ -16,9 +16,9 @@ function resolve_optional_chaining(
   path: TraversalPath
 ) {
   if (!node.optional) return;
-  let condition = new ConditionalExpression(0);
+  let condition = new ConditionalExpression(node.loc.start);
   //   The test, x === null || x === void 0
-  let test = new LogicalExpression(0);
+  let test = new LogicalExpression(node.loc.start);
   let left = new BinaryExpression(0);
   let right = new BinaryExpression(0);
   let void0 = new UnaryExpression(0);
@@ -38,5 +38,5 @@ function resolve_optional_chaining(
   node.optional = false;
   return condition;
 }
-resolve_optional_chaining?.apply;
+
 export default resolve_optional_chaining;

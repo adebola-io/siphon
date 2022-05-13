@@ -115,6 +115,7 @@ export var HTMLTags: any = {
   li: true,
   main: true,
   mark: true,
+  menu: true,
   meter: true,
   nav: true,
   noscript: true,
@@ -157,6 +158,7 @@ export var HTMLTags: any = {
   time: true,
   tr: true,
   u: true,
+  ul: true,
   var: true,
   video: true,
 };

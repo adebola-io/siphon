@@ -5,7 +5,11 @@ function create(tag, attributes = {}, children = []) {
     element.setAttribute(attribute[0], attribute[1]);
   });
   children.flat().forEach((child) => {
-    if (typeof child === 'string') element.append(document.createTextNode(child));
+    if (typeof child === 'string') element.append(
+      document.createTextNode(
+        child.replace(/\&amp\;/g, '&')
+      )
+    );
     else element.append(child);
   });
   return element;
@@ -17,9 +21,7 @@ import {
   ArrayExpression,
   AssignmentPattern,
   FunctionDeclaration,
-  IfStatement,
   ObjectExpression,
-  Program,
   ReturnStatement,
   VariableDeclaration,
   VariableDeclarator,
@@ -27,14 +29,8 @@ import {
 import {
   blockStatement,
   callExpression,
-  expressionStatement,
   memberExpression,
-  binaryExpression,
-  newFunctionExp,
   newIdentifier as i,
-  newString,
-  numberLiteral,
-  unaryExpression,
 } from "../../helpers/creator";
 import object_to_style from "./object_to_style";
 /**
@@ -45,20 +41,10 @@ function default_handler(functionName: string): FunctionDeclaration {
   const create = i(functionName),
     element = i("element"),
     tag = i("tag"),
-    createTextNode = i("createTextNode"),
     children = i("children"),
     document = i("document"),
     createElement = i("createElement"),
-    entries = i("entries"),
-    flat = i("flat"),
     attributes = i("attributes"),
-    attribute = i("attribute"),
-    forEach = i("forEach"),
-    object = i("Object"),
-    child = i("child"),
-    append = i("append"),
-    setAttribute = i("setAttribute"),
-    checkChildType = new IfStatement(0),
     emptyObject = new ObjectExpression(0),
     emptyArray = new ArrayExpression(0),
     func = new FunctionDeclaration(0),
@@ -87,37 +73,33 @@ function default_handler(functionName: string): FunctionDeclaration {
   //  Attribute setter, i.e.
   const attributeSetter = Ezra.parse(`
     Object.entries(attributes).forEach(function (attribute) {
-      if (attribute[0] === 'style' && attribute[1] instanceof Object){
-        element.setAttribute(attribute[0], stylize(attribute[1]));
-      } else element.setAttribute(attribute[0], attribute[1]);
+      switch (true) {
+        case attribute[0] === 'style' && typeof attribute[1] === 'object':
+          element.setAttribute(attribute[0], stylize(attribute[1]));
+          break;
+        case attribute[0] === 'className':
+          element.setAttribute('class', attribute[1]);
+          break;
+        case attribute[0].slice(0, 2) === 'on':
+          element.addEventListener(attribute[0].slice(2).toLowerCase(), attribute[1]);
+          break;
+        default: 
+          element.setAttribute(attribute[0], attribute[1])
+      }
     })`).body[0];
-  checkChildType.test = binaryExpression(
-    unaryExpression("typeof", child),
-    "!==",
-    newString('"object"')
-  );
-  checkChildType.consequent = expressionStatement(
-    callExpression(memberExpression(element, append), [
-      callExpression(memberExpression(document, createTextNode), [child]),
-    ])
-  );
-  checkChildType.alternate = expressionStatement(
-    callExpression(memberExpression(element, append), [child])
-  );
-  // Child setter, i.e.
-  // children.flat().forEach(function (child) {
-  //  if (typeof child !== object) element.append(document.createTextNode(child));
-  //  else element.append(child);
-  // });
-  const childSetter = expressionStatement(
-    callExpression(
-      memberExpression(
-        callExpression(memberExpression(children, flat)),
-        forEach
-      ),
-      [newFunctionExp(null, [child], blockStatement([checkChildType]))]
-    )
-  );
+
+  // Child setter/
+  const childSetter = Ezra.parse(`
+  children.flat().forEach((child) => {
+    if (typeof child === 'string') element.append(
+      document.createTextNode(
+        child.replace(/\\&amp\\;/g, '&')
+             .replace(/\\&copy\\;/g, '©')
+      ) 
+    );
+    else element.append(child);
+  });`).body[0];
+
   //   Return.
   _return.argument = element;
 

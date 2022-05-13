@@ -37,7 +37,7 @@ function transpileJSX(
   attributesObject.properties = [];
   node.openingElement.attributes.forEach((jsxAttribute) => {
     let attributeProp = new Property(0);
-    attributeProp.key = newIdentifier(jsxAttribute.name.name);
+    attributeProp.key = newString(`"${jsxAttribute.name.name}"`);
     if (jsxAttribute.value instanceof Literal) {
       attributeProp.value = jsxAttribute.value;
     } else if (jsxAttribute.value) {
@@ -55,7 +55,9 @@ function transpileJSX(
         break;
       case "JSXText": // An element's inner text.
         children.elements.push(
-          newString(`"${child.value.replace(/"/g, '"')}"`)
+          newString(
+            `"${child.value.replace(/"/g, '"').replace(/\n|\s[\s]*/g, " ")}"`
+          )
         );
         break;
       case "JSXExpressionContainer": // A nested expression.

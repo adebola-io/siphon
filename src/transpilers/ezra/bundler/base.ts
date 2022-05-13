@@ -32,9 +32,9 @@ export class bundler_internals extends bundler_utils {
       ArrowFunctionExpression: transform_arrow_functions,
       LogicalExpression: resolve_nullish_coalescing,
       VariableDeclaration: rewrite_destructured_variables,
-      JSXElement(node, path) {
-        return transpileJSX(node, path, defaultJSXFunctionName);
-      },
+      ChainExpression: (node) => node.expression,
+      JSXElement: (node, path) =>
+        transpileJSX(node, path, defaultJSXFunctionName),
     });
     // mangle_variables(this.tree);
     return this.tree;

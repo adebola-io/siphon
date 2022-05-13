@@ -4,6 +4,7 @@ import {
   BinaryExpression,
   BlockStatement,
   CallExpression,
+  ChainExpression,
   ClassDeclaration,
   ConditionalExpression,
   DoWhileStatement,
@@ -104,6 +105,7 @@ export interface Config {
     path: TraversalPath
   ) => void;
   MemberExpression?: (node: MemberExpression, path: TraversalPath) => void;
+  ChainExpression?: (node: ChainExpression, path: TraversalPath) => void;
   Property?: (node: Property, path: TraversalPath) => void;
   CallExpression?: (node: CallExpression, path: TraversalPath) => void;
   AssignmentExpression?: (
