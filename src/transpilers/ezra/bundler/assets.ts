@@ -49,7 +49,7 @@ ezra.createJSAsset = function (filename: PathLike) {
     },
   });
   var ezraModule = this.ModuleIdentifierNode(filename.toString());
-  var fullSourceExports: string[] = [];
+  var fullSourceExports: JSNode[] = [];
   var redefinitions: JSNode[] = [];
   var moduleImports: Map<string, Identifier> = new Map();
   var moduleExports: Map<Expression, Expression> = new Map();
@@ -63,7 +63,7 @@ ezra.createJSAsset = function (filename: PathLike) {
         extension: extname(dependencyPath),
       };
       // Create two declarations, one for the original initialization of the import, another to hold the imported values.
-      const assignDec = new VariableDeclaration(0);
+      const assignDec = new VariableDeclaration(node.loc.start);
       assignDec.kind = "const";
       const assignDeclarator = new VariableDeclarator(0);
       const placeholder = this.uniqueIdentifier("module");
@@ -73,8 +73,17 @@ ezra.createJSAsset = function (filename: PathLike) {
       assignDec.declarations.push(assignDeclarator);
       const declaration2 = new VariableDeclaration(0);
       declaration2.kind = "const";
+      // Full source imports. e.g. import './utils.js'
       if (node.specifiers.length === 0) {
-        fullSourceExports.push(dependencyPath);
+        if (/js/.test(extname(dependencyPath)))
+          Ezra.parse(readFileSync(dependencyPath, "utf-8"), {
+            sourceFile: dependencyPath,
+            parseJSX: this.options.allowJSX,
+          }).body.forEach((child) => {
+            child.loc.start = node.loc.start;
+            fullSourceExports.push(child);
+          });
+        else dependencies.push(dependency);
         return new EmptyNode(0);
       } else
         for (const specifier of node.specifiers) {
@@ -124,7 +133,13 @@ ezra.createJSAsset = function (filename: PathLike) {
       if (path.scope.type === "Program") return newIdentifier("globalThis");
     },
   });
-  ast.body.splice(0, 0, ...redefinitions);
+  ast.body.splice(
+    0,
+    0,
+    ...redefinitions
+      .concat(fullSourceExports)
+      .sort((a, b) => a.loc.start - b.loc.start)
+  );
   // Push all exports.
   moduleExports.forEach((value, key) => {
     ast.push(
@@ -140,7 +155,7 @@ ezra.createJSAsset = function (filename: PathLike) {
     module: this.prepareModule(ast, ezraModule),
   };
 };
-ezra.createUnknownAsset = function (filename: PathLike) {
+ezra.createUnknownAsset = function (filename) {
   var ezraModule = this.ModuleIdentifierNode(filename.toString());
   let dependencies: Dependency[] = [];
   let simulate = new Program(0);

@@ -37,6 +37,7 @@ export class bundler_utils {
   sourceMappings: Map<string, Array<string>> = new Map();
   createJSAsset!: (filename: PathLike) => Asset;
   createUnknownAsset!: (filename: PathLike) => Asset;
+  stylesheets: Array<PathLike> = [];
   /**
    * A tracking of all identifiers being used in the bundle, to prevent name clashes.
    */
@@ -46,9 +47,23 @@ export class bundler_utils {
   start(file: PathLike) {
     file = resolve(file.toString());
     var asset: Asset;
-    if (/js/.test(extname(file))) {
-      asset = this.createJSAsset(file);
-    } else asset = this.createUnknownAsset(file);
+    if (extname(file) === ".css") {
+      const ezraModule = this.ModuleIdentifierNode(file.toString());
+      this.stylesheets.push(file);
+      asset = {
+        dependencies: [],
+        filename: file,
+        id: ezraModule.name,
+        module: this.prepareModule(new Program(0), ezraModule),
+      };
+    } else
+      switch (true) {
+        case /js/.test(extname(file)):
+          asset = this.createJSAsset(file);
+          break;
+        default:
+          asset = this.createUnknownAsset(file);
+      }
     this.assets.set(file, asset);
     this.tree.body.push(...asset.module);
     asset.dependencies.forEach((dependency) => {

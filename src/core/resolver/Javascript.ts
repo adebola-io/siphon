@@ -44,6 +44,22 @@ class JavascriptResolve {
           sourceMaps: false,
         }).body
       );
+      // Add imported stylesheets as <link> nodes in the document to be parsed by Palette.
+      if (bundler.stylesheets.length) {
+        var head: HTMLDocumentNode = tagNameSearch(this.nodes, "head")[0];
+        if (head) {
+          bundler.stylesheets.forEach((stylesheet) => {
+            head.children?.push({
+              tagName: "link",
+              isVoid: true,
+              parent: head,
+              childID: head.children.length,
+              children: [],
+              attributes: { rel: "stylesheet", href: stylesheet },
+            });
+          });
+        }
+      }
       delete script.type;
     }
     if (this.options.internalJS || this.options.wickedMode) {

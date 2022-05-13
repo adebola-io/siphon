@@ -131,7 +131,6 @@ ezra.BlockStatement = function (node: BlockStatement) {
 
 ezra.ImportDeclaration = function (node: ImportDeclaration) {
   var _default = false;
-  console.log(9);
   this.write("import ");
   if (node.specifiers?.length) {
     switch (node.specifiers[0].type) {

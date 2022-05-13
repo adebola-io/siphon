@@ -23,8 +23,8 @@ function resolve_nullish_coalescing(
 ) {
   if (node.operator !== "??") return;
   //   The test. !(x === null || x === undefined)
-  let condition = new ConditionalExpression(0);
-  let test = new UnaryExpression(0);
+  let condition = new ConditionalExpression(node.loc.start);
+  let test = new UnaryExpression(node.loc.start);
   let testInner = new LogicalExpression(0);
   let innerL = new BinaryExpression(0);
   let innerR = new BinaryExpression(0);

@@ -11,11 +11,29 @@ colors.setTheme({
   yellow: "yellow",
 });
 function watcher(options: siphonOptions) {
+  var encounteredError = false;
   /**
    * Core bundler.
    */
   function runBundler() {
     options.relations.forEach((relation) => {
+      try {
+        let source = `${options.rootDir}/${relation.from}`,
+          destination = `${options.outDir}/${relation.to}`;
+        bundler(source).into(destination, options);
+        encounteredError = false;
+      } catch (e: any) {
+        console.log();
+        console.log(e.message?.red);
+        encounteredError = true;
+      }
+    });
+  }
+
+  if (!existsSync(options.rootDir)) Errors.enc("NO_ROOTDIR", options.rootDir);
+  let ready = true;
+  function throttle() {
+    if (ready) {
       console.clear();
       console.log(
         `${
@@ -24,10 +42,8 @@ function watcher(options: siphonOptions) {
           })}:`.gray
         }${` File change detected. Starting bundler...`.yellow}`
       );
-      try {
-        let source = `${options.rootDir}/${relation.from}`,
-          destination = `${options.outDir}/${relation.to}`;
-        bundler(source).into(destination, options);
+      runBundler();
+      if (!encounteredError) {
         console.log();
         console.log(
           `${
@@ -36,17 +52,8 @@ function watcher(options: siphonOptions) {
             })}:`.gray
           }${` Bundling successful. Siphon found zero errors.`.green}`
         );
-      } catch (e: any) {
-        console.log();
-        console.log(e.message?.red);
       }
-    });
-  }
-
-  if (!existsSync(options.rootDir)) Errors.enc("NO_ROOTDIR", options.rootDir);
-  let ready = true;
-  function throttle() {
-    if (ready) runBundler();
+    }
     ready = false;
     setTimeout(() => {
       ready = true;

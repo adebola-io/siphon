@@ -130,18 +130,18 @@ class Resolver {
   resolve(nodes: HTMLDocumentNode[]) {
     if (this.options.htmlModules) this.resolveModules(nodes);
     nodes = this.resolveImages(nodes);
+    nodes = new JavascriptResolve().resolveJS(
+      nodes,
+      this.source,
+      this.options,
+      this.destination
+    );
     nodes = this.resolveCSS(
       nodes,
       this.source,
       this.destination,
       this.options,
       this.assets
-    );
-    nodes = new JavascriptResolve().resolveJS(
-      nodes,
-      this.source,
-      this.options,
-      this.destination
     );
     // nodes = this.resolveJS(
     //   nodes,
