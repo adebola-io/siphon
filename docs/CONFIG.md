@@ -32,6 +32,10 @@ This instructs the Siphon core compiler to start bundling from `src/start.html` 
 
 Determines whether the bundler should write all external Javascript into the HTML file. The default value is `false`.
 
+#### `allowJSX`
+
+Determines whether React's JSX syntax should be parsed along with regular javascript. The default value is `false`.
+
 #### `internalStyles`
 
 Determines whether the bundler should write all external stylesheets into the HTML file. The default is `false`.
