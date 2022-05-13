@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "fs";
-import { Parser as Acorn } from "acorn";
-import * as Esprima from "esprima";
+// import { Parser as Acorn } from "acorn";
+// import * as Esprima from "esprima";
 import Ezra from ".";
 import {
   BinaryExpression,
