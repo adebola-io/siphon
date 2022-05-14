@@ -68,6 +68,20 @@ function transpileJSX(
     isSentenceCase(node.openingElement.tagName) ||
     HTMLTags[node.openingElement.tagName] !== true
   ) {
+    // Set the prop.children property.
+    let childrenProp = new Property(0);
+    childrenProp.key = newIdentifier("children");
+    let childrenArray = new ArrayExpression(0);
+    childrenArray.elements = node.children ?? [];
+    childrenProp.value = childrenArray;
+    // Prevent clash with already defined property.
+    if (
+      !attributesObject.properties.find(
+        (a) => a.key instanceof Literal && a.key.value === "children"
+      )
+    ) {
+      attributesObject.properties.push(childrenProp);
+    }
     return callExpression(nodeIdentifier, [attributesObject]);
   } else {
     let handler = newIdentifier(handlerName);
