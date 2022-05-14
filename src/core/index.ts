@@ -1,9 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
 import Errors from "./errors";
-import Generator from "./generator";
-import Resolver from "./resolver";
-import createDOMTree from "./parser/html/createDOMTree";
+import Generator from "./transpilers/mimo/generator";
+import Runtime from "./runtime";
+import createDOMTree from "./transpilers/mimo/createDOMTree";
 import { siphonOptions } from "../types";
 import { forceCreateDir } from "../utils";
 
@@ -18,13 +18,11 @@ function bundler(source: fs.PathLike) {
         case ".mhtml":
           var htmlTree = createDOMTree(source);
           forceCreateDir(destination);
-          let resolver = new Resolver(source, destination, options);
-          htmlTree = resolver.resolve(htmlTree);
-          fs.writeFile(
-            destination,
-            new Generator().generate(htmlTree, options),
-            () => {}
-          );
+          let runtime = new Runtime(source, destination, options);
+          let generator = new Generator();
+          htmlTree = runtime.resolve(htmlTree);
+          let result = generator.generate(htmlTree, options);
+          fs.writeFileSync(destination, result);
           return true;
       }
     },

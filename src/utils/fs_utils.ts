@@ -19,7 +19,7 @@ export function copyInBase64(src: PathLike, dest: PathLike) {
   writeFile(dest, readFileSync(src), "base64", () => {});
 }
 /**
- * Transform a file to a base 64 string
+ * Transform a file to a base 64 string.
  * @param file The file to transform.
  */
 export function stringifytoBase64(file: PathLike) {

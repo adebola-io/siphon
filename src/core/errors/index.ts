@@ -28,6 +28,9 @@ const Errors = {
     switch (true) {
       case e.FILE_NON_EXISTENT:
         error(`Siphon could not find ${src.toString()}.`);
+      case e.MISSING_SCRIPT:
+        message = `Siphon could not find the script file '${options.token}'.`;
+        error(message, src, index);
       case e.NO_ROOTDIR:
         error(`The rootDir '${src}' does not exist.`);
       case e.SOMETHING_WENT_WRONG:

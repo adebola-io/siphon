@@ -1,4 +1,4 @@
-const { Task } = require("../lib/structures");
+const { Task } = require("../lib/core/structures");
 const siphon = require("../lib");
 const { siphonOptions } = require("../lib/types");
 const { existsSync } = require("fs");
@@ -7,7 +7,6 @@ const { resolve } = require("path");
 const { green, bold } = require("colors");
 const task = new Task(process.argv);
 const start = require("./start");
-const path = require("path");
 /** @type {siphonOptions} */
 var options;
 
@@ -28,6 +27,8 @@ switch (true) {
   // Bundle single file.
   case task.inputs.length === 2 &&
     (task.inputs[0] === "-bundle" || task.inputs[0] === "-b"):
+    console.log();
+    console.log("Bundling " + task.inputs[1] + "...");
     siphon
       .bundler(task.inputs[1])
       .into(

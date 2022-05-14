@@ -82,7 +82,8 @@ export type ErrorTypes =
   | "ABRUPT"
   | "CLOSING_TAG_ATTR"
   | "UNEXPECTED_CLOSE"
-  | "OPEN_CURLY_EXPECTED";
+  | "OPEN_CURLY_EXPECTED"
+  | "MISSING_SCRIPT";
 export interface HTMLDocumentNode {
   identifier?: number;
   childID?: number;

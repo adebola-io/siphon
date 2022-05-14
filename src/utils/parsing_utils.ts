@@ -610,12 +610,16 @@ interface SiphonError {
   position?: { line: number; col: number };
 }
 export function HTMLError(e: SiphonError) {
-  if (e.root && e.location)
-    e.location = relative(relativePath(e.root, "./"), e.location).replace(
-      /\\/g,
-      "/"
-    );
+  if (e.root && e.location) {
+    e.location = relative(relativePath(e.root, "./"), e.location);
+  }
+  e.heading = e.heading.replace(/\\/g, "\\\\");
+  e.location = e.location?.replace(/\\/g, "/");
   return `<html style='background: #151515'>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+  </head>
   <body style='
    font-family: sans-serif;
    height: fit-content;
@@ -630,11 +634,7 @@ export function HTMLError(e: SiphonError) {
       document.querySelector('h3').innerText = "${e.heading}"
       document.querySelector('p').innerText = 
       "${
-        e.position
-          ? `${e.location?.replace(/\\/g, "\\\\")}:${e.position.line}:${
-              e.position.col
-            }`
-          : ""
+        e.position ? `${e.location}:${e.position.line}:${e.position.col}` : ""
       }"
       var error = new Error(\`${e.heading}\`);
       throw error;
