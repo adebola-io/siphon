@@ -1,5 +1,7 @@
 import { PathLike, readFileSync } from "fs";
+import { relative } from "path";
 import Errors from "../errors";
+import { relativePath } from "./fs_utils";
 
 /**
  * Checks if a character belongs to a list of space characters. e.g. spaces and new lines.
@@ -597,3 +599,46 @@ export const counterpart: any = {
   "{": "}",
   "<": ">",
 };
+export function removeInvalidChars(str: string) {
+  return str.replace(/(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]/g, " ");
+}
+interface SiphonError {
+  heading: string;
+  location?: string;
+  root?: string;
+  stack: typeof Error.prototype.stack;
+  position?: { line: number; col: number };
+}
+export function HTMLError(e: SiphonError) {
+  if (e.root && e.location)
+    e.location = relative(relativePath(e.root, "./"), e.location).replace(
+      /\\/g,
+      "/"
+    );
+  return `<html style='background: #151515'>
+  <body style='
+   font-family: sans-serif;
+   height: fit-content;
+   padding: 0 5%;
+   padding-top: 60px;
+   margin: 0'>
+    <h1 style='color: #d62929;'>Siphon Compile Error.</h1>
+    <hr />
+    <h3 style='color:white'></h3>
+    <p style='color: gray; margin-top: 0'></p>
+    <script>
+      document.querySelector('h3').innerText = "${e.heading}"
+      document.querySelector('p').innerText = 
+      "${
+        e.position
+          ? `${e.location?.replace(/\\/g, "\\\\")}:${e.position.line}:${
+              e.position.col
+            }`
+          : ""
+      }"
+      var error = new Error(\`${e.heading}\`);
+      throw error;
+    </script>
+  </body>
+</html>`;
+}

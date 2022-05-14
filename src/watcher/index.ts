@@ -1,9 +1,10 @@
-import { existsSync, watch } from "fs";
+import { existsSync, watch, writeFileSync } from "fs";
 import * as colors from "colors";
 import bundler from "../core";
-import { newTimeStamp } from "../utils";
+import { newTimeStamp, removeInvalidChars, HTMLError } from "../utils";
 import { siphonOptions } from "../types";
 import Errors from "../errors";
+import { resolve } from "path";
 colors.setTheme({
   red: "red",
   gray: "gray",
@@ -17,14 +18,22 @@ function watcher(options: siphonOptions) {
    */
   function runBundler() {
     options.relations.forEach((relation) => {
+      let source = `${options.rootDir}/${relation.from}`,
+        destination = `${options.outDir}/${relation.to}`;
       try {
-        let source = `${options.rootDir}/${relation.from}`,
-          destination = `${options.outDir}/${relation.to}`;
         bundler(source).into(destination, options);
         encounteredError = false;
       } catch (e: any) {
         console.log();
-        console.log(e.message?.red);
+        console.log(
+          colors.bold("ERROR:".black.bgRed + colors.red(" Failed to compile."))
+        );
+        console.log();
+        console.log(e.message);
+        if (existsSync(destination) && existsSync(source)) {
+          e.root = resolve(options.rootDir.toString());
+          writeFileSync(destination, HTMLError(e));
+        }
         encounteredError = true;
       }
     });
@@ -50,7 +59,9 @@ function watcher(options: siphonOptions) {
             `${newTimeStamp({
               noDate: true,
             })}:`.gray
-          }${` Bundling successful. Siphon found zero errors.`.green}`
+          }${colors.bold(
+            ` Bundling successful. Siphon found zero errors.`.green
+          )}`
         );
       }
     }

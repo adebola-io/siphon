@@ -34,7 +34,11 @@ ezra.jsxElement = function (start) {
         this.next();
         elem.closingElement = this.jsxClosingElement(start);
         if (elem.closingElement.tagName !== elem.openingElement.tagName)
-          this.raise("JSX_NO_CLOSE", elem.openingElement.tagName);
+          this.raise(
+            "JSX_NO_CLOSE",
+            elem.openingElement.tagName,
+            elem.openingElement.loc.end
+          );
         break;
       } else elem.children.push(this.jsxElement(start));
     } else if (this.char === "{") {
@@ -42,7 +46,11 @@ ezra.jsxElement = function (start) {
     } else elem.children.push(this.jsxText());
   }
   if (this.end && elem.closingElement === undefined)
-    this.raise("JSX_NO_CLOSE", elem.openingElement.tagName);
+    this.raise(
+      "JSX_NO_CLOSE",
+      elem.openingElement.tagName,
+      elem.openingElement.loc.end
+    );
   elem.loc.end = elem.closingElement?.loc.end;
   return elem;
 };

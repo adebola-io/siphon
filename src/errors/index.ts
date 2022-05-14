@@ -6,15 +6,19 @@ import { ErrorTypes } from "../types";
 
 function error(msg: string, src?: fs.PathLike, char?: number): void {
   var pos: any;
-  msg = bold(red(`${msg}`));
+  var full: string = bold(red(`${msg}`));
   if (src !== undefined) {
     if (char !== undefined) pos = trace(src, char);
     let pth =
       path.resolve(src.toString()) +
       (char !== undefined ? `:${pos.line}:${pos.col}` : "");
-    msg += bold(red("\n    " + `at ${pth}`));
+    full += bold(red("\n    " + `at ${pth}`));
   }
-  throw new Error(msg);
+  const e: any = new Error(full);
+  e.heading = msg;
+  e.location = src;
+  e.position = pos;
+  throw e;
 }
 
 const Errors = {
