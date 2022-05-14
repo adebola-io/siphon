@@ -8,7 +8,7 @@ import {
   writeFile,
 } from "fs";
 import { basename, extname, resolve } from "path";
-import Errors from "../errors";
+import Errors from "../core/errors";
 import { fileGetterOptions } from "../types";
 import { getMIMEType } from "./parsing_utils";
 

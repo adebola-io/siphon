@@ -1,5 +1,5 @@
 import { PathLike, readFileSync } from "fs";
-import Errors from "../../errors";
+import Errors from "../../core/errors";
 import {
   checkForEnd,
   isIllegalCSSIdentifier,

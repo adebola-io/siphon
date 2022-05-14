@@ -1,5 +1,5 @@
 import bundler from "./core";
-import watcher from "./watcher";
-import defaults from "./defaults";
+import watchSrc from "./core/watchSrc";
+import defaults from "./types/defaults";
 
-export { bundler, watcher, defaults };
+export { bundler, watchSrc as watcher, defaults };

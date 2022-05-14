@@ -1,6 +1,6 @@
 import { parserOptions } from ".";
-import { Stack } from "../../../structures";
-import Errors from "../../../errors";
+import { Stack } from "../../../core/structures";
+import Errors from "../../../core/errors";
 import { Context, ErrorTypes, Program } from "../../../types";
 import {
   assoc,

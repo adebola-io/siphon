@@ -1,4 +1,4 @@
-import { Stack } from "../../../structures";
+import { Stack } from "../../../core/structures";
 import {
   ExpressionStatement,
   JSNode,

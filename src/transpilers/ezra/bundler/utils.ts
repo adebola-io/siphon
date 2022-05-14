@@ -1,6 +1,6 @@
 import { existsSync, PathLike } from "fs";
 import { extname, resolve } from "path";
-import Errors from "../../../errors";
+import Errors from "../../../core/errors";
 import {
   FunctionDeclaration,
   Identifier,

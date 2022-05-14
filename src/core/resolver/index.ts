@@ -1,6 +1,6 @@
-import { PathLike, readFileSync } from "fs";
+import { PathLike } from "fs";
 import { basename, extname, resolve } from "path";
-import Errors from "../../errors";
+import Errors from "../errors";
 import { HTMLDocumentNode, siphonOptions } from "../../types";
 import {
   fileExists,

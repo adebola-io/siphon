@@ -1,5 +1,5 @@
 import Ezra from "../..";
-import { Visitor } from "../../../../structures";
+import { Visitor } from "../../../../core/structures";
 import { Program } from "../../../../types";
 import { clone } from "../helpers/creator";
 

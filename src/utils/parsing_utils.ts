@@ -1,6 +1,6 @@
 import { PathLike, readFileSync } from "fs";
 import { relative } from "path";
-import Errors from "../errors";
+import Errors from "../core/errors";
 import { relativePath } from "./fs_utils";
 
 /**

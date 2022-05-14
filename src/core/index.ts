@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import Errors from "../errors";
+import Errors from "./errors";
 import Generator from "./generator";
 import Resolver from "./resolver";
 import createDOMTree from "./parser/html/createDOMTree";

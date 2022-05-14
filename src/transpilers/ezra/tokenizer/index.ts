@@ -1,4 +1,4 @@
-import Errors from "../../../errors";
+import Errors from "../../../core/errors";
 import { siphonOptions } from "../../../types";
 import { operators, stringMarkers, isNum, JSkeywords } from "../../../utils";
 export interface Token {

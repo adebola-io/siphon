@@ -1,8 +1,8 @@
 import { existsSync, watch, writeFileSync } from "fs";
 import * as colors from "colors";
-import bundler from "../core";
-import { newTimeStamp, removeInvalidChars, HTMLError } from "../utils";
-import { siphonOptions } from "../types";
+import bundler from "..";
+import { newTimeStamp, HTMLError } from "../../utils";
+import { siphonOptions } from "../../types";
 import Errors from "../errors";
 import { resolve } from "path";
 colors.setTheme({
@@ -11,7 +11,7 @@ colors.setTheme({
   green: "green",
   yellow: "yellow",
 });
-function watcher(options: siphonOptions) {
+function watchSrc(options: siphonOptions, mode: "watch" | "serve" = "watch") {
   var encounteredError = false;
   /**
    * Core bundler.
@@ -83,4 +83,4 @@ function watcher(options: siphonOptions) {
   );
 }
 
-export default watcher;
+export default watchSrc;

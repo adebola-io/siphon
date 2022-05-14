@@ -2,6 +2,7 @@
   "compileOnSave": true,
   "compilerOptions": {
     "resolveJsonModule": true,
+    "removeComments": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "allowJs": true,

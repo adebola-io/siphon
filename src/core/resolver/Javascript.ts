@@ -1,6 +1,6 @@
 import { PathLike, writeFileSync } from "fs";
 import { HTMLDocumentNode, Program, siphonOptions } from "../../types";
-import Errors from "../../errors";
+import Errors from "../errors";
 import { relativePath, fileExists, getFileName } from "../../utils";
 import tagNameSearch from "../parser/html/tagNameSearch";
 import Ezra from "../../transpilers/ezra";

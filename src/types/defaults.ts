@@ -1,4 +1,4 @@
-import { siphonOptions } from "./types";
+import { siphonOptions } from ".";
 
 const defaults: siphonOptions = {
   rootDir: "./src",

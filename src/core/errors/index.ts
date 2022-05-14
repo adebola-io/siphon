@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
-import { trace } from "../utils";
+import { trace } from "../../utils";
 import { red, bold } from "colors";
-import { ErrorTypes } from "../types";
+import { ErrorTypes } from "../../types";
 
 function error(msg: string, src?: fs.PathLike, char?: number): void {
   var pos: any;
