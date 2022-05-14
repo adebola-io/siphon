@@ -183,6 +183,9 @@ const Errors = {
         error("Identifier expected.", src, index);
       case e.EMPTY_CONST_DECLARATION:
         error("'const' declarations must be initialized.", src, index);
+      case e.JS_IMPORTED_MODULE_MISSING:
+        error(`Cannot find module '${options.token}'.`, src, index);
+        break;
       case e.BIGINT_DECIMAL:
         error("A bigint literal must be an integer.", src, index);
       case e.ID_FOLLOWS_LITERAL:

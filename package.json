@@ -3,7 +3,7 @@
   "version": "0.0.4",
   "start-date": "25/3/22",
   "description": "Simple bundler for web applications. 📦🔧🧡",
-  "main": "lib/client/index.js",
+  "main": "bin/siphon",
   "scripts": {
     "test": "node scripts/testing.js",
     "test-ezra": "node lib/transpilers/ezra/test",

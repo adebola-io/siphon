@@ -106,7 +106,14 @@ export class bundler_utils {
           } else dependencyPath = resolve(`${node_module}/index.js`);
           if (fileExists(dependencyPath)) break;
         default:
-          Errors.enc("FILE_NON_EXISTENT", dependencyPath);
+          Errors.enc(
+            "JS_IMPORTED_MODULE_MISSING",
+            filename,
+            node.source.loc.start,
+            {
+              token: dependencyPath,
+            }
+          );
       }
     }
 

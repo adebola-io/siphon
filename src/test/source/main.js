@@ -1,5 +1,2 @@
-console.log(
-  <div>
-    <li>akomolafe sefunmi</li>
-  </div>
-);
+import "./utils";
+const element = <div></div>;

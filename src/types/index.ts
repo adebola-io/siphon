@@ -57,6 +57,7 @@ export type ErrorTypes =
   | "JS_ILLEGAL_RETURN"
   | "JS_REST_MUST_END"
   | "JSX_NO_CLOSE"
+  | "JS_IMPORTED_MODULE_MISSING"
   | "EXPECTED"
   | "RESERVED"
   | "CATCH_NEW_PARAM"
