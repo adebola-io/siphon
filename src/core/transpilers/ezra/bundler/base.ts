@@ -1,6 +1,10 @@
 import { bundlerOptions, bundler_utils, defaults } from "./utils";
 import { PathLike } from "fs";
-import { FunctionDeclaration, Program } from "../../../../types";
+import {
+  ArrayExpression,
+  FunctionDeclaration,
+  Program,
+} from "../../../../types";
 import { callExpression } from "../traverser/helpers/creator";
 import Ezra from "..";
 import transform_class_to_prototype from "../traverser/examples/transform_class_to_prototype";
@@ -38,6 +42,12 @@ export class bundler_internals extends bundler_utils {
       ChainExpression: (node) => node.expression,
       JSXElement: (node, path) =>
         transpileJSX(node, path, defaultJSXFunctionName),
+      JSXFragment(node) {
+        const arr = new ArrayExpression(node.loc.start);
+        arr.elements = node.children;
+        arr.loc.end = node.loc.end;
+        return arr;
+      },
     });
     // mangle_variables(this.tree);
     return this.tree;

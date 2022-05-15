@@ -42,8 +42,12 @@ ezra.expression = function (type) {
       return;
     // React JSX.
     case this.eat("<"):
-      if (this.options.parseJSX) return this.reparse(this.jsxElement(this.j));
-      else this.raise("JS_UNEXPECTED_TOKEN", "<");
+      if (this.options.parseJSX) {
+        var JSXStart = this.j - 1;
+        this.outerspace();
+        if (this.eat(">")) return this.reparse(this.jsxFragment(JSXStart));
+        else return this.reparse(this.jsxElement(JSXStart));
+      } else this.raise("JS_UNEXPECTED_TOKEN", "<");
     case this.eat("/"):
       return this.reparse(this.regexLiteral());
     case this.eat("("):

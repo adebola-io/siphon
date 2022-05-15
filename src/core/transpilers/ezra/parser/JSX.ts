@@ -1,19 +1,21 @@
 import {
   JSXAttribute,
   JSXClosingElement,
+  JSXClosingFragment,
   JSXElement,
   JSXExpressionContainer,
+  JSXFragment,
   JSXIdentifier,
   JSXMemberExpression,
   JSXNamespacedName,
   JSXOpeningElement,
+  JSXOpeningFragment,
   JSXText,
 } from "../../../../types";
 import { isValidIdentifierCharacter } from "../../../../utils";
 import { ezra } from "./base";
 
 ezra.jsxElement = function (start) {
-  start = start - 1;
   const elem = new JSXElement(start);
   this.outerspace();
   if (!isValidIdentifierCharacter(this.char)) {
@@ -40,7 +42,8 @@ ezra.jsxElement = function (start) {
             elem.openingElement.loc.end
           );
         break;
-      } else elem.children.push(this.jsxElement(start));
+      } else if (this.eat(">")) elem.children.push(this.jsxFragment(start));
+      else elem.children.push(this.jsxElement(start));
     } else if (this.char === "{") {
       elem.children.push(this.jsxExpressionContainer());
     } else elem.children.push(this.jsxText());
@@ -175,4 +178,40 @@ ezra.jsxExpressionContainer = function () {
   container.expression = this.group("expression");
   container.loc.end = this.j;
   return container;
+};
+ezra.jsxFragment = function (start) {
+  const fragment = new JSXFragment(start);
+  fragment.openingFragment = new JSXOpeningFragment(start);
+  fragment.openingFragment.loc.end = this.j;
+  fragment.children = [];
+  while (!this.end) {
+    this.outerspace();
+    if (this.eat("<")) {
+      start = this.j - 1;
+      this.outerspace();
+      if (this.eat("/")) {
+        this.outerspace();
+        if (this.eat(">")) {
+          fragment.closingFragment = new JSXClosingFragment(start);
+          fragment.closingFragment.loc.end = this.j;
+        } else
+          this.raise(
+            "JSX_FRAGMENT_NO_CLOSE",
+            undefined,
+            fragment.openingFragment.loc.end
+          );
+        break;
+      } else if (this.eat(">")) fragment.children.push(this.jsxFragment(start));
+      else fragment.children.push(this.jsxElement(start));
+    } else if (this.char === "{") {
+      fragment.children.push(this.jsxExpressionContainer());
+    } else fragment.children.push(this.jsxText());
+  }
+  if (this.end && fragment.closingFragment === undefined)
+    this.raise(
+      "JSX_FRAGMENT_NO_CLOSE",
+      undefined,
+      fragment.openingFragment.loc.end
+    );
+  return fragment;
 };

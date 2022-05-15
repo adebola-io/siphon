@@ -4,6 +4,7 @@ import {
   Identifier,
   JSXElement,
   JSXIdentifier,
+  JSXText,
   Literal,
   ObjectExpression,
   Property,
@@ -45,6 +46,33 @@ function transpileJSX(
     } else attributeProp.value = newString("''");
     attributesObject.properties.push(attributeProp);
   });
+  /* Recursively fill in the children of a JSX Fragment into a childList.*/
+  function destructureFragment(
+    child: ArrayExpression,
+    children: ArrayExpression
+  ) {
+    child.elements.forEach((subchild: any) => {
+      switch (subchild.type) {
+        case "CallExpression": // A former JSX Element.
+          children.elements.push(subchild);
+          break;
+        case "JSXText": // An element's inner text.
+          children.elements.push(
+            newString(
+              `"${subchild.value
+                .replace(/"/g, '"')
+                .replace(/\n|\s[\s]*/g, " ")}"`
+            )
+          );
+          break;
+        case "JSXExpressionContainer": // A nested expression.
+          children.elements.push(subchild.expression);
+          break;
+        case "ArrayExpression": // A former JSX Fragment.
+          destructureFragment(subchild, children);
+      }
+    });
+  }
   // Transform child elements to array of expressions.
   let children = new ArrayExpression(0);
   children.elements = [];
@@ -62,6 +90,9 @@ function transpileJSX(
         break;
       case "JSXExpressionContainer": // A nested expression.
         children.elements.push(child.expression);
+        break;
+      case "ArrayExpression": // A former JSX Fragment.
+        destructureFragment(child, children);
     }
   });
   if (

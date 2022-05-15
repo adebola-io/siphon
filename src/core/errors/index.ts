@@ -134,6 +134,8 @@ const Errors = {
       case e.JSX_NO_CLOSE:
         message = `JSX element '${options.token}' has no corresponding closing tag.`;
         error(message, src, index);
+      case e.JSX_FRAGMENT_NO_CLOSE:
+        error(`JSX Fragment has no corresponding closing tag.`, src, index);
       case e.INVALID_NEW_META_PROPERTY:
         message = `'${options.token}' is not a valid meta-property for keyword 'new'. Did you mean 'target'?`;
         error(message, src, index);

@@ -419,7 +419,7 @@ export class FunctionExpression extends JSNode {
   body!: BlockStatement;
 }
 export class YieldExpression extends JSNode {
-  type = 'YieldExpression';
+  type = "YieldExpression";
   delegate!: boolean;
   argument!: Expression;
 }
@@ -474,7 +474,7 @@ export class RestElement extends JSNode {
 export class JSXElement extends JSNode {
   type = "JSXElement";
   openingElement!: JSXOpeningElement;
-  children!: Array<JSXElement | JSXText | JSXExpressionContainer>;
+  children!: Array<JSXElement | JSXText | JSXExpressionContainer | JSXFragment>;
   closingElement!: JSXClosingElement | null;
 }
 export class JSXOpeningElement extends JSNode {
@@ -516,6 +516,18 @@ export class JSXNamespacedName extends JSNode {
   type = "JSXNamespacedName";
   namespace!: JSXIdentifier;
   name!: JSXIdentifier;
+}
+export class JSXFragment extends JSNode {
+  type = "JSXFragment";
+  openingFragment!: JSXOpeningFragment;
+  children!: Array<JSXElement | JSXText | JSXExpressionContainer | JSXFragment>;
+  closingFragment!: JSXClosingFragment;
+}
+export class JSXOpeningFragment extends JSNode {
+  type = "JSXOpeningFragment";
+}
+export class JSXClosingFragment extends JSNode {
+  type = "JSXClosingFragment";
 }
 export function isValidExpression(node?: JSNodes) {
   return node

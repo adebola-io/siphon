@@ -32,6 +32,7 @@ import {
   JSXClosingElement,
   JSXElement,
   JSXExpressionContainer,
+  JSXFragment,
   JSXIdentifier,
   JSXMemberExpression,
   JSXNamespacedName,
@@ -146,6 +147,7 @@ export class ezra_parse_internals extends parse_utils {
   JSXReparse!: (node: any) => any;
   jsxOpeningElement!: (start: number) => JSXOpeningElement;
   jsxClosingElement!: (start: number) => JSXClosingElement;
+  jsxFragment!: (start: number) => JSXFragment;
   jsxIdentifier!: () => JSXMemberExpression | JSXNamespacedName | JSXIdentifier;
   jsxAttribute!: () => JSXAttribute | undefined;
   JSXMemberExpression!: (object: Identifier) => any;
