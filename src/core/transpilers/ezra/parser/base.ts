@@ -77,9 +77,7 @@ export class ezra_parse_internals extends parse_utils {
   nullLiteral!: () => Literal;
   templateLiteral!: () => TemplateLiteral;
   memberExpression!: (object: JSNode) => JSNode;
-  chainExpression!: (
-    exp: MemberExpression | CallExpression | any
-  ) => ChainExpression;
+  chainExpression!: (exp: any) => ChainExpression;
   thisExpression!: () => ThisExpression;
   callExpression!: (callee: JSNode) => JSNode;
   arguments!: () => any;
@@ -93,6 +91,7 @@ export class ezra_parse_internals extends parse_utils {
   assignmentExpression!: (left: JSNode) => JSNode;
   sequenceExpression!: (left: JSNode) => JSNode;
   functionExpression!: (isAsync?: boolean) => JSNode;
+  yieldExpression!: () => JSNode;
   classExpression!: () => ClassExpression;
   maybeAsync!: () => Statement | undefined;
   maybeAsyncExpression!: () => Expression;

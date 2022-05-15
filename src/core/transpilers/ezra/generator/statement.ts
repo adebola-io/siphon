@@ -35,7 +35,11 @@ import { ezra } from "./base";
 
 ezra.FunctionDeclaration = function (node: FunctionDeclaration) {
   if (node.async) this.write("async ");
-  this.write("function ");
+  this.write("function");
+  if (node.generator) {
+    this.write("*");
+    this.space();
+  } else this.write(" ");
   this.write(node.id.name);
   this.space();
   this.write("(");

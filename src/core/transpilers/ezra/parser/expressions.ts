@@ -17,6 +17,7 @@ import {
   ThisExpression,
   UnaryExpression,
   UpdateExpression,
+  YieldExpression,
 } from "../../../../types";
 import { isDigit, isValidIdentifierCharacter } from "../../../../utils";
 import { ezra } from "./base";
@@ -85,6 +86,8 @@ ezra.expression = function (type) {
       return this.reparse(this.numberLiteral(), "number");
     case this.match("class"):
       return this.reparse(this.classExpression());
+    case this.match("yield"):
+      return this.reparse(this.yieldExpression());
     case this.match("super"):
       return this.reparse(this.super());
     case this.match("import"):
@@ -280,4 +283,18 @@ ezra.objectExpression = function () {
   object.properties = this.group("object") ?? [];
   object.loc.end = this.j;
   return object;
+};
+ezra.yieldExpression = function () {
+  const yieldexp = new YieldExpression(this.j - 6);
+  this.outerspace();
+  if (this.char == "*") {
+    this.next();
+    yieldexp.delegate = true;
+    this.outerspace();
+  } else yieldexp.delegate = false;
+  yieldexp.argument = this.expression();
+  this.operators.push(this.belly.top());
+  this.operators.pop();
+  yieldexp.loc.end = yieldexp.argument.loc.end;
+  return this.reparse(yieldexp);
 };

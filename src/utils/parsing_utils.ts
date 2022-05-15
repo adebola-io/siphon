@@ -588,6 +588,7 @@ export const precedence: any = {
   "?": 3,
   "=": 2,
   "=>": 2,
+  yield: 2,
   ",": 1,
   none: 0,
 };

@@ -70,6 +70,7 @@ export class ezra_gen_internals extends gen_utils {
   LogicalExpression!: Function;
   SequenceExpression!: Function;
   ArrowFunctionExpression!: Function;
+  YieldExpression!: Function;
   AssignmentPattern!: Function;
   ArrayPattern!: Function;
   ObjectPattern!: Function;

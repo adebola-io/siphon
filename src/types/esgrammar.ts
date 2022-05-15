@@ -418,6 +418,11 @@ export class FunctionExpression extends JSNode {
   params!: Array<JSNode | undefined>;
   body!: BlockStatement;
 }
+export class YieldExpression extends JSNode {
+  type = 'YieldExpression';
+  delegate!: boolean;
+  argument!: Expression;
+}
 export class BinaryExpression extends JSNode {
   type = "BinaryExpression";
   operator = "";

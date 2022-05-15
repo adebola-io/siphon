@@ -1,7 +1,6 @@
 import {
   ArrowFunctionExpression,
   AssignmentPattern,
-  ExpressionStatement,
   FunctionDeclaration,
   FunctionExpression,
   Identifier,
@@ -49,6 +48,11 @@ ezra.functionDeclaration = function () {
   const func = new FunctionDeclaration(this.j - 8);
   this.contexts.push("function");
   this.outerspace();
+  if (this.char === "*") {
+    func.generator = true;
+    this.next();
+    this.outerspace();
+  }
   func.id = this.identifier();
   this.outerspace();
   if (!this.eat("(")) this.raise("OPEN_BRAC_EXPECTED");
@@ -89,6 +93,11 @@ ezra.functionExpression = function (shouldReturn = false) {
   this.contexts.push("function");
   const func = new FunctionExpression(this.j - 8);
   this.outerspace();
+  if (this.char === "*") {
+    func.generator = true;
+    this.next();
+    this.outerspace();
+  }
   if (isValidIdentifierCharacter(this.char)) {
     func.id = this.identifier();
     this.outerspace();

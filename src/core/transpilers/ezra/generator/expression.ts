@@ -27,6 +27,7 @@ import {
   ThisExpression,
   UnaryExpression,
   UpdateExpression,
+  YieldExpression,
 } from "../../../../types";
 import { isAlphabetic, precedence } from "../../../../utils";
 import { ezra } from "./base";
@@ -216,6 +217,7 @@ ezra.ConditionalExpression = function (node: ConditionalExpression) {
 ezra.FunctionExpression = function (node: FunctionExpression) {
   if (node.async) this.write("async ");
   this.write("function");
+  if (node.generator) this.write("*");
   if (node.id !== null) {
     this.write(" " + node.id.name);
   }
@@ -252,6 +254,14 @@ ezra.ArrowFunctionExpression = function (node: ArrowFunctionExpression) {
   this.write("=>");
   this.space();
   this.render(node.body);
+};
+ezra.YieldExpression = function (node: YieldExpression) {
+  this.write("yield");
+  if (node.delegate) {
+    this.write("*");
+    this.space();
+  } else this.write(" ");
+  this.render(node.argument);
 };
 ezra.AssignmentPattern = function (node: AssignmentPattern) {
   this.render(node.left);
