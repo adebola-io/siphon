@@ -7,7 +7,7 @@ import {
 } from "../../../../types";
 import { callExpression } from "../traverser/helpers/creator";
 import Ezra from "..";
-import transform_class_to_prototype from "../traverser/examples/transform_class_to_prototype";
+// import transform_class_to_prototype from "../traverser/examples/transform_class_to_prototype";
 import transform_template_literals from "../traverser/examples/transform_template_literals";
 import resolve_optional_chaining from "../traverser/examples/resolve_optional_chaining";
 import resolve_nullish_coalescing from "../traverser/examples/resolve_nullish_coalescing";
@@ -33,7 +33,7 @@ export class bundler_internals extends bundler_utils {
     // Preset transformations.
     Ezra.traverse(this.tree, {
       enter: default_parameters,
-      ClassDeclaration: transform_class_to_prototype,
+      // ClassDeclaration: transform_class_to_prototype,
       TemplateLiteral: transform_template_literals,
       MemberExpression: resolve_optional_chaining,
       ArrowFunctionExpression: transform_arrow_functions,
