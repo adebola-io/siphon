@@ -1,2 +1,3 @@
-import "./utils";
-const element = <div></div>;
+function Popup() {
+  return <div></div>;
+}

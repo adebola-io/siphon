@@ -19,10 +19,8 @@ if (existsSync("siphon.config.js")) {
 
 switch (true) {
   // Watch mode.
-  case (task.args.watch || task.args.w) &&
-    (task.inputs.includes("-bundle") || task.inputs.includes("-b")) &&
-    task.inputs.length === 1:
-    siphon.watcher(options);
+  case task.args.watch || task.args.w:
+    siphon.watch(options);
     break;
   // Bundle single file.
   case task.inputs.length === 2 &&

@@ -135,3 +135,10 @@ export const js_parser_defaults: JSParserOptions = {
   index: 0,
   useCode: false,
 };
+export interface SiphonError {
+  heading: string;
+  location?: string;
+  root?: string;
+  stack: typeof Error.prototype.stack;
+  position?: { line: number; col: number };
+}

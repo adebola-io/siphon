@@ -1,6 +1,7 @@
 import { PathLike, readFileSync } from "fs";
 import { relative } from "path";
 import Errors from "../core/errors";
+import { SiphonError } from "../types";
 import { relativePath } from "./fs_utils";
 
 /**
@@ -602,13 +603,7 @@ export const counterpart: any = {
 export function removeInvalidChars(str: string) {
   return str.replace(/(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]/g, " ");
 }
-interface SiphonError {
-  heading: string;
-  location?: string;
-  root?: string;
-  stack: typeof Error.prototype.stack;
-  position?: { line: number; col: number };
-}
+
 export function HTMLError(e: SiphonError) {
   if (e.root && e.location) {
     e.location = relative(relativePath(e.root, "./"), e.location);
