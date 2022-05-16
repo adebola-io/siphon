@@ -34,7 +34,7 @@ Determines whether the bundler should write all external Javascript into the HTM
 
 #### `allowJSX`
 
-Determines whether React's JSX syntax should be parsed along with regular javascript. The default value is `false`.
+Determines whether React's JSX syntax should be parsed along with regular javascript. Each JSX element will be replaced with its DOM equivalent. The default value is `false`.
 
 #### `internalStyles`
 
