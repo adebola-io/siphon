@@ -20,7 +20,7 @@ import {
   VariableDeclarator,
   WhileStatement,
 } from "../../../../types";
-import { isDigit, isValidIdentifierCharacter } from "../../../../utils";
+import { isDigit, isValidIdentifierCharacter, trace } from "../../../../utils";
 import { ezra } from "./base";
 import { keywords } from "./identifiers";
 

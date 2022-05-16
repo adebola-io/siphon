@@ -1,7 +1,14 @@
-import { PathLike, writeFileSync } from "fs";
+import { mkdirSync, PathLike, writeFileSync } from "fs";
 import { HTMLDocumentNode, Program, siphonOptions } from "../../types";
 import Errors from "../errors";
-import { relativePath, fileExists, getFileName } from "../../utils";
+import {
+  relativePath,
+  fileExists,
+  getFileName,
+  copyInBase64,
+  forceCreateDir,
+  tryMkingDir,
+} from "../../utils";
 import tagNameSearch from "../transpilers/mimo/tagNameSearch";
 import Ezra from "../transpilers/ezra";
 import { bundler_internals } from "../transpilers/ezra/bundler/base";
@@ -46,6 +53,8 @@ class JavascriptResolve {
         ...bundler.bundle(pathToFile, {
           allowJSX: this.options.allowJSX,
           sourceMaps: false,
+          writeImagesIntoBundle: this.options.wickedMode,
+          storeImagesSeparately: this.options.storeImagesSeparately,
         }).body
       );
       // Add imported stylesheets as <link> nodes in the document to be parsed by Palette.
@@ -66,6 +75,7 @@ class JavascriptResolve {
       }
       delete script.type;
     }
+    let outputFolder = relativePath(this.destination, "./");
     if (this.options.internalJS || this.options.wickedMode) {
       // INTERNAL SCRIPT
       let script: HTMLDocumentNode = {
@@ -86,7 +96,6 @@ class JavascriptResolve {
     } else {
       // External scripts.
       let bundle = getFileName(this.destination) + ".bundle.js";
-      let outputFolder = relativePath(this.destination, "./");
       writeFileSync(
         `${outputFolder}/${bundle}`,
         Ezra.generate(outputAst, {
@@ -105,6 +114,17 @@ class JavascriptResolve {
         },
       };
       body.children?.push(script);
+    }
+    // Add imported images.
+    if (!this.options.wickedMode) {
+      let imageOutputFolder = outputFolder;
+      if (this.options.storeImagesSeparately) {
+        imageOutputFolder = `${outputFolder}\\img`;
+        tryMkingDir(imageOutputFolder);
+      }
+      bundler.images.forEach((imageSrc, imageName) => {
+        copyInBase64(imageSrc, `${imageOutputFolder}\\${imageName}`);
+      });
     }
   }
   scripts!: HTMLDocumentNode[];

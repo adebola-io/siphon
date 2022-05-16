@@ -81,7 +81,15 @@ function default_handler(functionName: string): FunctionDeclaration {
           element.setAttribute('class', attribute[1]);
           break;
         case attribute[0].slice(0, 2) === 'on':
-          element.addEventListener(attribute[0].slice(2).toLowerCase(), attribute[1]);
+          if (attribute[0].slice(2)==='View') {
+            window.addEventListener('scroll', ()=>{
+                if (element && 
+                    (element.getBoundingClientRect().top - 
+                    (window.innerHeight-(element.onviewoffset ?? 0))) <= 0)
+                  attribute[1].bind(element)() ;
+            })
+          } else if (attribute[0].slice(2)==='ViewOffset') element.onviewoffset = attribute[1];
+          else element.addEventListener(attribute[0].slice(2).toLowerCase(), attribute[1]);
           break;
         default: 
           element.setAttribute(attribute[0], attribute[1])

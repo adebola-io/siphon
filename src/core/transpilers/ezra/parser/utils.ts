@@ -151,14 +151,14 @@ export class parse_utils {
   /** Skips over suceeding comments in the text stream. */
   skip(contextual?: boolean) {
     if (this.belly.top() === "/*")
-      while (!this.eat("*/")) {
+      while (!(this.eat("*/") || this.end)) {
         contextual && this.char === "\n" && !this.newline
           ? (this.newline = true)
           : 0,
           this.next();
       }
     else {
-      while (this.char !== "\n") this.next();
+      while (!(this.char === "\n" || this.end)) this.next();
       contextual && this.char === "\n" && !this.newline
         ? (this.newline = true)
         : 0,

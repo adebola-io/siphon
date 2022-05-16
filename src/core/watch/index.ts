@@ -29,6 +29,7 @@ function watchSrc(options: siphonOptions) {
           colors.bold("ERROR:".black.bgRed + colors.red(" Failed to compile."))
         );
         console.log();
+        if (!e.heading) throw e;
         console.log(e.message);
         if (existsSync(destination) && existsSync(source)) {
           e.root = resolve(options.rootDir.toString());

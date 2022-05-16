@@ -13,7 +13,7 @@ import {
 
 // const text = readFileSync("src/test/source/main.js").toString();
 
-Ezra.bundle("src/test/source/main.js", { allowJSX: true, sourceMaps: false });
+// Ezra.bundle("src/test/source/main.js", { allowJSX: true, sourceMaps: false });
 // console.time();
 // const program = Esprima.parseScript(text, { loc: true, jsx: true });
 // console.timeEnd();

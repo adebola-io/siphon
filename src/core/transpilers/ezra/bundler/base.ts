@@ -2,6 +2,7 @@ import { bundlerOptions, bundler_utils, defaults } from "./utils";
 import { PathLike } from "fs";
 import {
   ArrayExpression,
+  EmptyNode,
   FunctionDeclaration,
   Program,
 } from "../../../../types";
@@ -52,7 +53,7 @@ export class bundler_internals extends bundler_utils {
         newString(
           `"${node.value.replace(/"/g, '"').replace(/\n|\s[\s]*/g, " ")}"`
         ),
-      JSXExpressionContainer: (node) => node.expression,
+      JSXExpressionContainer: (node) => node.expression ?? new EmptyNode(0),
     });
     // mangle_variables(this.tree);
     return this.tree;

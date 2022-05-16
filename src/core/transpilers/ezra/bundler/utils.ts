@@ -10,7 +10,12 @@ import {
   VariableDeclaration,
   VariableDeclarator,
 } from "../../../../types";
-import { fileExists, relativePath as pathFrom } from "../../../../utils";
+import {
+  fileExists,
+  getFileName,
+  imageExts,
+  relativePath as pathFrom,
+} from "../../../../utils";
 import {
   blockStatement,
   expressionStatement,
@@ -23,10 +28,14 @@ import { Asset } from "./types";
 export interface bundlerOptions {
   sourceMaps: boolean;
   allowJSX: boolean;
+  writeImagesIntoBundle: boolean;
+  storeImagesSeparately: boolean;
 }
 export const defaults: bundlerOptions = {
   sourceMaps: true,
   allowJSX: false,
+  writeImagesIntoBundle: false,
+  storeImagesSeparately: false,
 };
 var ID = 0;
 export class bundler_utils {
@@ -38,6 +47,8 @@ export class bundler_utils {
   createJSAsset!: (filename: PathLike) => Asset;
   createUnknownAsset!: (filename: PathLike) => Asset;
   stylesheets: Array<PathLike> = [];
+  createImageAsset!: (filename: PathLike) => Asset;
+  images: Map<string, PathLike> = new Map();
   /**
    * A tracking of all identifiers being used in the bundle, to prevent name clashes.
    */
@@ -61,6 +72,11 @@ export class bundler_utils {
         case /js/.test(extname(file)):
           asset = this.createJSAsset(file);
           break;
+        case imageExts.includes(extname(file)):
+          if (!this.options.writeImagesIntoBundle) {
+            asset = this.createImageAsset(file);
+            break;
+          }
         default:
           asset = this.createUnknownAsset(file);
       }
@@ -118,6 +134,24 @@ export class bundler_utils {
     }
 
     return resolve(dependencyPath);
+  }
+  generateNewImage(filename: PathLike) {
+    let name = getFileName(filename);
+    let extension = extname(filename.toString());
+    let organicName = name + extension; // Create a new file, e.g. foo.jpg.
+    // Confirm whether:
+    // (a) This is a new image with a unique address.
+    // (b) This is not a new image.
+    // (b) This is a new image, but the address has already been given to another image.
+    if (filename === this.images.get(organicName))
+      return organicName; // already addressed images.
+    else if (this.images.has(organicName)) {
+      // Already distributed addresses.
+      for (let i = 1; this.images.has(organicName); i++)
+        organicName = `${name}-${i}${extension}`;
+    }
+    this.images.set(organicName, filename);
+    return organicName;
   }
   /**
    * Creates a new Identifier.

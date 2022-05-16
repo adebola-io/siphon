@@ -155,9 +155,21 @@ ezra.createJSAsset = function (filename: PathLike) {
     module: this.prepareModule(ast, ezraModule),
   };
 };
+ezra.createImageAsset = function (filename: PathLike) {
+  let ezraModule = this.ModuleIdentifierNode(filename.toString());
+  let address = this.generateNewImage(filename);
+  if (this.options.storeImagesSeparately) address = `./img/${address}`;
+  else address = `./${address}`;
+  let defaultExport = `${ezraModule.name}.default = "${address}"`;
+  return {
+    id: ezraModule.name,
+    filename,
+    module: this.prepareModule(Ezra.parse(defaultExport), ezraModule),
+    dependencies: [],
+  };
+};
 ezra.createUnknownAsset = function (filename) {
   var ezraModule = this.ModuleIdentifierNode(filename.toString());
-  let dependencies: Dependency[] = [];
   let simulate = new Program(0);
   let defaultExport = assignmentExpression(
     memberExpression(ezraModule, newIdentifier("default")),
@@ -167,8 +179,8 @@ ezra.createUnknownAsset = function (filename) {
   simulate.push(expressionStatement(defaultExport));
   return {
     id: ezraModule.name,
-    dependencies,
     filename,
+    dependencies: [],
     module: this.prepareModule(simulate, ezraModule),
   };
 };
