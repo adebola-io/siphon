@@ -22,7 +22,7 @@ function transform_template_literals(
   node: TemplateLiteral,
   path: TraversalPath
 ) {
-  let bin = new BinaryExpression(0),
+  let bin = new BinaryExpression(node.loc.start),
     transformed = node.quasis.map((q) => {
       let string = new Literal(q.loc.start);
       string.raw = `"${q.value.raw
@@ -36,7 +36,7 @@ function transform_template_literals(
   bin.operator = "+";
   for (let i = 0; ops[i]; i++) {
     if (bin.left) {
-      let left = new BinaryExpression(0);
+      let left = new BinaryExpression(bin.left?.loc.start);
       left.operator = "+";
       left.left = bin.left;
       left.right = bin.right;

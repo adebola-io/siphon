@@ -1,9 +1,9 @@
-var _ecaf_ = 0;
-function _einitb94_ () {
-  if (_ecaf_) 
-    return _einitb94_;
-  else _ecaf_++;
-  Ob11111;
-  return _einitb94_;
+var _e902_ = 0;
+function _einit0de_ () {
+  if (_e902_) 
+    return _einit0de_;
+  else _e902_++;
+  "this" + "is " + "a" + "nested " + "template" + "literal";
+  return _einit0de_;
 }
-_einitb94_()
+_einit0de_()
