@@ -1,5 +1,5 @@
 import { Literal, TemplateElement, TemplateLiteral } from "../../../../types";
-import { isAlphabetic } from "../../../../utils";
+import { isAlphabetic, isAlphaNumeric } from "../../../../utils";
 import { ezra } from "./base";
 
 // Literals.
@@ -12,11 +12,20 @@ ezra.numberLiteral = function () {
     if (isAlphabetic(this.text[this.i]) || /\./.test(this.text[this.i])) {
       this.raise("ID_FOLLOWS_LITERAL");
     }
-  } else if (this.eat("0x")) {
-    this.belly.pop();
+  } /** Hexadecimal numbers. */ else if (this.taste("0x")) {
     numlit.raw = "Ox" + this.count(16);
     if (isAlphabetic(this.text[this.i])) this.raise("ID_FOLLOWS_LITERAL");
     numlit.value = parseInt(numlit.raw.slice(2), 16);
+  } /** Binary numbers */ else if (this.taste("0b")) {
+    numlit.raw = "Ob" + this.count(2);
+    if (isAlphaNumeric(this.text[this.i]))
+      this.raise("JS_UNEXPECTED_TOKEN", this.text[this.i]);
+    numlit.value = parseInt(numlit.raw.slice(2), 2);
+  } else if (this.eat("0o")) {
+    numlit.raw = "Oo" + this.count(8);
+    if (isAlphaNumeric(this.text[this.i]))
+      this.raise("JS_UNEXPECTED_TOKEN", this.text[this.i]);
+    numlit.value = parseInt(numlit.raw.slice(2), 8);
   } else {
     numlit.raw += this.count();
     if (this.text[this.i] === "n") {
@@ -30,9 +39,7 @@ ezra.numberLiteral = function () {
     }
     if (this.eat("e") || this.eat("E")) {
       numlit.raw += this.belly.pop();
-      if (this.eat("-")) {
-        numlit.raw += this.belly.pop();
-      }
+      if (this.taste("-")) numlit.raw += "-";
       numlit.raw += this.count();
     }
     if (this.text[this.i] === "n") this.raise("BIGINT_DECIMAL");

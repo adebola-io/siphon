@@ -432,7 +432,15 @@ export function trace(source: PathLike, character: number) {
   return { line, col: col + 1 };
 }
 export function isHexDigit(character: string) {
-  return isDigit(character) || /[A-F]|[a-f]/.test(character);
+  return isDigit(character) || /[A-Fa-f]/.test(character);
+}
+const BINARIES = /0|1/;
+export function isBinaryDigit(character: string) {
+  return BINARIES.test(character);
+}
+var OCTALS = /[0-7]/;
+export function isOctalDigit(character: string) {
+  return OCTALS.test(character);
 }
 export function isAlphaNumeric(character: string | undefined) {
   return isAlphabetic(character) || isDigit(character);

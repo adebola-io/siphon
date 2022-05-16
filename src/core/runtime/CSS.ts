@@ -83,7 +83,7 @@ function resolveCSS(
                     rule.notation[entry[0]] = `url(./${file})`;
                   }
                   assets[file] = asset;
-                } else if (assets[file] && assets[file] !== asset) {
+                } else if (assets[file] === asset) {
                   let id = 1;
                   let newcopy = fileName(file) + `-${id}` + extname(file);
                   while (assets[newcopy]) {

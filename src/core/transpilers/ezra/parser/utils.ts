@@ -11,6 +11,8 @@ import {
   NEWLINE,
   EMPTY_SPACE,
   precedence,
+  isBinaryDigit,
+  isOctalDigit,
 } from "../../../../utils";
 var spreadcontexts: any = { array: true, expression: true, object: true },
   commacontexts: any = {
@@ -91,6 +93,15 @@ export class parse_utils {
     this.belly.push(ptn);
     return true;
   }
+  /**
+   * Cheks if the next sequence of characters in the stream match a particular pattern.
+   * If a match is found, it advances to the nect character without eating the pattern.
+   */
+  taste(ptn: string) {
+    if (this.text.slice(this.i, this.i + ptn.length) !== ptn) return false;
+    this.i += ptn.length;
+    return true;
+  }
   peek(i = 1) {
     return this.text[this.i + i];
   }
@@ -135,6 +146,12 @@ export class parse_utils {
   count(base = 10) {
     let num = "";
     switch (base) {
+      case 8:
+        while (isOctalDigit(this.text[this.i])) num += this.text[this.i++];
+        break;
+      case 2:
+        while (isBinaryDigit(this.text[this.i])) num += this.text[this.i++];
+        break;
       case 10:
         while (isDigit(this.text[this.i])) num += this.text[this.i++];
         break;
