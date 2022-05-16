@@ -5,7 +5,7 @@ import {
   FunctionDeclaration,
   Program,
 } from "../../../../types";
-import { callExpression } from "../traverser/helpers/creator";
+import { callExpression, newString } from "../traverser/helpers/creator";
 import Ezra from "..";
 // import transform_class_to_prototype from "../traverser/examples/transform_class_to_prototype";
 import transform_template_literals from "../traverser/examples/transform_template_literals";
@@ -48,6 +48,11 @@ export class bundler_internals extends bundler_utils {
         arr.loc.end = node.loc.end;
         return arr;
       },
+      JSXText: (node) =>
+        newString(
+          `"${node.value.replace(/"/g, '"').replace(/\n|\s[\s]*/g, " ")}"`
+        ),
+      JSXExpressionContainer: (node) => node.expression,
     });
     // mangle_variables(this.tree);
     return this.tree;

@@ -22,6 +22,7 @@ import {
   ImportSpecifier,
   JSNode,
   JSXElement,
+  JSXExpressionContainer,
   JSXFragment,
   JSXText,
   Literal,
@@ -116,4 +117,8 @@ export interface Config {
   JSXElement?: (node: JSXElement, path: TraversalPath) => void;
   JSXText?: (node: JSXText, path: TraversalPath) => void;
   JSXFragment?: (node: JSXFragment, path: TraversalPath) => void;
+  JSXExpressionContainer?: (
+    node: JSXExpressionContainer,
+    path: TraversalPath
+  ) => void;
 }

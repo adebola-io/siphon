@@ -240,6 +240,7 @@ ezra.conditionalExpression = function (test) {
   const condexp = new ConditionalExpression(test.loc.start);
   condexp.test = test;
   condexp.consequent = this.expression("ternary");
+  this.outerspace();
   if (!this.eat(":")) this.raise("COLON_EXPECTED");
   condexp.alternate = this.expression();
   condexp.loc.end = this.j;
