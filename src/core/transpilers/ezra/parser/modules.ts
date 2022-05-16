@@ -24,7 +24,7 @@ ezra.importDeclaration = function () {
     const importspecs = this.group("import");
     if (importspecs === undefined) this.raise("IDENTIFIER_EXPECTED");
     else importdec.specifiers.push(...importspecs);
-  } else if (this.char === "*") {
+  } else if (this.text[this.i] === "*") {
     const namespce = new ImportNamespaceSpecifier(this.j);
     this.next();
     this.outerspace();
@@ -33,7 +33,7 @@ ezra.importDeclaration = function () {
     namespce.local = this.identifier();
     namespce.loc.end = namespce.local.loc.end;
     importdec.specifiers.push(namespce);
-  } else if (/'|"/.test(this.char)) {
+  } else if (/'|"/.test(this.text[this.i])) {
     importdec.source = this.stringLiteral();
     importdec.loc.end = this.j;
     this.outerspace();
@@ -58,7 +58,7 @@ ezra.importDeclaration = function () {
   this.outerspace();
   if (this.match("from")) {
     this.outerspace();
-    if (!/'|"/.test(this.char)) this.raise("JS_UNEXPECTED_TOKEN");
+    if (!/'|"/.test(this.text[this.i])) this.raise("JS_UNEXPECTED_TOKEN");
     importdec.source = this.stringLiteral();
   } else this.raise("EXPECTED", "from");
   importdec.loc.end = this.j;
@@ -72,7 +72,7 @@ ezra.importSpecifier = function () {
   importspec.imported = this.identifier();
   this.outerspace();
   switch (true) {
-    case this.char === ",":
+    case this.text[this.i] === ",":
     default:
       importspec.local = importspec.imported;
       break;
@@ -83,7 +83,7 @@ ezra.importSpecifier = function () {
       break;
   }
   importspec.loc.end = this.j;
-  if (this.char !== "}") this.next();
+  if (this.text[this.i] !== "}") this.next();
   return importspec;
 };
 ezra.exportDeclaration = function () {
@@ -98,7 +98,7 @@ ezra.exportDeclaration = function () {
     this.outerspace();
     this.eat(";");
     return exportDefDec;
-  } else if (this.char === "*") {
+  } else if (this.text[this.i] === "*") {
     //   export *
     this.next();
     this.outerspace();
@@ -138,7 +138,7 @@ ezra.exportDeclaration = function () {
       ) {
         this.raise(
           "JS_DEC_OR_STATEMENT_EXPECTED",
-          this.char,
+          this.text[this.i],
           exportDec.declaration?.loc.start
         );
       }

@@ -53,7 +53,7 @@ ezra.statement = function () {
     case context.JSX_attribute:
       return this.jsxAttribute();
     case context.switch_block:
-      if (this.char === "}") return;
+      if (this.text[this.i] === "}") return;
       if (!(this.match("case") || this.match("default")) && !this.end) {
         this.raise("JS_CASE_EXPECTED");
       } else {
@@ -70,7 +70,7 @@ ezra.statement = function () {
     case this.eat("//"):
       this.skip();
       break;
-    case this.char === "(":
+    case this.text[this.i] === "(":
       return this.tryExpressionStatement();
     case this.eat("{"):
       if (statementScope[this.contexts.top()] === undefined) {
@@ -112,7 +112,7 @@ ezra.statement = function () {
     case this.match("import"):
       var pos = this.j - 6;
       this.outerspace();
-      if (this.char === "(") {
+      if (this.text[this.i] === "(") {
         this.belly.pop();
         this.goto(pos);
         return this.tryExpressionStatement();
@@ -131,11 +131,14 @@ ezra.statement = function () {
 };
 ezra.tryExpressionStatement = function () {
   // Try labelled Statements.
-  if (isValidIdentifierCharacter(this.char) && !isDigit(this.char)) {
+  if (
+    isValidIdentifierCharacter(this.text[this.i]) &&
+    !isDigit(this.text[this.i])
+  ) {
     var pos = this.j;
     let label = this.identifier(true);
     this.outerspace();
-    if (this.char === ":") {
+    if (this.text[this.i] === ":") {
       this.next();
       return this.labeledStatement(label);
     } else this.goto(pos);
@@ -223,7 +226,7 @@ ezra.caseStatement = function (isDefault) {
   if (!this.eat(":")) this.raise("COLON_EXPECTED");
   this.outerspace();
   this.contexts.push("case");
-  while (!this.end && this.char !== "}" && !this.isNewCaseStatement()) {
+  while (!this.end && this.text[this.i] !== "}" && !this.isNewCaseStatement()) {
     let statement = this.statement();
     switchcase.consequent.push(statement);
     this.outerspace();
@@ -244,7 +247,7 @@ ezra.continueStatement = function () {
   var pos = this.j;
   const continuestat = new ContinueStatement(this.j - 8);
   this.outerspace();
-  if (this.char === ";" || /\n/.test(this.text.slice(pos, this.j))) {
+  if (this.text[this.i] === ";" || /\n/.test(this.text.slice(pos, this.j))) {
     continuestat.label = null;
   } else {
     continuestat.label = this.identifier();
@@ -261,7 +264,7 @@ ezra.throwStatement = function () {
   const throwstat = new ThrowStatement(this.j - 5);
   var pos = this.j;
   this.outerspace();
-  if (/\n|;/.test(this.text.slice(pos, this.j)) || this.char === "}")
+  if (/\n|;/.test(this.text.slice(pos, this.j)) || this.text[this.i] === "}")
     this.raise("EXPRESSION_EXPECTED");
   else throwstat.argument = this.expression();
   this.eat(";");
@@ -309,7 +312,10 @@ ezra.returnStatement = function () {
   const retstat = new ReturnStatement(this.j - 6);
   var pos = this.j;
   this.outerspace();
-  if (/;|\}/.test(this.char) || /\n/.test(this.text.slice(pos, this.j))) {
+  if (
+    /;|\}/.test(this.text[this.i]) ||
+    /\n/.test(this.text.slice(pos, this.j))
+  ) {
     retstat.argument = null;
   } else retstat.argument = this.expression() ?? null;
   this.eat(";");
@@ -335,7 +341,7 @@ ezra.variableDeclaration = function () {
   this.contexts.push("declaration");
   do {
     vardec.declarations.push(this.declarator(kind));
-  } while (this.char === "," ? (this.next(), true) : false);
+  } while (this.text[this.i] === "," ? (this.next(), true) : false);
   this.contexts.pop();
   vardec.loc.end = this.j;
   this.outerspace();

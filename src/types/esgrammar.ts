@@ -8,6 +8,7 @@ export class JSNode {
   loc: {
     start: number;
     end?: number;
+    sourcePosition?: { start: [number, number]; end: [number, number] };
   };
 }
 export type JSNodes = Statement | Expression | Declaration;

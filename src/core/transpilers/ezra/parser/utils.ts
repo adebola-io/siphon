@@ -8,6 +8,7 @@ import {
   isDigit,
   isHexDigit,
   isValidIdentifierCharacter,
+  NEWLINE,
   precedence,
 } from "../../../../utils";
 var spreadcontexts: any = { array: true, expression: true, object: true },
@@ -39,6 +40,10 @@ export class parse_utils {
   /** The original index of the character in the source text.
    * Useful for tracking characters during recursion. */
   j = 0;
+  /** Tracks the current line being parsed. */
+  k = 1;
+  /** Tracks the current column being parsed in a line. */
+  l = 1;
   from = 0;
   end = false;
   newline = false;
@@ -52,7 +57,7 @@ export class parse_utils {
    */
   raise(message: ErrorTypes, token?: string, at?: number) {
     Errors.enc(message, this.options.sourceFile, at ?? this.j, {
-      token: token ?? this.char,
+      token: token ?? this.text[this.i],
     });
   }
   /**
@@ -75,7 +80,11 @@ export class parse_utils {
     } else return false;
   }
   isNewCaseStatement() {
-    return this.predict("case") || this.predict("default") || this.char === "}";
+    return (
+      this.predict("case") ||
+      this.predict("default") ||
+      this.text[this.i] === "}"
+    );
   }
   /**
    * Checks if the next sequence of characters in the stream match a particular pattern.
@@ -83,12 +92,14 @@ export class parse_utils {
    * @param ptn The string pattern to check for.
    */
   eat(ptn: string) {
-    return this.text.slice(this.i, this.i + ptn.length) === ptn
-      ? (this.next(ptn.length), this.belly.push(ptn), true)
-      : false;
+    if (this.text.slice(this.i, this.i + ptn.length) === ptn) {
+      this.next(ptn.length);
+      this.belly.push(ptn);
+      return true;
+    } else return false;
   }
   remains() {
-    this.end = this.char === undefined;
+    this.end = this.text[this.i] === undefined;
   }
   peek(i = 1) {
     return this.text[this.i + i];
@@ -96,19 +107,20 @@ export class parse_utils {
   recede(i = 1) {
     this.j = this.from + this.i - i;
     this.i -= i;
-    this.char = this.text[this.i];
     this.remains();
   }
   next(i = 1) {
     this.j = this.from + this.i + i;
     this.i += i;
-    this.char = this.text[this.i];
     this.remains();
+    if (this.text[this.i] === NEWLINE) {
+      this.k++;
+      this.l = 1;
+    } else this.l++;
   }
   goto(i: number) {
     this.j = this.from + i;
     this.i = i;
-    this.char = this.text[this.i];
     this.remains();
   }
   expect(ptn: string) {
@@ -120,31 +132,39 @@ export class parse_utils {
     this.recede(this.belly.pop().length);
   }
   match(ptn: string) {
-    return ptn[0] === this.char &&
+    if (
+      ptn[0] === this.text[this.i] &&
       this.text.slice(this.i, this.i + ptn.length) === ptn &&
       !isValidIdentifierCharacter(this.peek(ptn.length))
-      ? (this.next(ptn.length), this.belly.push(ptn), true)
-      : false;
+    ) {
+      this.next(ptn.length);
+      this.belly.push(ptn);
+      return true;
+    } else return false;
   }
   /**
    * Check that the upcoming characters in the text stream follow a particular isolated pattern without advancing the token.
    * @param ptn The pattern to predict.
    */
   predict(ptn: string) {
-    return this.text.slice(this.i, this.i + ptn.length) === ptn &&
+    if (
+      this.text.slice(this.i, this.i + ptn.length) === ptn &&
       !isValidIdentifierCharacter(this.peek(ptn.length))
-      ? true
-      : false;
+    )
+      return true;
+    else return false;
   }
   /** Counts all the succeeding characters in the text stream that are numbers. */
   count(base = 10) {
     let num = "";
     switch (base) {
       case 10:
-        while (isDigit(this.char)) (num += this.char), this.next();
+        while (isDigit(this.text[this.i]))
+          (num += this.text[this.i]), this.next();
         break;
       case 16:
-        while (isHexDigit(this.char)) (num += this.char), this.next();
+        while (isHexDigit(this.text[this.i]))
+          (num += this.text[this.i]), this.next();
     }
     return num;
   }
@@ -152,14 +172,14 @@ export class parse_utils {
   skip(contextual?: boolean) {
     if (this.belly.top() === "/*")
       while (!(this.eat("*/") || this.end)) {
-        contextual && this.char === "\n" && !this.newline
+        contextual && this.text[this.i] === "\n" && !this.newline
           ? (this.newline = true)
           : 0,
           this.next();
       }
     else {
-      while (!(this.char === "\n" || this.end)) this.next();
-      contextual && this.char === "\n" && !this.newline
+      while (!(this.text[this.i] === "\n" || this.end)) this.next();
+      contextual && this.text[this.i] === "\n" && !this.newline
         ? (this.newline = true)
         : 0,
         this.next();
@@ -232,18 +252,20 @@ export class parse_utils {
   /** Skip over new lines and/or character spaces in a local expression, declaration or scope, where the position of the new line can affect the interpretation of expressions. */
   innerspace(skip_new_line = false) {
     if (skip_new_line)
-      while (/\s|\r|\n/.test(this.char))
-        this.char === "\n" && !this.newline ? (this.newline = true) : 0,
+      while (/\s|\r|\n/.test(this.text[this.i]))
+        this.text[this.i] === "\n" && !this.newline ? (this.newline = true) : 0,
           this.next();
-    else while (/\s|\r/.test(this.char) && this.char !== "\n") this.next();
+    else
+      while (/\s|\r/.test(this.text[this.i]) && this.text[this.i] !== "\n")
+        this.next();
     this.glazeOverComments(skip_new_line);
-    if (/\s|\r|\n/.test(this.char)) this.innerspace(skip_new_line);
+    if (/\s|\r|\n/.test(this.text[this.i])) this.innerspace(skip_new_line);
   }
   /** Skip over new lines, space characters and comments in the global scope of the program. */
   outerspace() {
     while (/\s|\r|\n/.test(this.text[this.i])) this.i++;
     this.goto(this.i);
     this.glazeOverComments();
-    if (/\s|\r|\n/.test(this.char)) this.outerspace();
+    if (/\s|\r|\n/.test(this.text[this.i])) this.outerspace();
   }
 }

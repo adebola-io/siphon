@@ -92,14 +92,14 @@ ezra.reparse = function (node, context) {
         return this.conditionalExpression(node);
       case this.eat("="):
         return this.assignmentExpression(node);
-      case this.char === "{":
+      case this.text[this.i] === "{":
         if (this.contexts.top() === "super_class") {
           this.recede();
           return node;
         }
-      case isValidIdentifierCharacter(this.char):
-      case /'|`|"/.test(this.char):
-      case isDigit(this.char):
+      case isValidIdentifierCharacter(this.text[this.i]):
+      case /'|`|"/.test(this.text[this.i]):
+      case isDigit(this.text[this.i]):
         // Check if the next expression is on a new line.
         if (/\n/.test(this.text.slice(pos, this.j))) {
           this.goto(pos);
@@ -116,7 +116,7 @@ ezra.reparse = function (node, context) {
       return this.chainExpression(node);
     }
     // Terminated statements.
-    if (this.char === ";") return node;
+    if (this.text[this.i] === ";") return node;
   }
   if (node === undefined) this.raise("EXPRESSION_EXPECTED");
   return node;

@@ -53,13 +53,14 @@ export const keywords: any = {
 
 ezra.identifier = function (allowKeyword = false, allowHyphen = false) {
   const id = new Identifier(this.j);
-  if (!isValidIdentifierCharacter(this.char)) this.raise("IDENTIFIER_EXPECTED");
-  if (isDigit(this.char)) this.raise("ID_FOLLOWS_LITERAL");
+  if (!isValidIdentifierCharacter(this.text[this.i]))
+    this.raise("IDENTIFIER_EXPECTED");
+  if (isDigit(this.text[this.i])) this.raise("ID_FOLLOWS_LITERAL");
   while (
-    isValidIdentifierCharacter(this.char) ||
-    (allowHyphen && this.char === "-")
+    isValidIdentifierCharacter(this.text[this.i]) ||
+    (allowHyphen && this.text[this.i] === "-")
   )
-    (id.name += this.char), this.next();
+    (id.name += this.text[this.i]), this.next();
   id.loc.end = this.j - 1;
   if (!allowKeyword && keywords[id.name] === true) {
     this.raise("RESERVED", id.name, id.loc.end);

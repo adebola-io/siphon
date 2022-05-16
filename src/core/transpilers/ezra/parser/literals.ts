@@ -9,22 +9,22 @@ ezra.numberLiteral = function () {
   if (this.belly.top() === "decim") {
     this.belly.pop();
     numlit.raw += "." + this.count();
-    if (isAlphabetic(this.char) || /\./.test(this.char)) {
+    if (isAlphabetic(this.text[this.i]) || /\./.test(this.text[this.i])) {
       this.raise("ID_FOLLOWS_LITERAL");
     }
   } else if (this.eat("0x")) {
     this.belly.pop();
     numlit.raw = "Ox" + this.count(16);
-    if (isAlphabetic(this.char)) this.raise("ID_FOLLOWS_LITERAL");
+    if (isAlphabetic(this.text[this.i])) this.raise("ID_FOLLOWS_LITERAL");
     numlit.value = parseInt(numlit.raw.slice(2), 16);
   } else {
     numlit.raw += this.count();
-    if (this.char === "n") {
+    if (this.text[this.i] === "n") {
       numlit.kind = "bigint";
       numlit.bigint = numlit.raw;
       numlit.raw += "n";
       this.next();
-    } else if (this.char === ".") {
+    } else if (this.text[this.i] === ".") {
       this.next();
       numlit.raw += "." + this.count();
     }
@@ -35,8 +35,8 @@ ezra.numberLiteral = function () {
       }
       numlit.raw += this.count();
     }
-    if (this.char === "n") this.raise("BIGINT_DECIMAL");
-    else if (isAlphabetic(this.char)) this.raise("ID_FOLLOWS_LITERAL");
+    if (this.text[this.i] === "n") this.raise("BIGINT_DECIMAL");
+    else if (isAlphabetic(this.text[this.i])) this.raise("ID_FOLLOWS_LITERAL");
     numlit.value = parseFloat(numlit.raw ?? "");
   }
   numlit.loc.end = this.j;
@@ -60,10 +60,10 @@ ezra.templateLiteral = function () {
   var raw = "";
   var start = this.j,
     end = start;
-  while (!this.end && !/`/.test(this.char)) {
+  while (!this.end && !/`/.test(this.text[this.i])) {
     // Read escape sequences.
-    if (this.char === "\\")
-      (raw += `\\${(this.next(), this.char)}`), this.next();
+    if (this.text[this.i] === "\\")
+      (raw += `\\${(this.next(), this.text[this.i])}`), this.next();
     // Read an expression that is nested within the literal.
     else if (this.eat("${")) {
       end = this.j - 2;
@@ -83,7 +83,7 @@ ezra.templateLiteral = function () {
       }
       start = this.j;
     } else {
-      raw += this.char;
+      raw += this.text[this.i];
       this.next();
     }
   }

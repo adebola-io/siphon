@@ -48,7 +48,7 @@ ezra.functionDeclaration = function () {
   const func = new FunctionDeclaration(this.j - 8);
   this.contexts.push("function");
   this.outerspace();
-  if (this.char === "*") {
+  if (this.text[this.i] === "*") {
     func.generator = true;
     this.next();
     this.outerspace();
@@ -75,14 +75,14 @@ ezra.parameter = function () {
   }
   const name = this.identifier();
   this.outerspace();
-  if (this.char === "," || this.char === ")") {
-    if (this.char === ",") this.next();
+  if (this.text[this.i] === "," || this.text[this.i] === ")") {
+    if (this.text[this.i] === ",") this.next();
     return name;
   }
-  if (!(this.char === "=")) this.raise("JS_PARAM_DEC_EXPECTED");
+  if (!(this.text[this.i] === "=")) this.raise("JS_PARAM_DEC_EXPECTED");
   this.next();
   const defaultValue = this.expression();
-  if (this.char === ",") this.next();
+  if (this.text[this.i] === ",") this.next();
   const pattern = new AssignmentPattern(name.loc.start);
   pattern.left = name;
   pattern.right = defaultValue;
@@ -93,12 +93,12 @@ ezra.functionExpression = function (shouldReturn = false) {
   this.contexts.push("function");
   const func = new FunctionExpression(this.j - 8);
   this.outerspace();
-  if (this.char === "*") {
+  if (this.text[this.i] === "*") {
     func.generator = true;
     this.next();
     this.outerspace();
   }
-  if (isValidIdentifierCharacter(this.char)) {
+  if (isValidIdentifierCharacter(this.text[this.i])) {
     func.id = this.identifier();
     this.outerspace();
   } else func.id = null;

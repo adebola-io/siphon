@@ -18,8 +18,8 @@ import { ezra } from "./base";
 ezra.jsxElement = function (start) {
   const elem = new JSXElement(start);
   this.outerspace();
-  if (!isValidIdentifierCharacter(this.char)) {
-    this.raise("JS_UNEXPECTED_TOKEN", this.char);
+  if (!isValidIdentifierCharacter(this.text[this.i])) {
+    this.raise("JS_UNEXPECTED_TOKEN", this.text[this.i]);
   }
   elem.openingElement = this.jsxOpeningElement(start);
   if (elem.openingElement.selfClosing) {
@@ -32,7 +32,7 @@ ezra.jsxElement = function (start) {
     if (this.eat("<")) {
       start = this.j - 1;
       this.outerspace();
-      if (this.char === "/") {
+      if (this.text[this.i] === "/") {
         this.next();
         elem.closingElement = this.jsxClosingElement(start);
         if (elem.closingElement.tagName !== elem.openingElement.tagName)
@@ -44,7 +44,7 @@ ezra.jsxElement = function (start) {
         break;
       } else if (this.eat(">")) elem.children.push(this.jsxFragment(start));
       else elem.children.push(this.jsxElement(start));
-    } else if (this.char === "{") {
+    } else if (this.text[this.i] === "{") {
       elem.children.push(this.jsxExpressionContainer());
     } else elem.children.push(this.jsxText());
   }
@@ -60,8 +60,8 @@ ezra.jsxElement = function (start) {
 ezra.jsxText = function () {
   const text = new JSXText(this.j);
   text.raw = "";
-  while (!(this.end || /\<|\{/.test(this.char))) {
-    text.raw += this.char;
+  while (!(this.end || /\<|\{/.test(this.text[this.i]))) {
+    text.raw += this.text[this.i];
     this.next();
   }
   text.value = text.raw.replace(/\r|\n/g, "");
@@ -69,7 +69,7 @@ ezra.jsxText = function () {
   return text;
 };
 ezra.jsxAttribute = function () {
-  if (/\//.test(this.char)) return;
+  if (/\//.test(this.text[this.i])) return;
   const attrib = new JSXAttribute(this.j);
   let attribName = this.identifier(true, true);
   attrib.name = new JSXIdentifier(this.j);
@@ -78,7 +78,7 @@ ezra.jsxAttribute = function () {
   this.outerspace();
   if (this.eat("=")) {
     this.belly.pop();
-    switch (this.char) {
+    switch (this.text[this.i]) {
       case '"':
       case "'":
         attrib.value = this.stringLiteral();
@@ -96,15 +96,16 @@ ezra.jsxAttribute = function () {
 ezra.jsxIdentifier = function () {
   const jsxident = new JSXIdentifier(this.j);
   const identifier = this.identifier(true, true);
-  if (this.char === ":") return this.JSXNamespacedName(identifier);
-  else if (this.char === ".") return this.JSXMemberExpression(identifier);
+  if (this.text[this.i] === ":") return this.JSXNamespacedName(identifier);
+  else if (this.text[this.i] === ".")
+    return this.JSXMemberExpression(identifier);
   jsxident.loc = identifier.loc;
   jsxident.name = identifier.name;
   return jsxident;
 };
 ezra.JSXReparse = function (node) {
   this.outerspace();
-  switch (this.char) {
+  switch (this.text[this.i]) {
     case ":":
       return this.JSXNamespacedName(node);
     case ".":
@@ -136,10 +137,10 @@ ezra.jsxOpeningElement = function () {
   const open = new JSXOpeningElement(this.j - 1);
   open.name = this.jsxIdentifier();
   open.attributes = this.group("JSX_attribute");
-  if (this.char === ">") open.selfClosing = false;
+  if (this.text[this.i] === ">") open.selfClosing = false;
   else if (this.eat("/")) {
     this.belly.pop(), this.outerspace();
-    if (this.char === ">") {
+    if (this.text[this.i] === ">") {
       open.selfClosing = true;
     }
   }
@@ -159,7 +160,7 @@ ezra.jsxClosingElement = function (start) {
   const close = new JSXClosingElement(start);
   close.name = this.jsxIdentifier();
   this.outerspace();
-  if (!this.eat(">")) this.raise("JS_UNEXPECTED_TOKEN", this.char);
+  if (!this.eat(">")) this.raise("JS_UNEXPECTED_TOKEN", this.text[this.i]);
   else this.belly.pop();
   this.outerspace();
   if (close.name instanceof JSXIdentifier) {
@@ -203,7 +204,7 @@ ezra.jsxFragment = function (start) {
         break;
       } else if (this.eat(">")) fragment.children.push(this.jsxFragment(start));
       else fragment.children.push(this.jsxElement(start));
-    } else if (this.char === "{") {
+    } else if (this.text[this.i] === "{") {
       fragment.children.push(this.jsxExpressionContainer());
     } else fragment.children.push(this.jsxText());
   }

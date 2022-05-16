@@ -16,11 +16,11 @@ ezra.group = function (context = "expression") {
   this.outerspace();
   this.operators = new Stack();
   this.belly = new Stack();
-  while (!this.end && this.char !== counterpart[closure]) {
+  while (!this.end && this.text[this.i] !== counterpart[closure]) {
     let statement = this.statement(context);
     if (statement !== undefined) groupBody.push(statement);
     this.outerspace();
-    if (this.char === "/" && context === "JSX_attribute") break;
+    if (this.text[this.i] === "/" && context === "JSX_attribute") break;
   }
   if (this.end) this.raise("EXPECTED", counterpart[closure]);
   else if (context !== "JSX_attribute") this.eat(counterpart[closure]);

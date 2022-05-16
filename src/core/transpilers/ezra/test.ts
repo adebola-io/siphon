@@ -11,8 +11,9 @@ import {
   VariableDeclaration,
 } from "../../../types";
 
-// const text = readFileSync("src/test/source/main.js").toString();
-
+const text = readFileSync("src/test/source/main.js").toString();
+const program = Ezra.parse(text, { sourceFile: "src/test/source/main.js" });
+console.log(program);
 // Ezra.bundle("src/test/source/main.js", { allowJSX: true, sourceMaps: false });
 // console.time();
 // const program = Esprima.parseScript(text, { loc: true, jsx: true });

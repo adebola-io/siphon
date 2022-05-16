@@ -59,17 +59,17 @@ ezra.definition = function () {
   // Getters and setters.
   // Block the use of 'constructor' as an identifier.
   if (key instanceof Identifier) {
-    if (key.name === "constructor" && this.char !== "(")
+    if (key.name === "constructor" && this.text[this.i] !== "(")
       this.raise("RESERVED", "constructor");
     if (
       getOrSet[key.name] === true &&
-      !(isComputed || /;|\(|\=/.test(this.char))
+      !(isComputed || /;|\(|\=/.test(this.text[this.i]))
     ) {
       kind = key.name;
       let actual = this.definitionKey();
       key = actual.key;
       isComputed = actual.isComputed;
-      if (this.char !== "(") this.raise("EXPECTED", "(");
+      if (this.text[this.i] !== "(") this.raise("EXPECTED", "(");
     }
   }
   if (this.eat("(")) {
@@ -103,11 +103,11 @@ ezra.definition = function () {
     definition.static = isStatic;
     definition.key = key;
     this.outerspace();
-    if (this.char === "=") {
+    if (this.text[this.i] === "=") {
       this.next();
       definition.value = this.expression();
       if (definition.value === undefined) this.raise("EXPRESSION_EXPECTED");
-    } else if (!/}|;/.test(this.char)) {
+    } else if (!/}|;/.test(this.text[this.i])) {
       // Check that next definition begins on a new line.
       if (/\n/.test(this.text.slice(key.loc.end, this.j))) {
         this.recede();
@@ -129,13 +129,13 @@ ezra.definitionKey = function () {
       key = this.group("property");
       isComputed = true;
       break;
-    case isDigit(this.char):
+    case isDigit(this.text[this.i]):
       key = this.numberLiteral();
       break;
     case this.eat("#"):
       key = this.privateIdentifier();
       break;
-    case /'|"/.test(this.char):
+    case /'|"/.test(this.text[this.i]):
       key = this.stringLiteral();
       break;
     default:
@@ -155,7 +155,7 @@ ezra.privateIdentifier = function () {
 ezra.classExpression = function () {
   const classexp = new ClassExpression(this.j - 5);
   this.outerspace();
-  if (this.char !== "{") {
+  if (this.text[this.i] !== "{") {
     if (!this.match("extends")) classexp.id = this.identifier();
     this.outerspace();
     if (this.belly.top() === "extends" || this.match("extends")) {

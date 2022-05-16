@@ -27,6 +27,7 @@ export function checkForEnd(character: string, source: PathLike): void {
 export function isForeignTag(tagName: string | undefined): boolean {
   return tagName ? ["script", "style"].includes(tagName) : false;
 }
+export const NEWLINE = "\n";
 var voidTags: any = {
   "!DOCTYPE": true,
   area: true,

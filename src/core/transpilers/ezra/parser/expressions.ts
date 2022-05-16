@@ -30,15 +30,15 @@ ezra.expression = function (type) {
     case this.eat("//"):
       this.skip();
       break;
-    case /"|'/.test(this.char):
+    case /"|'/.test(this.text[this.i]):
       return this.reparse(this.stringLiteral());
-    case /`/.test(this.char):
+    case /`/.test(this.text[this.i]):
       return this.reparse(this.templateLiteral());
-    case this.char === ":":
+    case this.text[this.i] === ":":
       if (!(type === "ternary" || type === "case"))
         this.raise("JS_UNEXPECTED_TOKEN");
-    case this.char === undefined:
-    case this.char === ";":
+    case this.text[this.i] === undefined:
+    case this.text[this.i] === ";":
       return;
     // React JSX.
     case this.eat("<"):
@@ -86,7 +86,7 @@ ezra.expression = function (type) {
       return this.reparse(this.booleanLiteral());
     case this.match("async"):
       return this.reparse(this.maybeAsyncExpression());
-    case isDigit(this.char):
+    case isDigit(this.text[this.i]):
       return this.reparse(this.numberLiteral(), "number");
     case this.match("class"):
       return this.reparse(this.classExpression());
@@ -98,9 +98,10 @@ ezra.expression = function (type) {
       return this.reparse(this.importExpression());
     case this.match("function"):
       return this.reparse(this.functionExpression());
-    case isValidIdentifierCharacter(this.char):
+    case isValidIdentifierCharacter(this.text[this.i]):
       return this.reparse(this.identifier());
     default:
+      console.log(this.k, this.l);
       this.raise("JS_UNEXPECTED_TOKEN");
   }
   return exp;
@@ -113,7 +114,7 @@ ezra.memberExpression = function (object) {
     memexp.property = this.group();
     if (memexp.property === undefined) this.raise("EXPRESSION_EXPECTED");
     memexp.computed = true;
-  } else if (this.char === "#") {
+  } else if (this.text[this.i] === "#") {
     let { arr }: any = { ...this.contexts };
     if (arr.includes("class_body")) {
       this.next();
@@ -156,9 +157,9 @@ ezra.importExpression = function () {
 };
 ezra.arguments = function () {
   const args = [];
-  while (!this.end && this.char !== ")") {
+  while (!this.end && this.text[this.i] !== ")") {
     args.push(this.expression());
-    if (this.char === ",") this.next();
+    if (this.text[this.i] === ",") this.next();
   }
   return args;
 };
@@ -292,7 +293,7 @@ ezra.objectExpression = function () {
 ezra.yieldExpression = function () {
   const yieldexp = new YieldExpression(this.j - 6);
   this.outerspace();
-  if (this.char == "*") {
+  if (this.text[this.i] == "*") {
     this.next();
     yieldexp.delegate = true;
     this.outerspace();

@@ -20,7 +20,7 @@ ezra.restElement = function () {
   rest.argument = this.expression();
   rest.loc.end = rest.argument.loc.end;
   // Rest elements must end a paramter lineup.
-  if (this.contexts.top() === "parameters" && this.char !== ")") {
+  if (this.contexts.top() === "parameters" && this.text[this.i] !== ")") {
     this.raise("JS_REST_MUST_END");
   }
   return rest;
@@ -28,9 +28,12 @@ ezra.restElement = function () {
 ezra.property = function () {
   if (this.eat("...")) return this.spreadElement();
   const prop = new Property(this.j);
-  if (isDigit(this.char) || !isValidIdentifierCharacter(this.char)) {
+  if (
+    isDigit(this.text[this.i]) ||
+    !isValidIdentifierCharacter(this.text[this.i])
+  ) {
     //   Invalid property keys.
-    if (!isValidPropertyKeyStart(this.char))
+    if (!isValidPropertyKeyStart(this.text[this.i]))
       this.raise("JS_PROPERTY_DEC_EXPECTED");
     //  Properties with Computed keys.
     if (this.eat("[")) {
@@ -38,11 +41,11 @@ ezra.property = function () {
       prop.computed = true;
     }
     // Number-indexed properties.
-    if (isDigit(this.char)) {
+    if (isDigit(this.text[this.i])) {
       prop.key = this.numberLiteral();
     }
     // String-indexed properties.
-    if (/'|"/.test(this.char)) {
+    if (/'|"/.test(this.text[this.i])) {
       prop.key = this.stringLiteral();
     }
     this.outerspace();
@@ -61,7 +64,7 @@ ezra.property = function () {
       prop.method = true;
       this.backtrack();
       prop.value = this.functionExpression();
-    } else if (this.char === "," || this.char === "}") {
+    } else if (this.text[this.i] === "," || this.text[this.i] === "}") {
       prop.shorthand = true;
       let clone = new Identifier(prop.key.loc.start);
       clone.name = prop.key.name;
@@ -76,9 +79,9 @@ ezra.property = function () {
 
 ezra.elements = function () {
   const args = [];
-  while (!this.end && this.char !== "]") {
+  while (!this.end && this.text[this.i] !== "]") {
     args.push(this.expression());
-    if (this.char === ",") this.next();
+    if (this.text[this.i] === ",") this.next();
     this.outerspace();
   }
   return args;
