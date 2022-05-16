@@ -28,6 +28,7 @@ export function isForeignTag(tagName: string | undefined): boolean {
   return tagName ? ["script", "style"].includes(tagName) : false;
 }
 export const NEWLINE = "\n";
+export const EMPTY_SPACE = /\s|\r|\n/;
 var voidTags: any = {
   "!DOCTYPE": true,
   area: true,

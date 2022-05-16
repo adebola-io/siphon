@@ -13,7 +13,7 @@ import { isValidIdentifierCharacter } from "../../../../utils";
 import { ezra } from "./base";
 
 ezra.maybeAsync = function () {
-  var pos = this.j - this.belly.pop().length;
+  var pos = this.i - this.belly.pop().length;
   try {
     const argument: any = this.statement();
     if (
@@ -28,12 +28,12 @@ ezra.maybeAsync = function () {
       return argument;
     }
   } catch (e) {}
-  this.goto(pos);
+  this.i = pos;
   return this.tryExpressionStatement();
 };
 var isAsync: any = { FunctionExpression: true, ArrowFunctionExpression: true };
 ezra.maybeAsyncExpression = function () {
-  var pos = this.j - this.belly.pop().length;
+  var pos = this.i - this.belly.pop().length;
   try {
     const argument: any = this.expression();
     if (isAsync[argument.type] === true) {
@@ -41,16 +41,16 @@ ezra.maybeAsyncExpression = function () {
       return argument;
     }
   } catch {}
-  this.goto(pos);
+  this.i = pos;
   return this.reparse(this.identifier());
 };
 ezra.functionDeclaration = function () {
-  const func = new FunctionDeclaration(this.j - 8);
+  const func = new FunctionDeclaration(this.i - 8);
   this.contexts.push("function");
   this.outerspace();
   if (this.text[this.i] === "*") {
     func.generator = true;
-    this.next();
+    this.i++;
     this.outerspace();
   }
   func.id = this.identifier();
@@ -61,14 +61,14 @@ ezra.functionDeclaration = function () {
   if (!this.eat("{")) this.raise("OPEN_CURLY_EXPECTED");
   else func.body = this.blockStatement();
   this.contexts.pop();
-  func.loc.end = this.j;
+  func.loc.end = this.i;
   return func;
 };
 ezra.parameter = function () {
   if (this.eat("...")) return this.restElement();
   if (this.eat("{")) {
     var exp = this.objectExpression();
-    const objpattern = new ObjectPattern(this.j - 1);
+    const objpattern = new ObjectPattern(this.i - 1);
     objpattern.properties = exp.properties;
     objpattern.loc.end = exp.loc.end;
     return objpattern;
@@ -76,13 +76,13 @@ ezra.parameter = function () {
   const name = this.identifier();
   this.outerspace();
   if (this.text[this.i] === "," || this.text[this.i] === ")") {
-    if (this.text[this.i] === ",") this.next();
+    if (this.text[this.i] === ",") this.i++;
     return name;
   }
   if (!(this.text[this.i] === "=")) this.raise("JS_PARAM_DEC_EXPECTED");
-  this.next();
+  this.i++;
   const defaultValue = this.expression();
-  if (this.text[this.i] === ",") this.next();
+  if (this.text[this.i] === ",") this.i++;
   const pattern = new AssignmentPattern(name.loc.start);
   pattern.left = name;
   pattern.right = defaultValue;
@@ -91,11 +91,11 @@ ezra.parameter = function () {
 };
 ezra.functionExpression = function (shouldReturn = false) {
   this.contexts.push("function");
-  const func = new FunctionExpression(this.j - 8);
+  const func = new FunctionExpression(this.i - 8);
   this.outerspace();
   if (this.text[this.i] === "*") {
     func.generator = true;
-    this.next();
+    this.i++;
     this.outerspace();
   }
   if (isValidIdentifierCharacter(this.text[this.i])) {
@@ -107,7 +107,7 @@ ezra.functionExpression = function (shouldReturn = false) {
   this.outerspace();
   if (!this.eat("{")) this.raise("EXPECTED", "{");
   else func.body = this.blockStatement(false);
-  func.loc.end = this.j;
+  func.loc.end = this.i;
   this.contexts.pop();
   return shouldReturn ? func : this.reparse(func);
 };
@@ -124,7 +124,7 @@ ezra.arrowFunctionExpression = function (params, startAt) {
     arrowfunc.body = this.blockStatement(false);
     this.contexts.pop();
   } else arrowfunc.body = this.expression();
-  arrowfunc.loc.end = this.j;
+  arrowfunc.loc.end = this.i;
   return this.reparse(arrowfunc);
 };
 ezra.parameterize = function (params) {

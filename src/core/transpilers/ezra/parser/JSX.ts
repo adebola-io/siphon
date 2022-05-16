@@ -27,13 +27,13 @@ ezra.jsxElement = function (start) {
     return elem;
   }
   elem.children = [];
-  while (!this.end) {
+  while (!(this.text[this.i] === undefined)) {
     this.outerspace();
     if (this.eat("<")) {
-      start = this.j - 1;
+      start = this.i - 1;
       this.outerspace();
       if (this.text[this.i] === "/") {
-        this.next();
+        this.i++;
         elem.closingElement = this.jsxClosingElement(start);
         if (elem.closingElement.tagName !== elem.openingElement.tagName)
           this.raise(
@@ -48,7 +48,7 @@ ezra.jsxElement = function (start) {
       elem.children.push(this.jsxExpressionContainer());
     } else elem.children.push(this.jsxText());
   }
-  if (this.end && elem.closingElement === undefined)
+  if (this.text[this.i] === undefined && elem.closingElement === undefined)
     this.raise(
       "JSX_NO_CLOSE",
       elem.openingElement.tagName,
@@ -58,21 +58,23 @@ ezra.jsxElement = function (start) {
   return elem;
 };
 ezra.jsxText = function () {
-  const text = new JSXText(this.j);
+  const text = new JSXText(this.i);
   text.raw = "";
-  while (!(this.end || /\<|\{/.test(this.text[this.i]))) {
+  while (
+    !(this.text[this.i] === undefined || /\<|\{/.test(this.text[this.i]))
+  ) {
     text.raw += this.text[this.i];
-    this.next();
+    this.i++;
   }
   text.value = text.raw.replace(/\r|\n/g, "");
-  text.loc.end = this.j;
+  text.loc.end = this.i;
   return text;
 };
 ezra.jsxAttribute = function () {
   if (/\//.test(this.text[this.i])) return;
-  const attrib = new JSXAttribute(this.j);
+  const attrib = new JSXAttribute(this.i);
   let attribName = this.identifier(true, true);
-  attrib.name = new JSXIdentifier(this.j);
+  attrib.name = new JSXIdentifier(this.i);
   attrib.name.name = attribName.name;
   attrib.name.loc = attribName.loc;
   this.outerspace();
@@ -90,11 +92,11 @@ ezra.jsxAttribute = function () {
         this.raise("EXPECTED", "{");
     }
   } else attrib.value = null;
-  attrib.loc.end = attrib.value?.loc.end ?? this.j;
+  attrib.loc.end = attrib.value?.loc.end ?? this.i;
   return attrib;
 };
 ezra.jsxIdentifier = function () {
-  const jsxident = new JSXIdentifier(this.j);
+  const jsxident = new JSXIdentifier(this.i);
   const identifier = this.identifier(true, true);
   if (this.text[this.i] === ":") return this.JSXNamespacedName(identifier);
   else if (this.text[this.i] === ".")
@@ -115,7 +117,7 @@ ezra.JSXReparse = function (node) {
   }
 };
 ezra.JSXMemberExpression = function (object) {
-  this.next();
+  this.i++;
   const prop = this.identifier(true, true);
   const jsxmem = new JSXMemberExpression(object.loc.start);
   jsxmem.object = object;
@@ -125,7 +127,7 @@ ezra.JSXMemberExpression = function (object) {
   return this.JSXReparse(jsxmem);
 };
 ezra.JSXNamespacedName = function (namespace) {
-  this.next();
+  this.i++;
   const ident = this.jsxIdentifier();
   const namsp = new JSXNamespacedName(namespace.loc.start);
   namsp.namespace = namespace;
@@ -134,7 +136,7 @@ ezra.JSXNamespacedName = function (namespace) {
   return namsp;
 };
 ezra.jsxOpeningElement = function () {
-  const open = new JSXOpeningElement(this.j - 1);
+  const open = new JSXOpeningElement(this.i - 1);
   open.name = this.jsxIdentifier();
   open.attributes = this.group("JSX_attribute");
   if (this.text[this.i] === ">") open.selfClosing = false;
@@ -144,7 +146,7 @@ ezra.jsxOpeningElement = function () {
       open.selfClosing = true;
     }
   }
-  this.next();
+  this.i++;
   if (open.name instanceof JSXIdentifier) {
     open.tagName = open.name.name;
   } else if (open.name instanceof JSXMemberExpression) {
@@ -152,7 +154,7 @@ ezra.jsxOpeningElement = function () {
   } else if (open.name instanceof JSXNamespacedName) {
     open.tagName = `${open.name.namespace.name}:${open.name.name.name}`;
   }
-  open.loc.end = this.j;
+  open.loc.end = this.i;
   return open;
 };
 ezra.jsxClosingElement = function (start) {
@@ -170,31 +172,31 @@ ezra.jsxClosingElement = function (start) {
   } else if (close.name instanceof JSXNamespacedName) {
     close.tagName = `${close.name.namespace.name}:${close.name.name.name}`;
   }
-  close.loc.end = this.j;
+  close.loc.end = this.i;
   return close;
 };
 ezra.jsxExpressionContainer = function () {
-  const container = new JSXExpressionContainer(this.j);
+  const container = new JSXExpressionContainer(this.i);
   this.eat("{");
   container.expression = this.group("expression");
-  container.loc.end = this.j;
+  container.loc.end = this.i;
   return container;
 };
 ezra.jsxFragment = function (start) {
   const fragment = new JSXFragment(start);
   fragment.openingFragment = new JSXOpeningFragment(start);
-  fragment.openingFragment.loc.end = this.j;
+  fragment.openingFragment.loc.end = this.i;
   fragment.children = [];
-  while (!this.end) {
+  while (!(this.text[this.i] === undefined)) {
     this.outerspace();
     if (this.eat("<")) {
-      start = this.j - 1;
+      start = this.i - 1;
       this.outerspace();
       if (this.eat("/")) {
         this.outerspace();
         if (this.eat(">")) {
           fragment.closingFragment = new JSXClosingFragment(start);
-          fragment.closingFragment.loc.end = this.j;
+          fragment.closingFragment.loc.end = this.i;
         } else
           this.raise(
             "JSX_FRAGMENT_NO_CLOSE",
@@ -208,7 +210,7 @@ ezra.jsxFragment = function (start) {
       fragment.children.push(this.jsxExpressionContainer());
     } else fragment.children.push(this.jsxText());
   }
-  if (this.end && fragment.closingFragment === undefined)
+  if (this.text[this.i] === undefined && fragment.closingFragment === undefined)
     this.raise(
       "JSX_FRAGMENT_NO_CLOSE",
       undefined,

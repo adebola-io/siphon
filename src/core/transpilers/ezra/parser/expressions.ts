@@ -43,7 +43,7 @@ ezra.expression = function (type) {
     // React JSX.
     case this.eat("<"):
       if (this.options.parseJSX) {
-        var JSXStart = this.j - 1;
+        var JSXStart = this.i - 1;
         this.outerspace();
         if (this.eat(">")) return this.reparse(this.jsxFragment(JSXStart));
         else return this.reparse(this.jsxElement(JSXStart));
@@ -101,13 +101,12 @@ ezra.expression = function (type) {
     case isValidIdentifierCharacter(this.text[this.i]):
       return this.reparse(this.identifier());
     default:
-      console.log(this.k, this.l);
       this.raise("JS_UNEXPECTED_TOKEN");
   }
   return exp;
 };
 ezra.memberExpression = function (object) {
-  var memexp = new MemberExpression(this.j);
+  var memexp = new MemberExpression(this.i);
   this.outerspace();
   memexp.object = object;
   if (this.belly.top() === "[") {
@@ -117,7 +116,7 @@ ezra.memberExpression = function (object) {
   } else if (this.text[this.i] === "#") {
     let { arr }: any = { ...this.contexts };
     if (arr.includes("class_body")) {
-      this.next();
+      this.i++;
       memexp.property = this.privateIdentifier();
     } else this.raise("JS_ILLEGAL_PRIV_IDENT");
   } else memexp.property = this.identifier(true);
@@ -134,32 +133,32 @@ ezra.chainExpression = function (exp) {
   return chainexp;
 };
 ezra.thisExpression = function () {
-  const thisexp = new ThisExpression(this.j - this.belly.pop().length);
-  thisexp.loc.end = this.j;
+  const thisexp = new ThisExpression(this.i - this.belly.pop().length);
+  thisexp.loc.end = this.i;
   return thisexp;
 };
 ezra.callExpression = function (callee) {
   const callexp = new CallExpression(callee.loc.start);
   callexp.callee = callee;
   callexp.arguments = this.group("call") ?? [];
-  callexp.loc.end = this.j;
+  callexp.loc.end = this.i;
   return this.reparse(callexp);
 };
 ezra.importExpression = function () {
-  const importexp = new ImportExpression(this.j - 6);
+  const importexp = new ImportExpression(this.i - 6);
   this.outerspace();
   if (!this.eat("(")) this.raise("EXPECTED", "(");
   var source = this.group("call") ?? [];
   if (source.length !== 1) this.raise("JS_ILLEGAL_IMPORT_EXP");
   importexp.source = source[0];
-  importexp.loc.end = this.j;
+  importexp.loc.end = this.i;
   return this.reparse(importexp);
 };
 ezra.arguments = function () {
   const args = [];
-  while (!this.end && this.text[this.i] !== ")") {
+  while (!(this.text[this.i] === undefined) && this.text[this.i] !== ")") {
     args.push(this.expression());
-    if (this.text[this.i] === ",") this.next();
+    if (this.text[this.i] === ",") this.i++;
   }
   return args;
 };
@@ -171,7 +170,7 @@ ezra.newExpression = function () {
   //     this.raise("INVALID_NEW_META_PROPERTY", metaprop.name);
   // }
   this.outerspace();
-  const newexp = new NewExpression(this.j);
+  const newexp = new NewExpression(this.i);
   this.contexts.push("new");
   this.operators.push("new");
   newexp.callee = this.expression();
@@ -188,24 +187,24 @@ ezra.updateExpression = function (argument, prefix) {
   const upexp = new UpdateExpression(argument.loc.start);
   upexp.operator = this.belly.top();
   upexp.argument = argument;
-  upexp.loc.end = this.j;
+  upexp.loc.end = this.i;
   upexp.prefix = prefix ? true : false;
   if (prefix) upexp.loc.start = upexp.loc.start - 2;
   return this.reparse(upexp, prefix ? "prefix" : "postfix");
 };
 ezra.unaryExpression = function () {
-  const unexp = new UnaryExpression(this.j - this.belly.top().length);
+  const unexp = new UnaryExpression(this.i - this.belly.top().length);
   unexp.operator = this.belly.top();
   this.operators.push(unexp.operator);
   unexp.argument = this.expression();
-  unexp.loc.end = this.j;
+  unexp.loc.end = this.i;
   this.operators.pop();
   if (/\-\-|\+\+/.test(unexp.operator))
     return this.updateExpression(unexp.argument, true);
   return this.reparse(unexp);
 };
 ezra.awaitExpression = function () {
-  const awexp = new AwaitExpression(this.j - 5);
+  const awexp = new AwaitExpression(this.i - 5);
   this.operators.push(this.belly.top());
   awexp.argument = this.expression();
   this.operators.pop();
@@ -219,7 +218,7 @@ ezra.binaryExpression = function (left) {
   binexp.operator = this.belly.top();
   this.operators.push(binexp.operator);
   binexp.right = this.expression();
-  binexp.loc.end = this.j;
+  binexp.loc.end = this.i;
   this.operators.pop();
   return this.reparse(binexp);
 };
@@ -231,7 +230,7 @@ ezra.logicalExpression = function (left) {
   this.operators.push(logexp.operator);
   this.outerspace();
   logexp.right = this.expression();
-  logexp.loc.end = this.j;
+  logexp.loc.end = this.i;
   this.operators.pop();
   return this.reparse(logexp);
 };
@@ -244,7 +243,7 @@ ezra.conditionalExpression = function (test) {
   this.outerspace();
   if (!this.eat(":")) this.raise("COLON_EXPECTED");
   condexp.alternate = this.expression();
-  condexp.loc.end = this.j;
+  condexp.loc.end = this.i;
   return this.reparse(condexp);
 };
 ezra.assignmentExpression = function (left) {
@@ -260,7 +259,7 @@ ezra.assignmentExpression = function (left) {
   this.operators.push(this.belly.top());
   assignexp.right = this.expression();
   this.operators.pop();
-  assignexp.loc.end = this.j;
+  assignexp.loc.end = this.i;
   return this.reparse(assignexp);
 };
 ezra.sequenceExpression = function (left: any) {
@@ -275,26 +274,26 @@ ezra.sequenceExpression = function (left: any) {
   } else seqexp.expressions.push(left);
   seqexp.expressions.push(this.expression());
   this.operators.pop();
-  seqexp.loc.end = this.j;
+  seqexp.loc.end = this.i;
   return this.reparse(seqexp);
 };
 ezra.arrayExpression = function () {
-  const array = new ArrayExpression(this.j - 1);
+  const array = new ArrayExpression(this.i - 1);
   array.elements = this.group("array").flat(1);
-  array.loc.end = this.j;
+  array.loc.end = this.i;
   return array;
 };
 ezra.objectExpression = function () {
-  const object = new ObjectExpression(this.j - 1);
+  const object = new ObjectExpression(this.i - 1);
   object.properties = this.group("object") ?? [];
-  object.loc.end = this.j;
+  object.loc.end = this.i;
   return object;
 };
 ezra.yieldExpression = function () {
-  const yieldexp = new YieldExpression(this.j - 6);
+  const yieldexp = new YieldExpression(this.i - 6);
   this.outerspace();
   if (this.text[this.i] == "*") {
-    this.next();
+    this.i++;
     yieldexp.delegate = true;
     this.outerspace();
   } else yieldexp.delegate = false;

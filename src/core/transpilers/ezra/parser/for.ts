@@ -18,7 +18,7 @@ import {
 import { ezra } from "./base";
 
 // ezra.forStatement = function () {
-//   const start = this.j - 3;
+//   const start = this.i - 3;
 //   const forstat = new ForStatement(start);
 //   this.outerspace();
 //   if (!this.eat("(")) this.raise("OPEN_BRAC_EXPECTED");
@@ -67,7 +67,7 @@ export const transformtoPattern = function (expression: Expression) {
   return transform;
 };
 ezra.forStatement = function () {
-  var start = this.j - 3,
+  var start = this.i - 3,
     hasAwait = false,
     forstatement: any;
   this.outerspace();

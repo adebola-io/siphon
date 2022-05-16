@@ -52,7 +52,7 @@ export const keywords: any = {
 };
 
 ezra.identifier = function (allowKeyword = false, allowHyphen = false) {
-  const id = new Identifier(this.j);
+  const id = new Identifier(this.i);
   if (!isValidIdentifierCharacter(this.text[this.i]))
     this.raise("IDENTIFIER_EXPECTED");
   if (isDigit(this.text[this.i])) this.raise("ID_FOLLOWS_LITERAL");
@@ -60,8 +60,8 @@ ezra.identifier = function (allowKeyword = false, allowHyphen = false) {
     isValidIdentifierCharacter(this.text[this.i]) ||
     (allowHyphen && this.text[this.i] === "-")
   )
-    (id.name += this.text[this.i]), this.next();
-  id.loc.end = this.j - 1;
+    (id.name += this.text[this.i]), this.i++;
+  id.loc.end = this.i - 1;
   if (!allowKeyword && keywords[id.name] === true) {
     this.raise("RESERVED", id.name, id.loc.end);
   }

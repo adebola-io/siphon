@@ -19,14 +19,14 @@ ezra.importDeclaration = function () {
   ) {
     this.raise("JS_ILLEGAL_IMPORT");
   }
-  const importdec = new ImportDeclaration(this.j - 6);
+  const importdec = new ImportDeclaration(this.i - 6);
   if (this.eat("{")) {
     const importspecs = this.group("import");
     if (importspecs === undefined) this.raise("IDENTIFIER_EXPECTED");
     else importdec.specifiers.push(...importspecs);
   } else if (this.text[this.i] === "*") {
-    const namespce = new ImportNamespaceSpecifier(this.j);
-    this.next();
+    const namespce = new ImportNamespaceSpecifier(this.i);
+    this.i++;
     this.outerspace();
     if (!this.match("as")) this.raise("EXPECTED", "as");
     this.outerspace();
@@ -35,12 +35,12 @@ ezra.importDeclaration = function () {
     importdec.specifiers.push(namespce);
   } else if (/'|"/.test(this.text[this.i])) {
     importdec.source = this.stringLiteral();
-    importdec.loc.end = this.j;
+    importdec.loc.end = this.i;
     this.outerspace();
     this.eat(";");
     return importdec;
   } else {
-    const defaultdec = new ImportDefaultSpecifier(this.j);
+    const defaultdec = new ImportDefaultSpecifier(this.i);
     defaultdec.local = this.identifier();
     defaultdec.loc.end = defaultdec.local.loc.end;
     importdec.specifiers.push(defaultdec);
@@ -61,13 +61,13 @@ ezra.importDeclaration = function () {
     if (!/'|"/.test(this.text[this.i])) this.raise("JS_UNEXPECTED_TOKEN");
     importdec.source = this.stringLiteral();
   } else this.raise("EXPECTED", "from");
-  importdec.loc.end = this.j;
+  importdec.loc.end = this.i;
   this.outerspace();
   this.eat(";");
   return importdec;
 };
 ezra.importSpecifier = function () {
-  const importspec = new ImportSpecifier(this.j - 1);
+  const importspec = new ImportSpecifier(this.i - 1);
   this.outerspace();
   importspec.imported = this.identifier();
   this.outerspace();
@@ -82,12 +82,12 @@ ezra.importSpecifier = function () {
       this.outerspace();
       break;
   }
-  importspec.loc.end = this.j;
-  if (this.text[this.i] !== "}") this.next();
+  importspec.loc.end = this.i;
+  if (this.text[this.i] !== "}") this.i++;
   return importspec;
 };
 ezra.exportDeclaration = function () {
-  const start = this.j - 6;
+  const start = this.i - 6;
   this.outerspace();
   if (this.match("default")) {
     //   Default exports.
@@ -100,7 +100,7 @@ ezra.exportDeclaration = function () {
     return exportDefDec;
   } else if (this.text[this.i] === "*") {
     //   export *
-    this.next();
+    this.i++;
     this.outerspace();
     const expAll = new ExportAllDeclaration(start);
     // export * as
@@ -123,12 +123,12 @@ ezra.exportDeclaration = function () {
     const exportDec = new ExportNamedDeclaration(start);
     if (this.eat("{")) {
       exportDec.specifiers = this.group("export");
-      exportDec.loc.end = this.j;
+      exportDec.loc.end = this.i;
       this.outerspace();
       if (this.match("from")) {
         this.outerspace();
         exportDec.source = this.stringLiteral();
-        exportDec.loc.end = this.j;
+        exportDec.loc.end = this.i;
       } else exportDec.source = null;
     } else {
       exportDec.declaration = this.statement();
@@ -151,7 +151,7 @@ ezra.exportDeclaration = function () {
   }
 };
 ezra.exportSpecifier = function () {
-  const expSpec = new ExportSpecifier(this.j);
+  const expSpec = new ExportSpecifier(this.i);
   const mirror = this.importSpecifier();
   expSpec.local = mirror.imported;
   expSpec.exported = mirror.local;

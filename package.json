@@ -21,7 +21,9 @@
   "author": "Adebola Akomolafe",
   "license": "ISC",
   "dependencies": {
-    "colors": "^1.4.0"
+    "acorn": "^8.7.0",
+    "colors": "^1.4.0",
+    "esprima": "^4.0.1"
   },
   "bin": {
     "siphon-cli": "bin/siphon"

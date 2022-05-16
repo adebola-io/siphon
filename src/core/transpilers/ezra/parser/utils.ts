@@ -9,6 +9,7 @@ import {
   isHexDigit,
   isValidIdentifierCharacter,
   NEWLINE,
+  EMPTY_SPACE,
   precedence,
 } from "../../../../utils";
 var spreadcontexts: any = { array: true, expression: true, object: true },
@@ -39,11 +40,6 @@ export class parse_utils {
   i = 0;
   /** The original index of the character in the source text.
    * Useful for tracking characters during recursion. */
-  j = 0;
-  /** Tracks the current line being parsed. */
-  k = 1;
-  /** Tracks the current column being parsed in a line. */
-  l = 1;
   from = 0;
   end = false;
   newline = false;
@@ -56,7 +52,7 @@ export class parse_utils {
    * @param message The error type to raise.
    */
   raise(message: ErrorTypes, token?: string, at?: number) {
-    Errors.enc(message, this.options.sourceFile, at ?? this.j, {
+    Errors.enc(message, this.options.sourceFile, at ?? this.i, {
       token: token ?? this.text[this.i],
     });
   }
@@ -65,10 +61,8 @@ export class parse_utils {
    */
   lowerPrecedence() {
     // console.log(precedence[this.operators.top()], precedence[this.belly.top()]);
-    let topOperator: any = { ...this.operators },
-      bellyTop: any = { ...this.belly };
-    (topOperator = topOperator.arr[topOperator.arr.length - 1]),
-      (bellyTop = bellyTop.arr[bellyTop.arr.length - 1]);
+    let topOperator = this.operators.top(),
+      bellyTop = this.belly.top();
     if (topOperator === undefined) return false;
     if (
       precedence[topOperator] > precedence[bellyTop] ||
@@ -92,39 +86,22 @@ export class parse_utils {
    * @param ptn The string pattern to check for.
    */
   eat(ptn: string) {
-    if (this.text.slice(this.i, this.i + ptn.length) === ptn) {
-      this.next(ptn.length);
-      this.belly.push(ptn);
-      return true;
-    } else return false;
-  }
-  remains() {
-    this.end = this.text[this.i] === undefined;
+    if (this.text.slice(this.i, this.i + ptn.length) !== ptn) return false;
+    this.i += ptn.length;
+    this.belly.push(ptn);
+    return true;
   }
   peek(i = 1) {
     return this.text[this.i + i];
   }
   recede(i = 1) {
-    this.j = this.from + this.i - i;
     this.i -= i;
-    this.remains();
   }
   next(i = 1) {
-    this.j = this.from + this.i + i;
     this.i += i;
-    this.remains();
-    if (this.text[this.i] === NEWLINE) {
-      this.k++;
-      this.l = 1;
-    } else this.l++;
-  }
-  goto(i: number) {
-    this.j = this.from + i;
-    this.i = i;
-    this.remains();
   }
   expect(ptn: string) {
-    this.innerspace(true);
+    this.outerspace();
     if (this.text.slice(this.i, this.i + ptn.length) !== ptn)
       this.raise("JS_UNEXPECTED_TOKEN");
   }
@@ -137,7 +114,7 @@ export class parse_utils {
       this.text.slice(this.i, this.i + ptn.length) === ptn &&
       !isValidIdentifierCharacter(this.peek(ptn.length))
     ) {
-      this.next(ptn.length);
+      this.i += ptn.length;
       this.belly.push(ptn);
       return true;
     } else return false;
@@ -159,30 +136,24 @@ export class parse_utils {
     let num = "";
     switch (base) {
       case 10:
-        while (isDigit(this.text[this.i]))
-          (num += this.text[this.i]), this.next();
+        while (isDigit(this.text[this.i])) num += this.text[this.i++];
         break;
       case 16:
-        while (isHexDigit(this.text[this.i]))
-          (num += this.text[this.i]), this.next();
+        while (isHexDigit(this.text[this.i])) num += this.text[this.i++];
     }
     return num;
   }
   /** Skips over suceeding comments in the text stream. */
   skip(contextual?: boolean) {
     if (this.belly.top() === "/*")
-      while (!(this.eat("*/") || this.end)) {
-        contextual && this.text[this.i] === "\n" && !this.newline
-          ? (this.newline = true)
-          : 0,
-          this.next();
-      }
+      while (!(this.eat("*/") || this.text[this.i] === undefined)) this.i++;
     else {
-      while (!(this.text[this.i] === "\n" || this.end)) this.next();
+      while (!(this.text[this.i] === "\n" || this.text[this.i] === undefined))
+        this.i++;
       contextual && this.text[this.i] === "\n" && !this.newline
         ? (this.newline = true)
         : 0,
-        this.next();
+        this.i++;
     }
     this.belly.pop();
   }
@@ -213,21 +184,23 @@ export class parse_utils {
     /** The raw value of the regex expression. */
     let value = "";
     let flags = "";
-    while (this.text[i] && !/\n|\//.test(this.text[i])) {
+    while (this.text[i] !== undefined && !/\n|\//.test(this.text[i])) {
       // ESCAPE SEQUENCE
       if (this.text[i] === "\\") {
         value += `\\${this.text[++i]}`;
         i++;
       } else {
         if (this.text[i] === "[") {
-          while (this.text[i] && this.text[i] !== "]") {
+          while (this.text[i] !== undefined && this.text[i] !== "]") {
             // ESCAPE SEQUENCE
             if (this.text[i] === "\\") {
               value += `\\${this.text[++i]}`;
               i++;
             } else value += this.text[i++];
           }
-          if (!this.text[i]) this.raise("UNTERMINATED_REGEX_LITERAL");
+          if (this.text[i] === undefined) {
+            this.raise("UNTERMINATED_REGEX_LITERAL");
+          }
         }
         value += this.text[i++];
       }
@@ -246,26 +219,13 @@ export class parse_utils {
       flags,
     };
   }
-  glazeOverComments(contextual?: boolean) {
+  glazeOverComments() {
     if (this.eat("//") || this.eat("/*")) this.skip(true);
-  }
-  /** Skip over new lines and/or character spaces in a local expression, declaration or scope, where the position of the new line can affect the interpretation of expressions. */
-  innerspace(skip_new_line = false) {
-    if (skip_new_line)
-      while (/\s|\r|\n/.test(this.text[this.i]))
-        this.text[this.i] === "\n" && !this.newline ? (this.newline = true) : 0,
-          this.next();
-    else
-      while (/\s|\r/.test(this.text[this.i]) && this.text[this.i] !== "\n")
-        this.next();
-    this.glazeOverComments(skip_new_line);
-    if (/\s|\r|\n/.test(this.text[this.i])) this.innerspace(skip_new_line);
   }
   /** Skip over new lines, space characters and comments in the global scope of the program. */
   outerspace() {
-    while (/\s|\r|\n/.test(this.text[this.i])) this.i++;
-    this.goto(this.i);
+    while (EMPTY_SPACE.test(this.text[this.i])) this.i++;
     this.glazeOverComments();
-    if (/\s|\r|\n/.test(this.text[this.i])) this.outerspace();
+    if (EMPTY_SPACE.test(this.text[this.i])) this.outerspace();
   }
 }

@@ -161,8 +161,8 @@ ezra.parse = function (input, options, from = 0) {
   this.next(0);
   this.contexts.push("global");
   this.options = options;
-  this.j = this.from = from;
-  while (!this.end) this.scope.push(this.statement());
+  this.i = this.from = from;
+  while (!(this.text[this.i] === undefined)) this.scope.push(this.statement());
   this.scope.loc.end = this.text.length;
   this.scope.sourceType = this.options.sourceType ?? "module";
   return this.scope;

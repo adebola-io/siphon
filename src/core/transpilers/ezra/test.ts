@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "fs";
-// import { Parser as Acorn } from "acorn";
-// import * as Esprima from "esprima";
+import { Parser as Acorn } from "acorn";
+const Esprima: any = require("esprima");
 import Ezra from ".";
 import {
   BinaryExpression,
@@ -12,16 +12,18 @@ import {
 } from "../../../types";
 
 const text = readFileSync("src/test/source/main.js").toString();
-const program = Ezra.parse(text, { sourceFile: "src/test/source/main.js" });
-console.log(program);
-// Ezra.bundle("src/test/source/main.js", { allowJSX: true, sourceMaps: false });
-// console.time();
-// const program = Esprima.parseScript(text, { loc: true, jsx: true });
-// console.timeEnd();
+console.time();
+Ezra.parse(text, { sourceFile: "src/test/source/main.js" });
+console.timeEnd();
+// console.log(program);
+// Ezra.bundle("src/test/source/main.js");
+console.time();
+Esprima.parseScript(text, { loc: true });
+console.timeEnd();
 
-// console.time();
-// const program = Acorn.parse(text, { ecmaVersion: 2022, locations: false });
-// console.timeEnd();
+console.time();
+Acorn.parse(text, { ecmaVersion: 2022 });
+console.timeEnd();
 
 // console.time();
 // const program = Ezra.parse(text, {

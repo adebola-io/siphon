@@ -16,13 +16,17 @@ ezra.group = function (context = "expression") {
   this.outerspace();
   this.operators = new Stack();
   this.belly = new Stack();
-  while (!this.end && this.text[this.i] !== counterpart[closure]) {
+  while (
+    !(this.text[this.i] === undefined) &&
+    this.text[this.i] !== counterpart[closure]
+  ) {
     let statement = this.statement(context);
     if (statement !== undefined) groupBody.push(statement);
     this.outerspace();
     if (this.text[this.i] === "/" && context === "JSX_attribute") break;
   }
-  if (this.end) this.raise("EXPECTED", counterpart[closure]);
+  if (this.text[this.i] === undefined)
+    this.raise("EXPECTED", counterpart[closure]);
   else if (context !== "JSX_attribute") this.eat(counterpart[closure]);
   this.operators = parentOps;
   this.belly = parentBelly;
@@ -61,7 +65,7 @@ ezra.group = function (context = "expression") {
       return args;
     case "expression":
       if (groupBody[0] === undefined) {
-        var mark = this.j - 2;
+        var mark = this.i - 2;
         this.outerspace();
         if (this.eat("=>"))
           return this.arrowFunctionExpression(undefined, mark);

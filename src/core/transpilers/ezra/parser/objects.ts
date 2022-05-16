@@ -9,14 +9,14 @@ import { isDigit, isValidIdentifierCharacter } from "../../../../utils";
 import { ezra } from "./base";
 
 ezra.spreadElement = function () {
-  const spread = new SpreadElement(this.j - 3);
+  const spread = new SpreadElement(this.i - 3);
   spread.argument = this.expression();
   spread.loc.end = spread.argument.loc.end;
   this.eat(",");
   return spread;
 };
 ezra.restElement = function () {
-  const rest = new RestElement(this.j - 3);
+  const rest = new RestElement(this.i - 3);
   rest.argument = this.expression();
   rest.loc.end = rest.argument.loc.end;
   // Rest elements must end a paramter lineup.
@@ -27,7 +27,7 @@ ezra.restElement = function () {
 };
 ezra.property = function () {
   if (this.eat("...")) return this.spreadElement();
-  const prop = new Property(this.j);
+  const prop = new Property(this.i);
   if (
     isDigit(this.text[this.i]) ||
     !isValidIdentifierCharacter(this.text[this.i])
@@ -79,9 +79,9 @@ ezra.property = function () {
 
 ezra.elements = function () {
   const args = [];
-  while (!this.end && this.text[this.i] !== "]") {
+  while (!(this.text[this.i] === undefined) && this.text[this.i] !== "]") {
     args.push(this.expression());
-    if (this.text[this.i] === ",") this.next();
+    if (this.text[this.i] === ",") this.i++;
     this.outerspace();
   }
   return args;

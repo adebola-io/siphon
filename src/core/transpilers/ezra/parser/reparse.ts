@@ -8,7 +8,7 @@ import { ezra } from "./base";
 
 ezra.reparse = function (node, context) {
   if (isValidExpression(node)) {
-    var pos = this.j;
+    var pos = this.i;
     this.outerspace();
     switch (true) {
       case this.eat("//"):
@@ -32,9 +32,9 @@ ezra.reparse = function (node, context) {
         } else return this.callExpression(node);
       case this.eat("++"):
       case this.eat("--"):
-        if (/\n/.test(this.text.slice(pos, this.j))) {
+        if (/\n/.test(this.text.slice(pos, this.i))) {
           this.belly.pop();
-          this.goto(pos);
+          this.i = pos;
           return node;
         } else {
           return this.updateExpression(node, false);
@@ -101,8 +101,8 @@ ezra.reparse = function (node, context) {
       case /'|`|"/.test(this.text[this.i]):
       case isDigit(this.text[this.i]):
         // Check if the next expression is on a new line.
-        if (/\n/.test(this.text.slice(pos, this.j))) {
-          this.goto(pos);
+        if (/\n/.test(this.text.slice(pos, this.i))) {
+          this.i = pos;
           return node;
         } else {
           this.raise("JS_UNEXP_KEYWORD_OR_IDENTIFIER");
