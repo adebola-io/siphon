@@ -21,7 +21,7 @@ ezra.numberLiteral = function () {
     if (isAlphaNumeric(this.text[this.i]))
       this.raise("JS_UNEXPECTED_TOKEN", this.text[this.i]);
     numlit.value = parseInt(numlit.raw.slice(2), 2);
-  } else if (this.eat("0o")) {
+  } /** Octal numbers */ else if (this.eat("0o")) {
     numlit.raw = "Oo" + this.count(8);
     if (isAlphaNumeric(this.text[this.i]))
       this.raise("JS_UNEXPECTED_TOKEN", this.text[this.i]);
