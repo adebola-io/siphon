@@ -14,6 +14,7 @@ import {
   fileExists,
   getFileName,
   imageExts,
+  JSFiles,
   relativePath as pathFrom,
 } from "../../../../utils";
 import {
@@ -45,6 +46,7 @@ export class bundler_utils {
   hasJSX?: boolean;
   sourceMappings: Map<string, Array<string>> = new Map();
   createJSAsset!: (filename: PathLike) => Asset;
+  createCSSAsset!: (filename: PathLike) => Asset;
   createUnknownAsset!: (filename: PathLike) => Asset;
   stylesheets: Array<PathLike> = [];
   createImageAsset!: (filename: PathLike) => Asset;
@@ -57,29 +59,25 @@ export class bundler_utils {
   /** Recursively read a file and build its dependencies. */
   start(file: PathLike) {
     file = resolve(file.toString());
+    let extension = extname(file).slice(1);
     var asset: Asset;
-    if (extname(file) === ".css") {
-      const ezraModule = this.ModuleIdentifierNode(file.toString());
-      this.stylesheets.push(file);
-      asset = {
-        dependencies: [],
-        filename: file,
-        id: ezraModule.name,
-        module: this.prepareModule(new Program(0), ezraModule),
-      };
-    } else
-      switch (true) {
-        case /js/.test(extname(file)):
-          asset = this.createJSAsset(file);
+    switch (true) {
+      // Bundle JS dependencies.
+      case JSFiles[extension] === true:
+        asset = this.createJSAsset(file);
+        break;
+      // Stylesheet dependecies.
+      case extension === "css":
+        asset = this.createCSSAsset(file);
+      // Bundle image dependencies.
+      case imageExts[extension] === true:
+        if (!this.options.writeImagesIntoBundle) {
+          asset = this.createImageAsset(file);
           break;
-        case imageExts.includes(extname(file)):
-          if (!this.options.writeImagesIntoBundle) {
-            asset = this.createImageAsset(file);
-            break;
-          }
-        default:
-          asset = this.createUnknownAsset(file);
-      }
+        }
+      default:
+        asset = this.createUnknownAsset(file);
+    }
     this.assets.set(file, asset);
     this.tree.body.push(...asset.module);
     asset.dependencies.forEach((dependency) => {

@@ -155,6 +155,16 @@ ezra.createJSAsset = function (filename: PathLike) {
     module: this.prepareModule(ast, ezraModule),
   };
 };
+ezra.createCSSAsset = function (filename: PathLike) {
+  const ezraModule = this.ModuleIdentifierNode(filename.toString());
+  this.stylesheets.push(filename);
+  return {
+    dependencies: [],
+    filename,
+    id: ezraModule.name,
+    module: this.prepareModule(new Program(0), ezraModule),
+  };
+};
 ezra.createImageAsset = function (filename: PathLike) {
   let ezraModule = this.ModuleIdentifierNode(filename.toString());
   let address = this.generateNewImage(filename);
@@ -169,18 +179,23 @@ ezra.createImageAsset = function (filename: PathLike) {
   };
 };
 ezra.createUnknownAsset = function (filename) {
-  var ezraModule = this.ModuleIdentifierNode(filename.toString());
-  let simulate = new Program(0);
-  let defaultExport = assignmentExpression(
-    memberExpression(ezraModule, newIdentifier("default")),
-    "=",
-    newString(`"${stringifytoBase64(filename)}"`)
-  );
-  simulate.push(expressionStatement(defaultExport));
+  filename = filename.toString();
+  var ezraModule = this.ModuleIdentifierNode(filename);
+  let defaultExport: string;
+  if (extname(filename) === ".json") {
+    defaultExport = `${ezraModule.name}.default = ${readFileSync(
+      filename,
+      "utf-8"
+    )}`;
+  } else {
+    defaultExport = `${ezraModule.name}.default = "${stringifytoBase64(
+      filename
+    )}"`;
+  }
   return {
     id: ezraModule.name,
     filename,
     dependencies: [],
-    module: this.prepareModule(simulate, ezraModule),
+    module: this.prepareModule(Ezra.parse(defaultExport), ezraModule),
   };
 };

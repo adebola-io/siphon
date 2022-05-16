@@ -175,16 +175,16 @@ export function isVoid(tagName: string | undefined): boolean {
   return tagName ? voidTags[tagName] === true : false;
 }
 export const stringMarkers: Array<string> = ["'", "`", '"'];
-export const imageExts: Array<string> = [
-  ".png",
-  ".jpeg",
-  ".jpg",
-  ".bmp",
-  ".svg",
-  ".gif",
-  ".tiff",
-  ".webp",
-];
+export const imageExts: any = {
+  ".png": true,
+  ".jpeg": true,
+  ".jpg": true,
+  ".bmp": true,
+  ".svg": true,
+  ".gif": true,
+  ".tiff": true,
+  ".webp": true,
+};
 /**
  * Confirm if a character is a numeric digit.
  * @param char The character to evaluate.
@@ -543,6 +543,12 @@ export const OPERATORS = operators._ignore1_.concat(
   operators._suceeding2_,
   operators._suceeding3_
 );
+export const JSFiles: any = {
+  js: true,
+  cjs: true,
+  mjs: true,
+  jsx: true,
+};
 export const precedence: any = {
   "(": 19,
   ")": 19,
