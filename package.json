@@ -1,6 +1,6 @@
 {
   "name": "siphon-cli",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "start-date": "25/3/22",
   "description": "Simple bundler for web applications. 📦🔧🧡",
   "main": "bin/siphon",
@@ -21,9 +21,7 @@
   "author": "Adebola Akomolafe",
   "license": "ISC",
   "dependencies": {
-    "acorn": "^8.7.0",
-    "colors": "^1.4.0",
-    "esprima": "^4.0.1"
+    "colors": "^1.4.0"
   },
   "bin": {
     "siphon-cli": "bin/siphon"
