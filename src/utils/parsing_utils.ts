@@ -176,14 +176,14 @@ export function isVoid(tagName: string | undefined): boolean {
 }
 export const stringMarkers: Array<string> = ["'", "`", '"'];
 export const imageExts: any = {
-  ".png": true,
-  ".jpeg": true,
-  ".jpg": true,
-  ".bmp": true,
-  ".svg": true,
-  ".gif": true,
-  ".tiff": true,
-  ".webp": true,
+  png: true,
+  jpeg: true,
+  jpg: true,
+  bmp: true,
+  svg: true,
+  gif: true,
+  tiff: true,
+  webp: true,
 };
 /**
  * Confirm if a character is a numeric digit.

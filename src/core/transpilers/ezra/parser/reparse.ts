@@ -18,7 +18,10 @@ ezra.reparse = function (node, context) {
       case this.text[this.i] === ",":
         if (this.requireComma()) {
           return node;
-        } else return this.sequenceExpression(node);
+        } else {
+          this.belly.push(this.text[this.i++]);
+          return this.sequenceExpression(node);
+        }
       case this.eat("."):
       case this.eat("?."):
         if (context === "number") this.raise("ID_FOLLOWS_LITERAL");

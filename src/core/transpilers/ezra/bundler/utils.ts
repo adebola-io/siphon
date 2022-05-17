@@ -69,6 +69,7 @@ export class bundler_utils {
       // Stylesheet dependecies.
       case extension === "css":
         asset = this.createCSSAsset(file);
+        break;
       // Bundle image dependencies.
       case imageExts[extension] === true:
         if (!this.options.writeImagesIntoBundle) {

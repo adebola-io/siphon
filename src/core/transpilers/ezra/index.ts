@@ -28,10 +28,28 @@ const Ezra = {
     const generator = new Generator();
     return generator.generate(node, options);
   },
-  traverse(node: JSNode, config: Config) {
+  /**
+   * The `traverse()` function takes in a Javascript AST node and recursively visits all its attached nodes and all their own attached nodes, performing a defined operation based on the type of node visited.
+   * @param node The node to traverse, e.g. a Program node, Function Declaration node, etc.
+   * @param config The configuration is an object of methods with names that match defined node types. When the node with the matching type is visited, the method will be run.
+   * For example:
+   * ```js
+   * var ast = Ezra.parse('2+3+4');
+   * Ezra.traverse(ast, {
+   *    Literal: (node, path)=> console.log(node.value) // will log 2, 3, and 4.
+   * })
+   * ```
+   */
+  traverse(node: JSNode, config: Config): void {
     const traverser = new Traverser();
     return traverser.traverse(node, config);
   },
+  /**
+   * The `bundle()` function reads through a Javascript file and recursively determines all its dependencies. It then concatenates all these files together, creating a single Abstract Syntax Tree of the combined dependencies.
+   * @param entry The starting Javascript file.
+   * @param options The bundling options.
+   * @returns The AST of the generated bundle
+   */
   bundle(entry: PathLike, options?: bundlerOptions) {
     const bundler = new Bundler();
     return bundler.bundle(entry, options);
