@@ -3,10 +3,16 @@ import { PathLike } from "fs";
 import {
   ArrayExpression,
   EmptyNode,
+  ExpressionStatement,
   FunctionDeclaration,
+  FunctionExpression,
   Program,
 } from "../../../../types";
-import { callExpression, newString } from "../traverser/helpers/creator";
+import {
+  blockStatement,
+  callExpression,
+  newString,
+} from "../traverser/helpers/creator";
 import Ezra from "..";
 // import transform_class_to_prototype from "../traverser/examples/transform_class_to_prototype";
 import transform_template_literals from "../traverser/examples/transform_template_literals";
@@ -55,7 +61,10 @@ export class bundler_internals extends bundler_utils {
         ),
       JSXExpressionContainer: (node) => node.expression ?? new EmptyNode(0),
     });
+    // Wrap the entire bundle in an IIFE.
+    var call: any = Ezra.parse("(function(){})()");
+    call.body[0].expression.callee.body = blockStatement(this.tree.body);
     // mangle_variables(this.tree);
-    return this.tree;
+    return call;
   }
 }

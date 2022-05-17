@@ -1,8 +1,10 @@
-var _eb34_ = 0;
-function _einit8aa_ () {
-  if (_eb34_) 
-    return _einit8aa_;
-  else _eb34_++;
-  return _einit8aa_;
-}
-_einit8aa_()
+(function () {
+  var _eb0c_ = 0;
+  function _einit019_ () {
+    if (_eb0c_) 
+      return _einit019_;
+    else _eb0c_++;
+    return _einit019_;
+  }
+  _einit019_()
+})();
