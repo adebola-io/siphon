@@ -117,7 +117,7 @@ export class parse_utils {
       this.raise("JS_UNEXPECTED_TOKEN");
   }
   backtrack() {
-    this.recede(this.belly.pop().length);
+    this.i -= this.belly.pop().length;
   }
   match(ptn: string) {
     if (

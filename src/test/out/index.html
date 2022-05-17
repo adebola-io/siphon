@@ -1,16 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
+<html style='background: #151515'>
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta
-       name="viewport"
-       content="width=device-width, initial-scale=1.0"
-       />
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="./index.bundle.js"></script>
+  <body style='
+   font-family: sans-serif;
+   height: fit-content;
+   padding: 0 5%;
+   padding-top: 60px;
+   margin: 0'>
+    <h1 style='color: #d62929;'>Siphon Compile Error.</h1>
+    <hr />
+    <h3 style='color:white'></h3>
+    <p style='color: gray; margin-top: 0'></p>
+    <script>
+      document.querySelector('h3').innerText = "Unexpected token ','."
+      document.querySelector('p').innerText = 
+      "source/main.js:474:6"
+      var error = new Error(`Unexpected token ','.`);
+      throw error;
+    </script>
   </body>
 </html>

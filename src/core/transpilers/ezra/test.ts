@@ -12,14 +12,20 @@ import {
 } from "../../../types";
 
 const text = readFileSync("src/test/source/main.js").toString();
-console.time();
-Ezra.parse(text, { sourceFile: "src/test/source/main.js" });
-console.timeEnd();
+// console.time();
+writeFileSync(
+  "result.json",
+  JSON.stringify(Ezra.parse(text, { sourceFile: "src/test/source/main.js" }))
+);
+// console.timeEnd();
 // console.log(program);
 // Ezra.bundle("src/test/source/main.js");
-console.time();
-Esprima.parseScript(text, { loc: true });
-console.timeEnd();
+// console.time();
+// writeFileSync(
+//   "result.json",
+//   JSON.stringify(Esprima.parseScript(text, { loc: true }))
+// );
+// console.timeEnd();
 
 console.time();
 Acorn.parse(text, { ecmaVersion: 2022 });

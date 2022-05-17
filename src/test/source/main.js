@@ -1,1 +1,3 @@
-`${`this`}is ${`a` + `nested ${`template` + `${`literal`}`}`}`;
+{
+  var name = "sefunmi";
+}

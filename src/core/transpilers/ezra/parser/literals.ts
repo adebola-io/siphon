@@ -6,12 +6,12 @@ import { ezra } from "./base";
 ezra.numberLiteral = function () {
   const numlit = new Literal(this.i);
   numlit.kind = "number";
-  if (this.belly.top() === "decim") {
-    this.belly.pop();
+  if (this.belly.pop() === ".") {
     numlit.raw += "." + this.count();
     if (isAlphabetic(this.text[this.i]) || /\./.test(this.text[this.i])) {
       this.raise("ID_FOLLOWS_LITERAL");
     }
+    numlit.value = parseFloat(numlit.raw);
   } /** Hexadecimal numbers. */ else if (this.taste("0x")) {
     numlit.raw = "Ox" + this.count(16);
     if (isAlphabetic(this.text[this.i])) this.raise("ID_FOLLOWS_LITERAL");
@@ -72,9 +72,8 @@ ezra.templateLiteral = function () {
     if (this.text[this.i] === "\\")
       (raw += `\\${(this.i++, this.text[this.i])}`), this.i++;
     // Read an expression that is nested within the literal.
-    else if (this.eat("${")) {
+    else if (this.taste("${")) {
       end = this.i - 2;
-      this.belly.pop();
       this.belly.push("{");
       var expression = this.group("expression");
       if (expression === undefined)

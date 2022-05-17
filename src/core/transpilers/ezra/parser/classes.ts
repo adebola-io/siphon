@@ -72,9 +72,8 @@ ezra.definition = function () {
       if (this.text[this.i] !== "(") this.raise("EXPECTED", "(");
     }
   }
-  if (this.eat("(")) {
+  if (this.text[this.i] === "(") {
     // METHOD DEFINITIONS.
-    this.backtrack();
     definition = new MethodDefinition(start);
     definition.computed = isComputed;
     definition.static = isStatic;

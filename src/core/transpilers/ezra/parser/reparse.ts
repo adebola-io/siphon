@@ -15,9 +15,8 @@ ezra.reparse = function (node, context) {
       case this.eat("/*"):
         this.skip();
         break;
-      case this.eat(","):
+      case this.text[this.i] === ",":
         if (this.requireComma()) {
-          this.backtrack();
           return node;
         } else return this.sequenceExpression(node);
       case this.eat("."):
@@ -25,11 +24,9 @@ ezra.reparse = function (node, context) {
         if (context === "number") this.raise("ID_FOLLOWS_LITERAL");
       case this.eat("["):
         return this.memberExpression(node);
-      case this.eat("("):
-        if (this.contexts.top() === "new") {
-          this.backtrack();
-          return node;
-        } else return this.callExpression(node);
+      case this.text[this.i] === "(":
+        if (this.contexts.top() === "new") return node;
+        else return this.callExpression(node);
       case this.eat("++"):
       case this.eat("--"):
         if (/\n/.test(this.text.slice(pos, this.i))) {

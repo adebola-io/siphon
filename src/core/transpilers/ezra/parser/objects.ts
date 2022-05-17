@@ -50,9 +50,8 @@ ezra.property = function () {
     }
     this.outerspace();
     if (this.eat(":")) prop.value = this.expression();
-    else if (this.eat("(")) {
+    else if (this.text[this.i] === "(") {
       prop.method = true;
-      this.backtrack();
       prop.value = this.functionExpression();
     } else this.raise("EXPECTED", ":");
   } else {
@@ -60,9 +59,8 @@ ezra.property = function () {
     prop.key = this.identifier(true);
     this.outerspace();
     if (this.eat(":")) prop.value = this.expression();
-    else if (this.eat("(")) {
+    else if (this.text[this.i] === "(") {
       prop.method = true;
-      this.backtrack();
       prop.value = this.functionExpression();
     } else if (this.text[this.i] === "," || this.text[this.i] === "}") {
       prop.shorthand = true;
@@ -80,6 +78,12 @@ ezra.property = function () {
 ezra.elements = function () {
   const args = [];
   while (!(this.text[this.i] === undefined) && this.text[this.i] !== "]") {
+    while (this.text[this.i] === ",") {
+      this.i++;
+      args.push(null);
+      this.outerspace();
+    }
+    if (this.text[this.i] === "]") break;
     args.push(this.expression());
     if (this.text[this.i] === ",") this.i++;
     this.outerspace();

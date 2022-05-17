@@ -74,11 +74,13 @@ ezra.statement = function () {
       break;
     case this.text[this.i] === "(":
       return this.tryExpressionStatement();
-    case this.eat("{"):
+    case this.text[this.i] === "{":
       if (statementScope[this.contexts.top()] === undefined) {
-        this.backtrack();
         return this.tryExpressionStatement();
-      } else return this.blockStatement();
+      } else {
+        this.belly.push(this.text[this.i++]);
+        return this.blockStatement();
+      }
     case this.match("do"):
       return this.doWhileStatement();
     case this.eat(";"):

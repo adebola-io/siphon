@@ -78,8 +78,7 @@ ezra.jsxAttribute = function () {
   attrib.name.name = attribName.name;
   attrib.name.loc = attribName.loc;
   this.outerspace();
-  if (this.eat("=")) {
-    this.belly.pop();
+  if (this.taste("=")) {
     switch (this.text[this.i]) {
       case '"':
       case "'":
@@ -140,8 +139,8 @@ ezra.jsxOpeningElement = function () {
   open.name = this.jsxIdentifier();
   open.attributes = this.group("JSX_attribute");
   if (this.text[this.i] === ">") open.selfClosing = false;
-  else if (this.eat("/")) {
-    this.belly.pop(), this.outerspace();
+  else if (this.taste("/")) {
+    this.outerspace();
     if (this.text[this.i] === ">") {
       open.selfClosing = true;
     }
@@ -162,8 +161,7 @@ ezra.jsxClosingElement = function (start) {
   const close = new JSXClosingElement(start);
   close.name = this.jsxIdentifier();
   this.outerspace();
-  if (!this.eat(">")) this.raise("JS_UNEXPECTED_TOKEN", this.text[this.i]);
-  else this.belly.pop();
+  if (!this.taste(">")) this.raise("JS_UNEXPECTED_TOKEN", this.text[this.i]);
   this.outerspace();
   if (close.name instanceof JSXIdentifier) {
     close.tagName = close.name.name;

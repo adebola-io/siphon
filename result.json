@@ -1,0 +1,36 @@
+{
+  "type": "Program",
+  "loc": { "start": 0, "end": 31 },
+  "body": [
+    {
+      "type": "BlockStatement",
+      "loc": { "start": 0, "end": 29 },
+      "body": [
+        {
+          "type": "VariableDeclaration",
+          "loc": { "start": 5, "end": 25 },
+          "kind": "var",
+          "declarations": [
+            {
+              "type": "VariableDeclarator",
+              "loc": { "start": 9, "end": 25 },
+              "id": {
+                "type": "Identifier",
+                "loc": { "start": 9, "end": 12 },
+                "name": "name"
+              },
+              "init": {
+                "type": "Literal",
+                "loc": { "start": 16, "end": 25 },
+                "raw": "\"sefunmi\"",
+                "kind": "string",
+                "value": "sefunmi"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sourceType": "module"
+}

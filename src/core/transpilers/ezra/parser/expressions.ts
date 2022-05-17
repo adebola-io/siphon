@@ -72,8 +72,6 @@ ezra.expression = function (type) {
       if (this.allowSpread()) return this.spreadElement();
       else this.raise("EXPRESSION_EXPECTED");
     case this.eat("."):
-      this.belly.pop();
-      this.belly.push("decim");
       return this.reparse(this.numberLiteral());
     case this.match("new"):
       return this.reparse(this.newExpression());
@@ -109,7 +107,8 @@ ezra.memberExpression = function (object) {
   var memexp = new MemberExpression(this.i);
   this.outerspace();
   memexp.object = object;
-  if (this.belly.top() === "[") {
+  let query = this.belly.top();
+  if (query === "[") {
     memexp.property = this.group();
     if (memexp.property === undefined) this.raise("EXPRESSION_EXPECTED");
     memexp.computed = true;
@@ -122,7 +121,7 @@ ezra.memberExpression = function (object) {
   } else memexp.property = this.identifier(true);
   memexp.loc.start = memexp.object.loc.start;
   memexp.loc.end = memexp.property?.loc.end;
-  if (this.belly.top() === "?.") memexp.optional = true;
+  if (query === "?.") memexp.optional = true;
   this.belly.pop();
   return this.reparse(memexp, ".");
 };
@@ -138,6 +137,7 @@ ezra.thisExpression = function () {
   return thisexp;
 };
 ezra.callExpression = function (callee) {
+  this.belly.push(this.text[this.i++]);
   const callexp = new CallExpression(callee.loc.start);
   callexp.callee = callee;
   callexp.arguments = this.group("call") ?? [];
