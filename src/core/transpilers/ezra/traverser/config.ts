@@ -13,6 +13,7 @@ import {
   ExportNamedDeclaration,
   ExportSpecifier,
   ExpressionStatement,
+  ForStatement,
   FunctionDeclaration,
   Identifier,
   IfStatement,
@@ -28,9 +29,11 @@ import {
   Literal,
   LogicalExpression,
   MemberExpression,
+  ObjectExpression,
   PrivateIdentifier,
   Program,
   Property,
+  ReturnStatement,
   Super,
   SwitchStatement,
   TemplateLiteral,
@@ -39,10 +42,33 @@ import {
   VariableDeclarator,
   WhileStatement,
 } from "../../../../types";
+import { Visitor } from "../../../structures";
+
+export class Scope {
+  constructor(node: BlockStatement | Program, previousScope?: Scope) {
+    this.node = node;
+    this.variables = new Map();
+    this.functions = new Map();
+    this.undeclared = new Map();
+    this.ancestors = previousScope?.ancestors ?? [];
+    this.descendants = [];
+    if (previousScope) {
+      this.ancestors.push(previousScope);
+      previousScope?.descendants.push(this);
+    }
+  }
+  level = 0;
+  ancestors: Array<Scope>;
+  descendants: Array<Scope>;
+  functions: Map<string, Identifier>;
+  node: BlockStatement | Program;
+  variables: Map<string, Identifier>;
+  undeclared: Map<string, { node: Identifier; hoisted?: Identifier }>;
+}
 
 export interface TraversalPath {
   parent: JSNode;
-  scope: JSNode;
+  scope: Scope;
   route: JSNode[];
 }
 export interface Config {
@@ -71,6 +97,8 @@ export interface Config {
     node: ExpressionStatement,
     path: TraversalPath
   ) => void;
+  ReturnStatement?: (node: ReturnStatement, path: TraversalPath) => void;
+  ForStatement?: (node: ForStatement, path: TraversalPath) => void;
   WhileStatement?: (node: WhileStatement, path: TraversalPath) => void;
   DoWhileStatement?: (node: DoWhileStatement, path: TraversalPath) => void;
   TemplateLiteral?: (node: TemplateLiteral, path: TraversalPath) => void;

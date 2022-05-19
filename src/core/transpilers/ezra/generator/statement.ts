@@ -50,7 +50,7 @@ ezra.FunctionDeclaration = function (node: FunctionDeclaration) {
 };
 ezra.VariableDeclaration = function (node: VariableDeclaration) {
   this.write(node.kind + " ");
-  this.sequence(node.declarations);
+  this.sequence(node.declarations, node.type);
   this.write(";");
 };
 ezra.VariableDeclarator = function (node: VariableDeclarator) {

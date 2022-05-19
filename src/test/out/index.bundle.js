@@ -1,10 +1,1 @@
-(function () {
-  var _eb0c_ = 0;
-  function _einit019_ () {
-    if (_eb0c_) 
-      return _einit019_;
-    else _eb0c_++;
-    return _einit019_;
-  }
-  _einit019_()
-})();
+(function(){var g=0;function h(){if(g)return h;else g++;Object.defineProperty(exports,"__esModule",{value:!0}),exports.HTMLError=exports.removeInvalidChars=exports.counterpart=exports.assoc=exports.precedence=exports.JSFiles=exports.OPERATORS=exports.getMIMEType=exports.isIllegalCSSIdentifier=exports.isValidIdentifierCharacter=exports.isAlphaNumeric=exports.isOctalDigit=exports.isBinaryDigit=exports.isHexDigit=exports.trace=exports.operators=exports.declarators=exports.JSkeywords=exports.last=exports.lastRealChar=exports.isBracket=exports.isNewLine=exports.isSentenceCase=exports.isAlphabetic=exports.isNum=exports.isDigit=exports.imageExts=exports.stringMarkers=exports.isVoid=exports.HTMLTags=exports.deprecatedTags=exports.EMPTY_SPACE=exports.NEWLINE=exports.isForeignTag=exports.checkForEnd=exports.isSpaceCharac=void 0;var b=require("fs"),c=require("path"),d=require("../core/errors"),e=require("./fs_utils");function f(a){return (/\u0020|\u0009|\u000A|\u000C|\u000D/).test(a);}return h;}h()})();

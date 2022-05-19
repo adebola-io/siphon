@@ -34,10 +34,13 @@ function transpileJSX(
     nodeIdentifier = newIdentifier(node.openingElement.tagName);
   }
   // Transform JSXAttributes to object properties.
-  let attributesObject = new ObjectExpression(0);
+  let attributesObject = new ObjectExpression(
+    node.openingElement.attributes[0]?.loc.start ??
+      node.openingElement.loc.start
+  );
   attributesObject.properties = [];
   node.openingElement.attributes.forEach((jsxAttribute) => {
-    let attributeProp = new Property(0);
+    let attributeProp = new Property(jsxAttribute.loc.start);
     attributeProp.key = newString(`"${jsxAttribute.name.name}"`);
     if (jsxAttribute.value) {
       attributeProp.value = jsxAttribute.value;
@@ -55,9 +58,13 @@ function transpileJSX(
     HTMLTags[node.openingElement.tagName] !== true
   ) {
     // Set the prop.children property.
-    let childrenProp = new Property(0);
+    let childrenProp = new Property(
+      node.children[0]?.loc.start ?? node.openingElement.loc.start
+    );
     childrenProp.key = newIdentifier("children");
-    let childrenArray = new ArrayExpression(0);
+    let childrenArray = new ArrayExpression(
+      node.children[0]?.loc.start ?? node.openingElement.loc.end
+    );
     childrenArray.elements = node.children ?? [];
     childrenProp.value = childrenArray;
     // Prevent clash with already defined property.

@@ -234,7 +234,8 @@ ezra.LogicalExpression = function (node: LogicalExpression) {
   this.render(node.left);
   this.writeIf(")", condition);
   condition =
-    requiresBrackets(node, "right") || /Assign/.test(node.right?.type ?? "");
+    requiresBrackets(node, "right") ||
+    /Assign|Sequence|Conditional/.test(node.right?.type ?? "");
   this.space();
   this.write(node.operator);
   this.space();
@@ -243,7 +244,7 @@ ezra.LogicalExpression = function (node: LogicalExpression) {
   this.writeIf(")", condition);
 };
 ezra.SequenceExpression = function (node: SequenceExpression) {
-  this.sequence(node.expressions);
+  this.sequence(node.expressions, node.type);
 };
 ezra.ArrowFunctionExpression = function (node: ArrowFunctionExpression) {
   if (node.async) this.write("async ");
@@ -271,7 +272,7 @@ ezra.AssignmentPattern = function (node: AssignmentPattern) {
 ezra.ArrayPattern = ezra.ArrayExpression;
 ezra.ObjectPattern = ezra.ObjectExpression;
 ezra.RestElement = function (node: RestElement) {
-  var condition = isValidReference(node.argument);
+  var condition = !isValidReference(node.argument);
   this.write("...");
   this.writeIf("(", condition);
   this.render(node.argument);

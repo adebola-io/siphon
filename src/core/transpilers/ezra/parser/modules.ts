@@ -1,4 +1,5 @@
 import {
+  ClassDeclaration,
   ExportAllDeclaration,
   ExportDefaultDeclaration,
   ExportNamedDeclaration,
@@ -134,7 +135,8 @@ ezra.exportDeclaration = function () {
       exportDec.declaration = this.statement();
       if (
         !(exportDec.declaration instanceof FunctionDeclaration) &&
-        !(exportDec.declaration instanceof VariableDeclaration)
+        !(exportDec.declaration instanceof VariableDeclaration) &&
+        !(exportDec.declaration instanceof ClassDeclaration)
       ) {
         this.raise(
           "JS_DEC_OR_STATEMENT_EXPECTED",

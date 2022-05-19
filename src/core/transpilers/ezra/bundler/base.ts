@@ -3,9 +3,7 @@ import { PathLike } from "fs";
 import {
   ArrayExpression,
   EmptyNode,
-  ExpressionStatement,
   FunctionDeclaration,
-  FunctionExpression,
   Program,
 } from "../../../../types";
 import {
@@ -20,9 +18,10 @@ import resolve_optional_chaining from "../traverser/examples/resolve_optional_ch
 import resolve_nullish_coalescing from "../traverser/examples/resolve_nullish_coalescing";
 import rewrite_destructured_variables from "../traverser/examples/rewrite_destructured_variables";
 import transpileJSX from "../traverser/examples/JSX_transpiling/transpile_jsx";
-import transform_arrow_functions from "../traverser/examples/transform_arrow_functions";
+// import transform_arrow_functions from "../traverser/examples/transform_arrow_functions";
 import default_handler from "../traverser/examples/JSX_transpiling/default_handler";
 import default_parameters from "../traverser/examples/default_parameters";
+import minify from "../traverser/examples/minify";
 
 export class bundler_internals extends bundler_utils {
   bundle(entry: PathLike, options?: bundlerOptions) {
@@ -43,7 +42,7 @@ export class bundler_internals extends bundler_utils {
       // ClassDeclaration: transform_class_to_prototype,
       TemplateLiteral: transform_template_literals,
       MemberExpression: resolve_optional_chaining,
-      ArrowFunctionExpression: transform_arrow_functions,
+      // ArrowFunctionExpression: transform_arrow_functions,
       LogicalExpression: resolve_nullish_coalescing,
       VariableDeclaration: rewrite_destructured_variables,
       ChainExpression: (node) => node.expression,
@@ -62,9 +61,9 @@ export class bundler_internals extends bundler_utils {
       JSXExpressionContainer: (node) => node.expression ?? new EmptyNode(0),
     });
     // Wrap the entire bundle in an IIFE.
-    var call: any = Ezra.parse("(function(){})()");
-    call.body[0].expression.callee.body = blockStatement(this.tree.body);
-    // mangle_variables(this.tree);
-    return call;
+    var final: any = Ezra.parse("(function(){})()");
+    final.body[0].expression.callee.body = blockStatement(this.tree.body);
+    // Mangle and minify.
+    return minify(final);
   }
 }

@@ -46,8 +46,9 @@ export function assignmentExpression(
   return assign;
 }
 export function expressionStatement(expression: Expression) {
-  let statement = new ExpressionStatement(0);
+  let statement = new ExpressionStatement(expression.loc.start);
   statement.expression = expression;
+  statement.loc.end = expression.loc.end;
   return statement;
 }
 export function unaryExpression(operator: string, argument: Expression) {
@@ -91,11 +92,12 @@ export function memberExpression(
   computed = false,
   optional = false
 ) {
-  let mem = new MemberExpression(0);
+  let mem = new MemberExpression(object.loc.start);
   mem.object = object;
   mem.property = property;
   mem.computed = computed;
   mem.optional = optional;
+  mem.loc.end = property.loc.end;
   return mem;
 }
 export function newIdentifier(name: string) {
@@ -104,7 +106,7 @@ export function newIdentifier(name: string) {
   return id;
 }
 export function callExpression(callee: JSNode, args: JSNode[] = []) {
-  const call = new CallExpression(0);
+  const call = new CallExpression(callee.loc.start);
   call.callee = callee;
   call.arguments = args;
   return call;
@@ -146,6 +148,6 @@ null_.raw = "null";
 null_.kind = "null";
 export var this_ = new ThisExpression(0);
 export var undefined_ = newIdentifier("undefined");
-export function clone(node: JSNode) {
+export function clone(node: any) {
   return Object.assign(Object.create(Object.getPrototypeOf(node)), node);
 }

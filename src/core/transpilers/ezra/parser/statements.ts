@@ -12,6 +12,7 @@ import {
   LabeledStatement,
   ObjectPattern,
   ReturnStatement,
+  SequenceExpression,
   SwitchCase,
   SwitchStatement,
   ThrowStatement,
@@ -326,6 +327,11 @@ ezra.returnStatement = function () {
   ) {
     retstat.argument = null;
   } else retstat.argument = this.expression() ?? null;
+  // Mark node to prevent it from being generated on a newline.
+  if (retstat.argument instanceof SequenceExpression) {
+    var exp: any = retstat.argument;
+    exp.__isreturn = true;
+  }
   this.eat(";");
   retstat.loc.end = this.i;
   return retstat;

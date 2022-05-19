@@ -1,5 +1,5 @@
 import { generatorOptions } from ".";
-import { JSNode } from "../../../../types";
+import { EmptyNode, JSNode } from "../../../../types";
 
 export class gen_utils {
   state = "";
@@ -47,7 +47,7 @@ export class gen_utils {
     }
   }
   comma(node: any, i: number) {
-    if (i !== node.length - 1) {
+    if (i !== node.length - 1 && !(node[i] instanceof EmptyNode)) {
       this.write(",");
       this.space();
     }
@@ -64,11 +64,12 @@ export class gen_utils {
     else if (inBetween) this.write(inBetween);
   }
   /** Print a list of nodes separated by commas. */
-  sequence(list: any[]) {
+  sequence(list: any[], type?: string) {
     let i = 0;
     if (list.length > 2) {
       this.indentLevel++;
-      if (list[0].type !== "VariableDeclarator") this.newline();
+      if (type !== "VariableDeclaration" && type !== "SequenceExpression")
+        this.newline();
     } else if (list[0]?.type === "Property" && list[0].method) {
       this.indentLevel++;
       this.newline();
@@ -76,12 +77,17 @@ export class gen_utils {
     for (i; list[i]; i++) {
       this.render(list[i]);
       this.comma(list, i);
-      if (list.length > 2 && i !== list.length - 1) this.newline();
+      if (
+        list.length > 2 &&
+        i !== list.length - 1 &&
+        list[i].type !== "EmptyNode"
+      )
+        this.newline();
     }
     if (list.length > 2) {
       this.indentLevel--;
-      if (list[0].type !== "VariableDeclarator") this.newline();
-    } else if (list[0]?.type === "Property" && list[0].method) {
+      if (type !== "VariableDeclaration") this.newline();
+    } else if (type === "ObjectExpression" && list[0].method) {
       this.indentLevel--;
       this.newline();
     }

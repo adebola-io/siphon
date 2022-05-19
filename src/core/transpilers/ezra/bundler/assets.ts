@@ -52,7 +52,7 @@ ezra.createJSAsset = function (filename: PathLike) {
   var fullSourceExports: JSNode[] = [];
   var redefinitions: JSNode[] = [];
   var moduleImports: Map<string, Identifier> = new Map();
-  var moduleExports: Map<Expression, Expression> = new Map();
+  var moduleExports: Map<Expression, any> = new Map();
   Ezra.traverse(ast, {
     ImportDeclaration: (node) => {
       let dependencyPath = this.getDependencyPath(node, filename);
@@ -88,14 +88,17 @@ ezra.createJSAsset = function (filename: PathLike) {
       } else
         for (const specifier of node.specifiers) {
           const declarator = new VariableDeclarator(0);
-          declarator.id = specifier.local;
+          declarator.id = newIdentifier(specifier.local.name);
           if (specifier instanceof ImportDefaultSpecifier) {
             declarator.init = memberExpression(
               placeholder,
               newIdentifier("default")
             );
           } else if (specifier instanceof ImportSpecifier) {
-            declarator.init = memberExpression(placeholder, specifier.imported);
+            declarator.init = memberExpression(
+              placeholder,
+              newIdentifier(specifier.imported.name)
+            );
           } else if (specifier instanceof ImportNamespaceSpecifier) {
             declarator.init = placeholder;
           }
@@ -130,7 +133,7 @@ ezra.createJSAsset = function (filename: PathLike) {
       return new EmptyNode(0);
     },
     ThisExpression(node, path) {
-      if (path.scope.type === "Program") return newIdentifier("globalThis");
+      if (path.scope.level === 0) return newIdentifier("globalThis");
     },
   });
   ast.body.splice(
@@ -144,7 +147,11 @@ ezra.createJSAsset = function (filename: PathLike) {
   moduleExports.forEach((value, key) => {
     ast.push(
       expressionStatement(
-        assignmentExpression(memberExpression(ezraModule, value), "=", key)
+        assignmentExpression(
+          memberExpression(ezraModule, newIdentifier(value.name)),
+          "=",
+          key
+        )
       )
     );
   });
@@ -152,7 +159,7 @@ ezra.createJSAsset = function (filename: PathLike) {
     id: ezraModule.name,
     dependencies,
     filename,
-    module: this.prepareModule(ast, ezraModule),
+    module: this.prepareModule(ast, newIdentifier(ezraModule.name)),
   };
 };
 ezra.createCSSAsset = function (filename: PathLike) {

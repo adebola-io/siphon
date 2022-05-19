@@ -25,9 +25,9 @@ function resolve_nullish_coalescing(
   //   The test. !(x === null || x === undefined)
   let condition = new ConditionalExpression(node.loc.start);
   let test = new UnaryExpression(node.loc.start);
-  let testInner = new LogicalExpression(0);
-  let innerL = new BinaryExpression(0);
-  let innerR = new BinaryExpression(0);
+  let testInner = new LogicalExpression(node.loc.start);
+  let innerL = new BinaryExpression(node.loc.start);
+  let innerR = new BinaryExpression(node.loc.start);
   innerL.left = innerR.left = node.left;
   innerL.operator = innerR.operator = "===";
   innerL.right = null_;

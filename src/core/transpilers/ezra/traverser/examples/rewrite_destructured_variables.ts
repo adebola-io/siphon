@@ -39,9 +39,10 @@ function rewrite_destructured_variables(
       for (let j = 0; dec.id.properties[j]; j++) {
         let property = dec.id.properties[j];
         if (!property.computed && property.value instanceof Identifier) {
-          let newDec = new VariableDeclarator(0);
+          let newDec = new VariableDeclarator(dec.loc.start);
           newDec.id = newIdentifier(property.value.name);
           newDec.init = memberExpression(settlerObject, property.key);
+          newDec.loc.end = dec.loc.end;
           node.declarations.push(newDec);
         }
       }
@@ -57,7 +58,7 @@ function rewrite_destructured_variables(
       for (let j = 0; dec.id.elements[j]; j++) {
         let element = dec.id.elements[j];
         if (element instanceof Identifier) {
-          let newDec = new VariableDeclarator(0);
+          let newDec = new VariableDeclarator(dec.loc.start);
           newDec.id = newIdentifier(element.name);
           newDec.init = memberExpression(
             settlerObject,

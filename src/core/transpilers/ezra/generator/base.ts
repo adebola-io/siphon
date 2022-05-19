@@ -82,7 +82,7 @@ export var ezra = ezra_gen_internals.prototype;
 ezra.generate = function (node, options) {
   this.options = { ...defaults, ...options };
   if (node.type === "Program") {
-    this.indentLevel = this.options.indent;
+    this.indentLevel = this.options.indent ?? 0;
     for (let x = 0; x < this.indentLevel; x++) {
       this.write("  ");
       this.lineLength += 2;
@@ -90,7 +90,8 @@ ezra.generate = function (node, options) {
   }
   for (let i = 0; node.body[i]; i++) {
     this.renderTopLevel(node.body[i]);
-    if (i !== node.body.length - 1) this.newline();
+    if (i !== node.body.length - 1 && node.body[i].type !== "EmptyNode")
+      this.newline();
   }
   return this.state;
 };
