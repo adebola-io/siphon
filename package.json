@@ -1,6 +1,6 @@
 {
   "name": "siphon-cli",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "start-date": "25/3/22",
   "description": "Simple bundler for web applications. 📦🔧🧡",
   "main": "bin/siphon",
