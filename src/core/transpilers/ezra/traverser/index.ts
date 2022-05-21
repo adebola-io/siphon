@@ -25,7 +25,7 @@ class Traverser {
     // Bind variable declarations to the scope in which they are created.
     switch (true) {
       case node instanceof FunctionDeclaration:
-      case node instanceof VariableDeclarator:
+      case node instanceof VariableDeclarator && !/For/.test(path.parent.type):
       case node instanceof ClassDeclaration:
         path.scope.variables.set(node.id.name, node.id);
         break;
@@ -43,6 +43,7 @@ class Traverser {
               path.scope.variables.set(param.argument.name, param.argument);
           }
         }
+        break;
     }
     Object.keys(node).forEach((key) => {
       if (node[key] instanceof Array) {

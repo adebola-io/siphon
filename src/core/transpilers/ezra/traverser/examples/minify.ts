@@ -3,42 +3,61 @@ import {
   ConditionalExpression,
   EmptyNode,
   ExpressionStatement,
-  Identifier,
-  JSNode,
+  // Identifier,
+  // JSNode,
   LogicalExpression,
   Program,
   ReturnStatement,
   SequenceExpression,
 } from "../../../../../types";
-import { keywords } from "../../parser/identifiers";
-import { TraversalPath } from "../config";
+// import { keywords } from "../../parser/identifiers";
+// import { Scope, TraversalPath } from "../config";
 import {
   expressionStatement,
   newIdentifier,
   numberLiteral,
   unaryExpression,
 } from "../helpers/creator";
-export function isNotRenamable(node: Identifier, path: any) {
-  // Properties of member expressions.
-  if (
-    path.parent.type === "MemberExpression" &&
-    path.parent.property === node
-  ) {
-    return true;
-  }
-  // Left hand sides of properties.
-  if (/Property/.test(path.parent.type) && path.parent.key === node) {
-    if (path.parent.shorthand) path.parent.shorthand = false;
-    return true;
-  }
-  return false;
-}
-var declarer: any = {
-  VariableDeclarator: true,
-  FunctionDeclaration: true,
-  ClassDeclaration: true,
-};
-var letters = "abcdefghijklmnopqrstuvwxyz$_";
+// export function isNotRenamable(node: Identifier, path: any) {
+//   // Properties of member expressions.
+//   if (
+//     path.parent.type === "MemberExpression" &&
+//     path.parent.property === node
+//   ) {
+//     return true;
+//   }
+//   // Left hand sides of properties.
+//   if (/Property/.test(path.parent.type) && path.parent.key === node) {
+//     if (path.parent.shorthand) path.parent.shorthand = false;
+//     return true;
+//   }
+//   return false;
+// }
+// var declarer: any = {
+//   VariableDeclarator: true,
+//   FunctionDeclaration: true,
+//   ClassDeclaration: true,
+// };
+// var letters = "abcdefghijklmnopqrstuvwxyz$_";
+// function bindHoistedVariables(scope: Scope, node: any) {
+//   if (scope.undeclared.has(node.id.name)) {
+//     const replacer = scope.undeclared.get(node.id.name);
+//     if (replacer) replacer.hoisted = node.id;
+//   }
+//   for (const desc of scope.descendants) bindHoistedVariables(desc, node);
+// }
+// function renameHoistedVariables(scope: Scope) {
+//   // Rename hoisted variables in scope.
+//   scope.undeclared.forEach((variable) => {
+//     if (variable.hoisted) {
+//       variable.node.name = variable.hoisted.name;
+//     }
+//   });
+//   // Rename hoisted variables in nested scopes.
+//   scope.descendants.forEach((desc) => {
+//     renameHoistedVariables(desc);
+//   });
+// }
 /**
  * Traverse an AST and cut corners where possible, shortening variable names, removing dead code, concatenating consecutive expressions, etc.
  * @param ast The ast of the file to minify.
@@ -46,80 +65,54 @@ var letters = "abcdefghijklmnopqrstuvwxyz$_";
 export default function (ast: Program) {
   var i = 0;
   var globalVarTracker = new Map();
-  function rename_vars(closure: JSNode, path: TraversalPath) {
-    // Rename declared variables.
-    path.scope.variables.forEach((variable) => {
-      do {
-        let a = Math.random().toString(16);
-        variable.name =
-          letters[i++ % 27] +
-          (i > 27 ? (i > 150 ? a.slice(12) : a.slice(13)) : "");
-      } while (
-        globalVarTracker.has(variable.name) ||
-        keywords[variable.name] === true
-      );
-      // Rename hoisted variables in scope.
-      path.scope.undeclared.forEach((variable) => {
-        if (variable.hoisted) {
-          variable.node.name = variable.hoisted.name;
-        }
-      });
-      // Rename hoisted variables in nested scopes.
-      path.scope.descendants.forEach((desc) => {
-        desc.undeclared.forEach((variable) => {
-          if (variable.hoisted) {
-            variable.node.name = variable.hoisted.name;
-          }
-        });
-      });
-      globalVarTracker.set(variable.name, true);
-    });
-  }
+  // function rename_vars(closure: JSNode, path: TraversalPath) {
+  // Rename declared variables.
+  //   path.scope.variables.forEach((variable) => {
+  //     do {
+  //       let a = Math.random().toString(16);
+  //       variable.name =
+  //         letters[i++ % 27] +
+  //         (i > 27 ? (i > 150 ? a.slice(12) : a.slice(13)) : "");
+  //     } while (
+  //       globalVarTracker.has(variable.name) ||
+  //       keywords[variable.name] === true
+  //     );
+  //     globalVarTracker.set(variable.name, true);
+  //   });
+  //   renameHoistedVariables(path.scope);
+  // }
   Ezra.traverse(ast, {
-    Program: rename_vars,
+    // Program: rename_vars,
     // Remove unnecesary block statements.
     BlockStatement(node, path) {
-      if (path.scope.variables.size > 0) {
-        rename_vars(node, path);
-        return;
-      }
+      if (path.scope.variables.size > 0) return;
       if (node.body.length > 1 || node.body.length === 0) return;
       if (/Statement/.test(path.parent.type)) return node.body[0];
     },
-    Identifier(node, path) {
-      if (isNotRenamable(node, path)) return;
-      // Bind all defined identifiers to the variable definitions.
-      // Check if the identifier is defined in scope.
-      if (path.scope.variables.has(node.name))
-        return path.scope.variables.get(node.name);
-      // Check if the identifier is defined in the outer scopes.
-      else {
-        for (const ancestor of path.scope.ancestors)
-          if (ancestor.variables?.has(node.name)) {
-            return ancestor.variables.get(node.name);
-          }
-      }
-      // Track variable even if it is undeclared to detect hoisting.
-      if (path.scope.undeclared.has(node.name))
-        return path.scope.undeclared.get(node.name)?.node;
-      else if (!/Function/.test(path.parent.type))
-        path.scope.undeclared.set(node.name, { node });
-      globalVarTracker.set(node.name, true);
-    },
+    // Identifier(node, path) {
+    // if (isNotRenamable(node, path)) return;
+    // // Bind all defined identifiers to the variable definitions.
+    // // Check if the identifier is defined in scope.
+    // if (path.scope.variables.has(node.name))
+    //   return path.scope.variables.get(node.name);
+    // // Check if the identifier is defined in the outer scopes.
+    // else {
+    //   for (const ancestor of path.scope.ancestors)
+    //     if (ancestor.variables?.has(node.name))
+    //       return ancestor.variables.get(node.name);
+    // }
+    // // Track variable even if it is undeclared to detect hoisting.
+    // if (path.scope.undeclared.has(node.name))
+    //   return path.scope.undeclared.get(node.name)?.node;
+    // else if (!/Function/.test(path.parent.type))
+    //   path.scope.undeclared.set(node.name, { node });
+    // globalVarTracker.set(node.name, true);
+    // },
     // Hoist previously undeclared variables.
-    enter(node: any, path) {
-      if (declarer[node.type] !== true) return;
-      if (path.scope.undeclared.has(node.id.name)) {
-        const replacer = path.scope.undeclared.get(node.id.name);
-        if (replacer) replacer.hoisted = node.id;
-      }
-      for (const desc of path.scope.descendants) {
-        if (desc.undeclared.has(node.id.name)) {
-          const replacer = desc.undeclared.get(node.id.name);
-          if (replacer) replacer.hoisted = node.id;
-        }
-      }
-    },
+    // enter(node: any, path) {
+    // if (declarer[node.type] !== true) return;
+    // bindHoistedVariables(path.scope, node);
+    // },
     // Join all consecutive variable declarations with the same keyword.
     VariableDeclaration(node, path: any) {
       if (!/Block|Program/.test(path.parent.type)) return;

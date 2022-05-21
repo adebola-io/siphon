@@ -15,7 +15,7 @@ import {
   VariableDeclaration,
   VariableDeclarator,
 } from "../../../../types";
-import { stringifytoBase64 } from "../../../../utils";
+import { JSFiles, stringifytoBase64 } from "../../../../utils";
 import {
   assignmentExpression,
   callExpression,
@@ -75,7 +75,7 @@ ezra.createJSAsset = function (filename: PathLike) {
       declaration2.kind = "const";
       // Full source imports. e.g. import './utils.js'
       if (node.specifiers.length === 0) {
-        if (/js/.test(extname(dependencyPath)))
+        if (JSFiles[extname(dependencyPath).slice(1)] === true)
           Ezra.parse(readFileSync(dependencyPath, "utf-8"), {
             sourceFile: dependencyPath,
             parseJSX: this.options.allowJSX,

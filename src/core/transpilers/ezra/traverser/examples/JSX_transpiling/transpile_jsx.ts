@@ -58,13 +58,9 @@ function transpileJSX(
     HTMLTags[node.openingElement.tagName] !== true
   ) {
     // Set the prop.children property.
-    let childrenProp = new Property(
-      node.children[0]?.loc.start ?? node.openingElement.loc.start
-    );
+    let childrenProp = new Property(node.openingElement?.loc.start ?? 0);
     childrenProp.key = newIdentifier("children");
-    let childrenArray = new ArrayExpression(
-      node.children[0]?.loc.start ?? node.openingElement.loc.end
-    );
+    let childrenArray = new ArrayExpression(node.openingElement?.loc.end ?? 0);
     childrenArray.elements = node.children ?? [];
     childrenProp.value = childrenArray;
     // Prevent clash with already defined property.
